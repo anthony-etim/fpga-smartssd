@@ -1,0 +1,6 @@
+<: set CompName [getComponentNameString] :>
+<: setOutputDirectory "./" :>
+<: setFileName $CompName :>
+<: setFileExtension ".xdc" :>
+<: setFileProcessingOrder late :>
+<: setFileUsedIn [list synthesis implementation] :>

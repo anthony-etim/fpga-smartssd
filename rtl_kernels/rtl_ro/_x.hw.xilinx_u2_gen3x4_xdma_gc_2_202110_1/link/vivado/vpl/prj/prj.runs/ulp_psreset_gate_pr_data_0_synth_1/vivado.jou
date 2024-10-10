@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+# IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+# Start of session at: Wed Oct 12 11:06:12 2022
+# Process ID: 30030
+# Current directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_data_0_synth_1
+# Command line: vivado -log ulp_psreset_gate_pr_data_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source ulp_psreset_gate_pr_data_0.tcl
+# Log file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_data_0_synth_1/ulp_psreset_gate_pr_data_0.vds
+# Journal file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_data_0_synth_1/vivado.jou
+#-----------------------------------------------------------
+source ulp_psreset_gate_pr_data_0.tcl -notrace

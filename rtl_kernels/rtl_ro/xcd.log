@@ -1,0 +1,20 @@
+Fri Dec 31 12:52:41 2021: Running xcd server. This server was built by gradle.
+Fri Dec 31 12:52:41 2021: Server was asked to start on port: '33657'
+Fri Dec 31 12:52:41 2021: Server is using token UUID: '54267ebd-804c-408f-bfeb-79c569394099'
+Fri Dec 31 12:52:41 2021: SESSION_MGR: creating session with session uuid: '6d04a3e9-ade5-4ab9-8d63-1f78fcd2ec76' and name 'default'
+Fri Dec 31 12:52:41 2021: Attempting to start server on port '33657'
+Fri Dec 31 12:52:41 2021: XCD main fifo: created main fifo '/tmp/xcdmain54267ebd-804c-408f-bfeb-79c569394099', fd read = 15
+Fri Dec 31 12:52:41 2021: Running Dispatch Server
+Fri Dec 31 12:52:41 2021: Version 2.2.0
+Fri Dec 31 12:52:50 2021: Dispatch Server: Accepted socket connection from client
+Fri Dec 31 12:52:50 2021: Starting Socket connection
+Fri Dec 31 12:52:50 2021: EXCHANGE_TOKEN received, server token: 54267ebd-804c-408f-bfeb-79c569394099, passed token: 54267ebd-804c-408f-bfeb-79c569394099
+Fri Dec 31 12:52:51 2021: DISPATCH_HANDLER: Adding handler from function makeHandler in library libxv_system_diagram
+Fri Dec 31 12:52:51 2021: SESSION_MGR: creating session with session uuid: 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' and name 'v++_package_ro'
+Fri Dec 31 12:52:51 2021: KERNEL_SVC: creating session with uuid: 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' and name 'v++_package_ro'
+Fri Dec 31 12:52:51 2021: GUIDANCE_SMGR: creating guidance session with uuid: 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' and name 'v++_package_ro'
+Fri Dec 31 12:52:51 2021: SYSTEM_DIAGRAM_SMGR: creating diagram session with uuid: 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' and name 'v++_package_ro'
+Fri Dec 31 12:52:57 2021: SESSION_MGR: closing session for UUID 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' with name 'v++_package_ro'
+Fri Dec 31 12:52:57 2021: KERNEL_SVC: closing session for UUID 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' with name 'v++_package_ro'
+Fri Dec 31 12:52:57 2021: GUIDANCE_SMGR: closing session for UUID 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' with name 'v++_package_ro'
+Fri Dec 31 12:52:57 2021: SYSTEM_DIAGRAM_SMGR: closing session for UUID 'cbe7e35a-5d6c-400f-b019-d5ff59b0b461' with name 'v++_package_ro'

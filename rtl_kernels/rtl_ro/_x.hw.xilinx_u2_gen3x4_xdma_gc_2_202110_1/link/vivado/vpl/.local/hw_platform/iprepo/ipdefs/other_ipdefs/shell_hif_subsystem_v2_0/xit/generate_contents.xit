@@ -1,0 +1,923 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (0) Define hierarchy(s)
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# Hierarchical cell: icap_reset
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+proc create_hier_cell_icap_reset { parentCell nameHier } {
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+    
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    # Slave AXI-Lite for icap_reset AXI GPIO
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_icap_reset
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    # icap_reset control pins
+    create_bd_pin -dir O -from 31 -to 0 conf_req_data
+    create_bd_pin -dir O -from 3  -to 0 conf_req_reg_num
+    create_bd_pin -dir O -from 1  -to 0 conf_req_type
+    create_bd_pin -dir O vcc
+    create_bd_pin -dir O gnd
+    
+    # AXI clock & reset
+    create_bd_pin -dir I -type clk aclk_pcie
+    create_bd_pin -dir I -type rst aresetn_pcie
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+    
+    # Create the mcap_enable GPIO, this sets the mcap_enable bit (bit 0) of the control register
+    set mcap_enable [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params [list \
+        CONFIG.C_GPIO_WIDTH {1} \
+        CONFIG.C_ALL_OUTPUTS {1} \
+        ] \
+    mcap_enable ]
+    
+    # create 1-bit vcc
+    set const_vcc [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+        CONFIG.CONST_VAL {1} \
+        ] \
+    const_vcc ]
+    
+    # create 1-bit gnd
+    set const_gnd [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+        CONFIG.CONST_VAL {0} \
+        ] \
+    const_gnd ]
+    
+    # create register number constant with value of 0x5 (control register)
+    set const_reg_num [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+        CONFIG.CONST_WIDTH {4} \
+        CONFIG.CONST_VAL {0x5} \
+        ] \
+    const_reg_num ]
+    
+    # create type constant with value of 0x2 (write)
+    set const_type [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+        CONFIG.CONST_WIDTH {2} \
+        CONFIG.CONST_VAL {0x2} \
+        ] \
+    const_type ]
+    
+    # create 15-bit data constant with value of 0
+    set const_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+        CONFIG.CONST_WIDTH {15} \
+        CONFIG.CONST_VAL {0} \
+        ] \
+    const_data ]
+    
+    # create the concat IP to form the 32-bit data bus connection
+    set concat_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params [list \
+        CONFIG.NUM_PORTS {4} \
+        ] \
+    concat_data ]
+    
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    # AXI GPIO - mcap_enable
+    connect_bd_intf_net -intf_net s_axi_icap_reset [get_bd_intf_pins s_axi_icap_reset] [get_bd_intf_pins mcap_enable/S_AXI]
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # AXI Clock & Reset
+    connect_bd_net -net aclk_pcie [get_bd_pins aclk_pcie] [get_bd_pins mcap_enable/s_axi_aclk]
+    connect_bd_net -net aresetn_pcie [get_bd_pins aresetn_pcie] [get_bd_pins mcap_enable/s_axi_aresetn]
+    
+    # Request Data
+    connect_bd_net -net icap_reset_ip_gpio_io_o [get_bd_pins mcap_enable/gpio_io_o] [get_bd_pins concat_data/In0]
+    connect_bd_net -net const_data_ip_dout [get_bd_pins const_data/dout] [get_bd_pins concat_data/In1] [get_bd_pins concat_data/In3]
+    connect_bd_net -net vcc_ip_dout [get_bd_pins const_vcc/dout] [get_bd_pins concat_data/In2] [get_bd_pins vcc]
+    connect_bd_net -net concat_data_ip_dout [get_bd_pins concat_data/dout] [get_bd_pins conf_req_data]
+    
+    # Register Number
+    connect_bd_net -net const_reg_num_ip_dout [get_bd_pins const_reg_num/dout] [get_bd_pins conf_req_reg_num]
+    
+    # Type
+    connect_bd_net -net const_type_ip_dout [get_bd_pins const_type/dout] [get_bd_pins conf_req_type]
+    
+    # Gnd
+    connect_bd_net -net gnd_ip_dout [get_bd_pins const_gnd/dout] [get_bd_pins gnd]
+    
+    # Restore current instance
+    current_bd_instance $oldCurInst
+    
+}
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create instance(s)
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+  
+  # Set the PCIe configuration properties dependent on configured Max PCIe Link Width
+  if {$C_PCIE_LINK_CAP_MAX eq "Gen3x4"} {
+  
+      set pcie_axisten_if_ext_512_rc_4tlp_straddle false
+      set pcie_axisten_if_ext_512_rq_straddle false
+      set pcie_axisten_if_rc_straddle false
+      set pcie_axisten_if_width 128_bit
+      set pcie_coreclk_freq 250
+      set pcie_pl_link_cap_max_link_width X4
+      set pcie_enable_more_clk false
+      set axi_bridge_tdata_width 128
+      set axi_bridge_tuser_width_cq 88
+      set axi_bridge_tuser_width_cc 33
+      
+  } elseif {$C_PCIE_LINK_CAP_MAX eq "Gen3x8"} {
+  
+      set pcie_axisten_if_ext_512_rc_4tlp_straddle false
+      set pcie_axisten_if_ext_512_rq_straddle false
+      set pcie_axisten_if_rc_straddle true
+      set pcie_axisten_if_width 256_bit
+      set pcie_pl_link_cap_max_link_width X8
+      set axi_bridge_tdata_width 256
+      set axi_bridge_tuser_width_cq 88
+      set axi_bridge_tuser_width_cc 33
+      
+      # Only 250MHz core clock supported on -2LV part
+      if {$C_SPEEDGRADE eq "-2LV"} {
+      
+          set pcie_coreclk_freq 250
+          set pcie_enable_more_clk false
+          
+      } else {
+      
+          set pcie_coreclk_freq 500
+          set pcie_enable_more_clk true
+          
+      }
+      
+  } else {
+  
+      set pcie_axisten_if_ext_512_rc_4tlp_straddle true
+      set pcie_axisten_if_ext_512_rq_straddle true
+      set pcie_axisten_if_rc_straddle false
+      set pcie_axisten_if_width 512_bit
+      set pcie_coreclk_freq 500
+      set pcie_pl_link_cap_max_link_width X16
+      set pcie_enable_more_clk true
+      set axi_bridge_tdata_width 512
+      set axi_bridge_tuser_width_cq 183
+      set axi_bridge_tuser_width_cc 81
+
+  }
+  
+  # Set the properties common to both pcie4 and pcie4c 
+  set pcie_properties [ list \
+      CONFIG.AXISTEN_IF_CQ_ALIGNMENT_MODE {Address_Aligned} \
+      CONFIG.AXISTEN_IF_RQ_ALIGNMENT_MODE {DWORD_Aligned} \
+      CONFIG.AXISTEN_IF_RC_STRADDLE $pcie_axisten_if_rc_straddle \
+      CONFIG.AXISTEN_IF_EXT_512_RC_4TLP_STRADDLE $pcie_axisten_if_ext_512_rc_4tlp_straddle \
+      CONFIG.AXISTEN_IF_EXT_512_RQ_STRADDLE $pcie_axisten_if_ext_512_rq_straddle \
+      CONFIG.MSI_X_OPTIONS {MSI-X_External} \
+      CONFIG.ENABLE_MULTIPF_AER {true} \
+      CONFIG.PF0_CLASS_CODE {120000} \
+      CONFIG.PF0_DEVICE_ID $C_PF0_DEVICE_ID \
+      CONFIG.PF0_MSIX_CAP_PBA_BIR {BAR_3:2} \
+      CONFIG.PF0_MSIX_CAP_PBA_OFFSET {14000} \
+      CONFIG.PF0_MSIX_CAP_TABLE_BIR {BAR_3:2} \
+      CONFIG.PF0_MSIX_CAP_TABLE_OFFSET {10000} \
+      CONFIG.PF0_MSIX_CAP_TABLE_SIZE {1F} \
+      CONFIG.PF0_SUBSYSTEM_ID {000E} \
+      CONFIG.PF1_CLASS_CODE {120000} \
+      CONFIG.PF1_DEVICE_ID $C_PF1_DEVICE_ID \
+      CONFIG.PF1_INTERRUPT_PIN {INTA} \
+      CONFIG.PF1_MSIX_CAP_PBA_BIR {BAR_3:2} \
+      CONFIG.PF1_MSIX_CAP_PBA_OFFSET {14000} \
+      CONFIG.PF1_MSIX_CAP_TABLE_BIR {BAR_3:2} \
+      CONFIG.PF1_MSIX_CAP_TABLE_OFFSET {10000} \
+      CONFIG.PF1_MSIX_CAP_TABLE_SIZE {1F} \
+      CONFIG.PF1_SUBSYSTEM_ID {000E} \
+      CONFIG.PL_LINK_CAP_MAX_LINK_SPEED {8.0_GT/s} \
+      CONFIG.PL_LINK_CAP_MAX_LINK_WIDTH $pcie_pl_link_cap_max_link_width \
+      CONFIG.TL_PF_ENABLE_REG {2} \
+      CONFIG.acs_ext_cap_enable {true} \
+      CONFIG.axisten_freq {250} \
+      CONFIG.axisten_if_enable_client_tag {true} \
+      CONFIG.axisten_if_width $pcie_axisten_if_width \
+      CONFIG.cfg_ext_if {false} \
+      CONFIG.copy_pf0 {false} \
+      CONFIG.coreclk_freq $pcie_coreclk_freq \
+      CONFIG.disable_bram_pipeline $C_PCIE_REDUCE_RESOURCE \
+      CONFIG.disable_eq_synchronizer $C_PCIE_REDUCE_RESOURCE \
+      CONFIG.dma_2rp {true} \
+      CONFIG.en_ext_clk {false} \
+      CONFIG.en_gt_selection $C_EN_GT_QUAD_SEL \
+      CONFIG.en_pcie_conf {true} \
+      CONFIG.enable_code {4232} \
+      CONFIG.enable_jtag_dbg {true} \
+      CONFIG.ext_pcie_cfg_space_enabled {true} \
+      CONFIG.enable_more_clk $pcie_enable_more_clk \
+      CONFIG.ins_loss_profile {Chip-to-Chip} \
+      CONFIG.mode_selection {Advanced} \
+      CONFIG.pcie_blk_locn $C_PCIE_BLK_LOCN \
+      CONFIG.pf0_bar0_64bit {true} \
+      CONFIG.pf0_bar0_prefetchable {true} \
+      CONFIG.pf0_bar0_scale {Megabytes} \
+      CONFIG.pf0_bar0_size {32} \
+      CONFIG.pf0_bar1_enabled {false} \
+      CONFIG.pf0_bar2_enabled {true} \
+      CONFIG.pf0_bar2_64bit {true} \
+      CONFIG.pf0_bar2_prefetchable {true} \
+      CONFIG.pf0_bar2_size {128} \
+      CONFIG.pf0_base_class_menu {Simple_communication_controllers} \
+      CONFIG.pf0_class_code_base {12} \
+      CONFIG.pf0_class_code_interface {00} \
+      CONFIG.pf0_class_code_sub {00} \
+      CONFIG.pf0_msi_enabled {false} \
+      CONFIG.pf0_msix_enabled {true} \
+      CONFIG.pf0_sub_class_interface_menu {16450_compatible_serial_controller} \
+      CONFIG.pf0_vc_cap_enabled {false} \
+      CONFIG.pf1_bar0_64bit {true} \
+      CONFIG.pf1_bar0_index {4} \
+      CONFIG.pf1_bar0_prefetchable {true} \
+      CONFIG.pf1_bar0_scale {Megabytes} \
+      CONFIG.pf1_bar0_size {32} \
+      CONFIG.pf1_bar1_enabled {false} \
+      CONFIG.pf1_bar2_enabled {true} \
+      CONFIG.pf1_bar2_64bit {true} \
+      CONFIG.pf1_bar2_prefetchable {true} \
+      CONFIG.pf1_bar2_type {Memory} \
+      CONFIG.pf1_bar2_size {128} \
+      CONFIG.pf1_bar4_64bit {true} \
+      CONFIG.pf1_bar4_enabled {true} \
+      CONFIG.pf1_bar4_prefetchable {true} \
+      CONFIG.pf1_bar4_scale {Megabytes} \
+      CONFIG.pf1_bar4_size {256} \
+      CONFIG.pf1_bar4_type {Memory} \
+      CONFIG.pf1_base_class_menu {Simple_communication_controllers} \
+      CONFIG.pf1_class_code_base {12} \
+      CONFIG.pf1_class_code_interface {00} \
+      CONFIG.pf1_class_code_sub {00} \
+      CONFIG.pf1_msix_enabled {true} \
+      CONFIG.pf1_rbar_cap_bar4 {000000FFF000} \
+      CONFIG.pf1_rbar_num {1} \
+      CONFIG.pf1_sub_class_interface_menu {16450_compatible_serial_controller} \
+      CONFIG.plltype {QPLL1} \
+      CONFIG.rbar_enable {true} \
+      CONFIG.type1_membase_memlimit_enable {Disabled} \
+      CONFIG.type1_prefetchable_membase_memlimit {Disabled} \
+      CONFIG.use_standard_interfaces {true} \
+  ]
+  
+  # Add the selected GT quad if quad selection is enabled
+  if {$C_EN_GT_QUAD_SEL} {
+  
+      lappend pcie_properties CONFIG.select_quad $C_GT_QUAD
+      
+  }
+  
+  # Create the pcie4c IP if enabled, set the VSEC base address
+  if {$C_HAS_PCIE4C} {
+  
+      set pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:pcie4c_uscale_plus:1.* -set_params $pcie_properties pcie ]
+      set pcie_vsec_base_addr 0xE80
+      
+  } else {
+  
+      set pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:pcie4_uscale_plus:1.* -set_params $pcie_properties pcie ]
+      set pcie_vsec_base_addr 0x480
+      
+  }
+  
+  #############################
+  # Segment Address Definitions
+  #############################
+  # Set the AXI addresses for the peripherals that are also reported for H/W discovery
+  set user_mailbox_addr 0x01F00000
+  set mgmt_mailbox_addr 0x01F10000
+  set uuid_rom_addr 0x01F04000
+  set flash_programmer_addr 0x01F06000
+  set mgmt_platform_info_addr 0x01F09000
+  set user_platform_info_addr 0x01F11000
+  # Note: BAR Layout addresses in the VSEC don't include address bits [3:0]
+  set mgmt_bar_layout_table_addr 0x01F0800
+  set user_bar_layout_table_addr 0x01F1000
+  
+  # Instantiate the PCIE vendor specific extended capability (VSEC) IP - implements the Xilinx ALF
+  set pcie_ext_cap [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_pcie_ext_cap:2.* -set_params [list \
+      CONFIG.C_CAP_BASE_ADDR $pcie_vsec_base_addr \
+      CONFIG.C_PF0_LOW_OFFSET $mgmt_bar_layout_table_addr \
+      CONFIG.C_PF1_LOW_OFFSET $user_bar_layout_table_addr \
+      ] \
+  pcie_ext_cap ]
+  
+  # Instatiate the Management Platform Info IP to report Platform Type
+  set mgmt_platform_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_platform_info:1.* -set_params [list \
+      CONFIG.C_PLATFORM_TYPE $C_PLATFORM_TYPE \
+      ] \
+  mgmt_platform_info ]
+
+  # Instatiate the User Platform Info IP to report Platform Type
+  set user_platform_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_platform_info:1.* -set_params [list \
+      CONFIG.C_PLATFORM_TYPE $C_PLATFORM_TYPE \
+      ] \
+  user_platform_info ]
+  
+  # Create the Mailbox IP for s/w inter-PF comms (Management <-> User)
+  # Interrupts are routed out of the subsystem to be handled externally
+  # Depth of 4096 equates to 8 BRAM36s
+  set mailbox [ create_bd_cell -type ip -vlnv xilinx.com:ip:mailbox:2.* -set_params [list \
+      CONFIG.C_IMPL_STYLE {1} \
+      CONFIG.C_MAILBOX_DEPTH {4096} \
+      ] \
+  mailbox ]
+  
+  # Creates the Logic-UUID ROM instance for the BLP, this must be populated post-implementation
+  set uuid_rom [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_uuid_rom:1.* uuid_rom ]
+  
+  # Instatiate the AXI Quad SPI Flash Programmer
+  set flash_programmer [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_quad_spi:3.* -set_params [list \
+      CONFIG.C_FIFO_DEPTH {256} \
+      CONFIG.C_SCK_RATIO {2} \
+      CONFIG.C_SPI_MEMORY {2} \ 
+      CONFIG.C_SPI_MODE {2} \ 
+      CONFIG.C_USE_STARTUP {1} \
+      CONFIG.C_USE_STARTUP_INT {1} \
+      ] \
+  flash_programmer ]
+  
+  # Instatiate the Management PF BAR Layout IP
+  set mgmt_bar_layout [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_bar_layout_table:1.* -set_params [list \
+      CONFIG.C_NUM_TABLE_ENTRIES {4} \
+      CONFIG.C_ENTRY_TYPE_0 {0x50} \
+      CONFIG.C_ENTRY_ADDR_0 $uuid_rom_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_0 [get_vlnv_major_version $uuid_rom] \
+      CONFIG.C_ENTRY_MINOR_VERSION_0 [get_vlnv_minor_version $uuid_rom] \
+      CONFIG.C_ENTRY_TYPE_1 {0x51} \
+      CONFIG.C_ENTRY_ADDR_1 $flash_programmer_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_1 [get_vlnv_major_version $flash_programmer] \
+      CONFIG.C_ENTRY_MINOR_VERSION_1 [get_vlnv_minor_version $flash_programmer] \
+      CONFIG.C_ENTRY_TYPE_2 {0x52} \
+      CONFIG.C_ENTRY_ADDR_2 $mgmt_platform_info_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_2 [get_vlnv_major_version $mgmt_platform_info] \
+      CONFIG.C_ENTRY_MINOR_VERSION_2 [get_vlnv_minor_version $mgmt_platform_info] \
+      CONFIG.C_ENTRY_TYPE_3 {0x53} \
+      CONFIG.C_ENTRY_ADDR_3 $mgmt_mailbox_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_3 [get_vlnv_major_version $mailbox] \
+      CONFIG.C_ENTRY_MINOR_VERSION_3 [get_vlnv_minor_version $mailbox] \
+      ] \
+  mgmt_bar_layout ]
+
+  # Instantiate the User PF BAR Layout IP
+  set user_bar_layout [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_bar_layout_table:1.* -set_params [list \
+      CONFIG.C_NUM_TABLE_ENTRIES {2} \
+      CONFIG.C_ENTRY_TYPE_0 {0x53} \
+      CONFIG.C_ENTRY_ADDR_0 $user_mailbox_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_0 [get_vlnv_major_version $mailbox] \
+      CONFIG.C_ENTRY_MINOR_VERSION_0 [get_vlnv_minor_version $mailbox] \
+      CONFIG.C_ENTRY_TYPE_1 {0x52} \
+      CONFIG.C_ENTRY_ADDR_1 $user_platform_info_addr \
+      CONFIG.C_ENTRY_MAJOR_VERSION_1 [get_vlnv_major_version $user_platform_info] \
+      CONFIG.C_ENTRY_MINOR_VERSION_1 [get_vlnv_minor_version $user_platform_info] \
+      ] \
+  user_bar_layout ]
+
+  # Instantiate the ICAP reset hierarchy - enables/disables the MCAP interface to force a reset of the ICAP
+  create_hier_cell_icap_reset [current_bd_instance .] icap_reset
+  
+  # Create the common clock metadata adapter IPs
+  set aclk_pcie_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params [list \
+      CONFIG.CLK_DOMAIN $C_ACLK_PCIE_CLK_DOMAIN \
+      ] \
+  aclk_pcie_clk_adapt ]
+  
+  set pcie_rc_axis_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clk_metadata_adapter:1.* -set_params [list \
+      CONFIG.M_CLK_DOMAIN $C_ACLK_PCIE_CLK_DOMAIN \
+      ] \
+  pcie_rc_axis_clk_adapt ]
+  
+  set pcie_rq_axis_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clk_metadata_adapter:1.* pcie_rq_axis_clk_adapt ]
+  
+  set pcie_cq_axis_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clk_metadata_adapter:1.* -set_params [list \
+      CONFIG.M_CLK_DOMAIN $C_ACLK_PCIE_CLK_DOMAIN \
+      ] \
+  pcie_cq_axis_clk_adapt ]
+  
+  set pcie_cc_axis_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clk_metadata_adapter:1.* pcie_cc_axis_clk_adapt ]
+  
+  # Clock metadata adapter IP when Core Clock is enabled
+  if {$pcie_enable_more_clk} {
+  
+      set aclk_pcie_2x_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params [list \
+          CONFIG.CLK_DOMAIN $C_ACLK_PCIE_CLK_DOMAIN \
+          ] \
+      aclk_pcie_2x_clk_adapt ]
+      
+  }
+  
+  # Create aclk_ctrl clock metadata adapter
+  set aclk_ctrl_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params [list \
+      CONFIG.CLK_DOMAIN $C_ACLK_CTRL_CLK_DOMAIN \
+      ] \
+  aclk_ctrl_clk_adapt ]
+  
+  # Create aclk_ctrl_2x clock metadata adapter, same clock domain as aclk_ctrl
+  set aclk_ctrl_2x_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params [list \
+      CONFIG.CLK_DOMAIN $C_ACLK_CTRL_CLK_DOMAIN \
+      ] \
+  aclk_ctrl_2x_clk_adapt ]
+  
+  # Create the AXI Firewall instance for the Management PF AXI-Lite
+  set axi_firewall_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* axi_firewall_ctrl_mgmt ]
+  
+  # Create the AXI Firewall instance for the User PF AXI-Lite
+  set axi_firewall_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* axi_firewall_ctrl_user ]
+  
+  # Create the AXI VIP IP at the HIP boundary for the Management PF
+  set axi_vip_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_ctrl_mgmt ]
+  
+  # Create the AXI VIP IP at the HIP boundary for the User PF
+  set axi_vip_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_ctrl_user ]
+
+  # Instantiate the AXI-Lite Tap IP to bridge the PCIe CQ/CC AXIS interface to AXI-Lite
+  # Management instance targets PF0, BAR0
+  set pcie_axi_bridge_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:pcie_axi4lite_tap:1.* -set_params [list \
+      CONFIG.TDATA_WIDTH $axi_bridge_tdata_width \
+      CONFIG.TUSER_WIDTH_CQ $axi_bridge_tuser_width_cq \
+      CONFIG.TUSER_WIDTH_CC $axi_bridge_tuser_width_cc \
+      ] \
+  pcie_axi_bridge_mgmt ]
+  
+  # Instantiate the AXI-Lite Tap IP to bridge the PCIe CQ/CC AXIS interface to AXI-Lite
+  # User instance targets PF1, BAR0
+  set pcie_axi_bridge_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:pcie_axi4lite_tap:1.* -set_params [list \
+      CONFIG.TARGET_FUNCTION {0x1} \
+      CONFIG.TDATA_WIDTH $axi_bridge_tdata_width \
+      CONFIG.TUSER_WIDTH_CQ $axi_bridge_tuser_width_cq \
+      CONFIG.TUSER_WIDTH_CC $axi_bridge_tuser_width_cc \
+      ] \
+  pcie_axi_bridge_user ]
+
+  # Create the input buffer for the PCIE Reference clock
+  set pcie_refclk_ibuf [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.* -set_params [list \
+      CONFIG.C_BUF_TYPE {IBUFDSGTE} \
+      ] \
+  pcie_refclk_ibuf ]
+  
+  # Instantiate the Clk_Wiz IP to create the 50MHz & 100MHz control clocks using the PCIE User clock (250MHz) as a reference
+  set clkwiz_level0_periph [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.* -set_params [list \
+      CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {100.000} \
+      CONFIG.CLKOUT2_USED {true} \
+      CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {50.000} \
+      CONFIG.PRIMITIVE {PLL} \
+      CONFIG.PRIM_SOURCE {No_buffer} \
+      ] \
+  clkwiz_level0_periph ]
+  
+  # Create the PR Isolation AXI GPIO peripheral. S/W can write to GPIO bit 0 to enable the PLP reset
+  # '0' = Reset Asserted, '1' = Reset De-asserted
+  # Output defaults to '0' (reset asserted) post configuration and GPIO AXI reset 
+  set pr_isolate [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params [list \
+      CONFIG.C_ALL_INPUTS_2 {1} \
+      CONFIG.C_ALL_OUTPUTS {1} \
+      CONFIG.C_DOUT_DEFAULT {0x00000000} \
+      CONFIG.C_GPIO2_WIDTH {1} \
+      CONFIG.C_GPIO_WIDTH {1} \
+      CONFIG.C_IS_DUAL {1} \
+      ] \
+  pr_isolate ]
+  
+  # Create the first stage reset for the aclk_pcie domain, this resets all HIF peripherals and is output to reset the BLP
+  # Inputs include the PCIe User Reset, PCIe Hot Reset and PCIe Link Up
+  set psreset_static_pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params [list \
+      CONFIG.C_AUX_RST_WIDTH {1} \
+      CONFIG.C_EXT_RST_WIDTH {1} \
+      CONFIG.C_AUX_RESET_HIGH.VALUE_SRC {USER} \
+      CONFIG.C_AUX_RESET_HIGH {1} \
+      ] \
+  psreset_static_pcie ]
+  
+  # Create the second stage reset for the aclk_pcie domain, this is output from the HIF to reset the PLP and IINTF
+  # Inputs include psreset_static_pcie and s/w controlled pr_isolate GPIO 
+  set psreset_pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params [list \
+      CONFIG.C_AUX_RST_WIDTH {1} \
+      CONFIG.C_EXT_RST_WIDTH {1} \
+      ] \
+  psreset_pcie ]
+  
+  # Create the first stage reset for the aclk_ctrl domain, this is output from the HIF to reset the BLP
+  # Inputs include PCIe User Reset, psreset_static_pcie output and clkwiz_level0_periph locked signal
+  set psreset_static_ctrl [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params [list \
+      CONFIG.C_AUX_RST_WIDTH {1} \
+      CONFIG.C_EXT_RST_WIDTH {1} \
+      ] \
+  psreset_static_ctrl ]
+  
+  # Create the second stage reset for the aclk_ctrl domain, this is output from the HIF to reset the PLP
+  # Inputs include psreset_static_ctrl output and s/w controlled pr_isolate GPIO
+  set psreset_ctrl [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params [list \
+      CONFIG.C_AUX_RST_WIDTH {1} \
+      CONFIG.C_EXT_RST_WIDTH {1} \
+      ] \
+  psreset_ctrl ]
+  
+  # Instantiate the credit handler IP to manage CQ non-posted credits for local TAP IP transactions
+  set pcie_credit_handler [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_pcie_credit_handler:2.* -set_params [list \
+      CONFIG.PCIE_LINK_CAP_MAX $C_PCIE_LINK_CAP_MAX \
+      ] \
+  pcie_credit_handler ]
+  
+  # Create AXI GPIO instance to monitor/clear the pcie link up latch in the credit handler IP
+  # GPIO bit 0 is output only, s/w can write '1' then '0' to clear the link status latch. Defaults to '0' post reset
+  # GPIO2 bit 0 is input only, s/w can read to get the latched link status. '1' = PCIe Link Up has toggled. '0' = PCIe Link Up has not toggled.
+  set pcie_link_mon [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params [list \
+      CONFIG.C_GPIO_WIDTH {1} \
+      CONFIG.C_GPIO2_WIDTH {1} \
+      CONFIG.C_IS_DUAL {1} \
+      CONFIG.C_ALL_INPUTS_2 {1} \
+      CONFIG.C_ALL_OUTPUTS {1} \
+      ] \
+  pcie_link_mon ]
+  
+  # Create instance: vcc, and set properties
+  set vcc [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+      CONFIG.CONST_VAL {1} \
+      ] \
+  vcc ]
+  
+  # Creates an AXI Interconnect instance for the Management AXI-Lite (aclk_pcie)
+  set axi_ic_ctrl_mgmt_fast [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params [list \
+      CONFIG.NUM_MI {7} \
+      ] \
+  axi_ic_ctrl_mgmt_fast ]
+  
+  # Creates an AXI Interconnect instance for the Management AXI-Lite (aclk_ctrl)
+  set axi_ic_ctrl_mgmt_slow [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params [list \
+      CONFIG.NUM_MI {6} \
+      ] \
+  axi_ic_ctrl_mgmt_slow ]
+  
+  # Creates an AXI Interconnect instance for the User AXI-Lite (aclk_pcie)
+  set axi_ic_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params [list \
+      CONFIG.NUM_MI {4} \
+      ] \
+  axi_ic_ctrl_user ]
+  
+  # OR together the read/write error outputs of the Management AXI Firewall
+  set irq_or_ctrl_mgmt_firewall [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params [list \
+      CONFIG.C_OPERATION {or} \
+      CONFIG.C_SIZE {1} \
+      CONFIG.LOGO_FILE {data/sym_orgate.png} \
+      ] \
+  irq_or_ctrl_mgmt_firewall ]
+  
+  # OR together the read/write error outputs of the User AXI Firewall
+  set irq_or_ctrl_user_firewall [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params [list \
+      CONFIG.C_OPERATION {or} \
+      CONFIG.C_SIZE {1} \
+      CONFIG.LOGO_FILE {data/sym_orgate.png} \
+      ] \
+  irq_or_ctrl_user_firewall ]
+
+  # Reduce the OR'd Management/User AXI Firewall error outputs to a single bit, this is routed externally for use as an interrupt
+  set irq_or_ctrl_axi_firewalls [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params [list \
+      CONFIG.C_OPERATION {or} \
+      CONFIG.C_SIZE {1} \
+      CONFIG.LOGO_FILE {data/sym_orgate.png} \
+      ] \
+  irq_or_ctrl_axi_firewalls ]
+  
+  # Instatiate the build info IP and populate with the version parameters
+  set build_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params [list \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG \
+      ] \
+  build_info ]
+  
+  # Instatiate the User AXI Clock Converter if enabled
+  if {$C_HAS_USER_AXI_CC} {
+  
+      set user_axi_cc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_clock_converter:2.* user_axi_cc ]
+      
+  }
+
+  # Create 1-bit GND constant
+  set gnd [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+      CONFIG.CONST_VAL {0} \
+      ] \
+  gnd ]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create interface connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # PCIe RC/RQ AXI-Stream Interfaces
+  connect_bd_intf_net -intf_net pcie_ip_m_axis_rc [get_bd_intf_pins pcie/m_axis_rc] [get_bd_intf_pins pcie_rc_axis_clk_adapt/S_AXIS]
+  connect_bd_intf_net -intf_net pcie_rc_axis_clk_adapt_ip_m_axis [get_bd_intf_pins pcie_rc_axis_clk_adapt/M_AXIS] [get_bd_intf_ports m_pcie_axis_rc]
+  connect_bd_intf_net -intf_net s_pcie_axis_rq [get_bd_intf_ports s_pcie_axis_rq] [get_bd_intf_pins pcie_rq_axis_clk_adapt/S_AXIS]
+  connect_bd_intf_net -intf_net pcie_rq_axis_clk_adapt_ip_m_axis [get_bd_intf_pins pcie_rq_axis_clk_adapt/M_AXIS] [get_bd_intf_pins pcie/s_axis_rq]
+  
+  # PCIe Configuration Interfaces
+  connect_bd_intf_net -intf_net s_pcie4_cfg_interrupt [get_bd_intf_ports s_pcie4_cfg_interrupt] [get_bd_intf_pins pcie/pcie4_cfg_interrupt]
+  connect_bd_intf_net -intf_net s_pcie4_cfg_external_msix [get_bd_intf_ports s_pcie4_cfg_external_msix] [get_bd_intf_pins pcie/pcie4_cfg_external_msix_without_msi_if]
+  connect_bd_intf_net -intf_net s_pcie4_cfg_control [get_bd_intf_ports s_pcie4_cfg_control] [get_bd_intf_pins pcie/pcie4_cfg_control_if]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_fc [get_bd_intf_pins pcie/pcie4_cfg_fc] [get_bd_intf_ports m_pcie4_cfg_fc]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_mesg_rcvd [get_bd_intf_pins pcie/pcie4_cfg_mesg_rcvd] [get_bd_intf_ports m_pcie4_cfg_mesg_rcvd]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_mesg_tx [get_bd_intf_pins pcie/pcie4_cfg_mesg_tx] [get_bd_intf_ports m_pcie4_cfg_mesg_tx]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_status_if [get_bd_intf_pins pcie/pcie4_cfg_status_if] [get_bd_intf_pins pcie_credit_handler/s_pcie4_cfg_status]
+  connect_bd_intf_net -intf_net pcie_credit_handler_ip_m_pcie4_cfg_status [get_bd_intf_pins pcie_credit_handler/m_pcie4_cfg_status] [get_bd_intf_ports m_pcie4_cfg_status]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_mgmt_if [get_bd_intf_pins pcie/pcie4_cfg_mgmt_if] [get_bd_intf_ports s_pcie4_cfg_mgmt]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_cfg_ext [get_bd_intf_pins pcie/pcie4_cfg_ext] [get_bd_intf_pins pcie_ext_cap/s_pcie4_cfg_ext]
+  connect_bd_intf_net -intf_net pcie_ip_pcie4_mgt [get_bd_intf_pins pcie/pcie4_mgt] [get_bd_intf_ports pcie4_mgt]
+  connect_bd_intf_net -intf_net pcie_refclk [get_bd_intf_ports pcie_refclk] [get_bd_intf_pins pcie_refclk_ibuf/CLK_IN_D]
+  
+  # PCIe CQ/CC AXI-Stream Interfaces
+  connect_bd_intf_net -intf_net pcie_ip_m_axis_cq [get_bd_intf_pins pcie/m_axis_cq] [get_bd_intf_pins pcie_cq_axis_clk_adapt/S_AXIS]
+  connect_bd_intf_net -intf_net pcie_cq_axis_clk_adapt_ip_m_axis [get_bd_intf_pins pcie_cq_axis_clk_adapt/M_AXIS] [get_bd_intf_pins pcie_axi_bridge_mgmt/S_AXIS_PCIE_CQ]
+  connect_bd_intf_net -intf_net [get_bd_intf_nets pcie_cq_axis_clk_adapt_ip_m_axis] [get_bd_intf_pins pcie_cq_axis_clk_adapt/M_AXIS] [get_bd_intf_pins pcie_credit_handler/mon_axis_cq]
+  connect_bd_intf_net -intf_net pcie_axi_bridge_mgmt_ip_m_axis_bypass_cq [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXIS_BYPASS_CQ] [get_bd_intf_pins pcie_axi_bridge_user/S_AXIS_PCIE_CQ]
+  connect_bd_intf_net -intf_net pcie_axi_bridge_user_ip_m_axis_bypass_cq [get_bd_intf_pins pcie_axi_bridge_user/M_AXIS_BYPASS_CQ] [get_bd_intf_ports m_pcie_axis_cq]
+  connect_bd_intf_net -intf_net [get_bd_intf_nets pcie_axi_bridge_user_ip_m_axis_bypass_cq] [get_bd_intf_pins pcie_axi_bridge_user/M_AXIS_BYPASS_CQ] [get_bd_intf_pins pcie_credit_handler/mon_axis_cq_usr]
+  connect_bd_intf_net -intf_net s_pcie_axis_cc [get_bd_intf_ports s_pcie_axis_cc] [get_bd_intf_pins pcie_axi_bridge_mgmt/S_AXIS_BYPASS_CC]
+  connect_bd_intf_net -intf_net pcie_axis_bridge_mgmt_ip_m_axis_pcie_cc [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXIS_PCIE_CC] [get_bd_intf_pins pcie_axi_bridge_user/S_AXIS_BYPASS_CC]
+  connect_bd_intf_net -intf_net pcie_axis_bridge_user_ip_m_axis_pcie_cc [get_bd_intf_pins pcie_axi_bridge_user/M_AXIS_PCIE_CC] [get_bd_intf_pins pcie_cc_axis_clk_adapt/S_AXIS]
+  connect_bd_intf_net -intf_net pcie_cc_axis_clk_adapt_ip_m_axis [get_bd_intf_pins pcie_cc_axis_clk_adapt/M_AXIS] [get_bd_intf_pins pcie/s_axis_cc]
+  
+  # Management PF AXI-Lite Control
+  connect_bd_intf_net -intf_net pcie_axi_bridge_mgmt_ip_m_axi [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/S00_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m00_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M00_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/S00_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m01_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M01_AXI] [get_bd_intf_pins mailbox/S0_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m02_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M02_AXI] [get_bd_intf_pins axi_firewall_ctrl_mgmt/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m03_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M03_AXI] [get_bd_intf_pins axi_firewall_ctrl_mgmt/S_AXI_CTL]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m04_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M04_AXI] [get_bd_intf_pins axi_firewall_ctrl_user/S_AXI_CTL]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m05_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M05_AXI] [get_bd_intf_pins pcie_link_mon/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_fast_ip_m06_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_fast/M06_AXI] [get_bd_intf_pins icap_reset/s_axi_icap_reset]
+  connect_bd_intf_net -intf_net axi_firewall_ctrl_mgmt_ip_m_axi [get_bd_intf_pins axi_firewall_ctrl_mgmt/M_AXI] [get_bd_intf_pins axi_vip_ctrl_mgmt/S_AXI]
+  connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_ip_m_axi [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_ports m_axi_ctrl_mgmt]
+  
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m00_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M00_AXI] [get_bd_intf_pins pr_isolate/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m01_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M01_AXI] [get_bd_intf_pins uuid_rom/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m02_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M02_AXI] [get_bd_intf_pins build_info/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m03_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M03_AXI] [get_bd_intf_pins flash_programmer/AXI_LITE]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m04_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M04_AXI] [get_bd_intf_pins mgmt_bar_layout/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_slow_ip_m05_axi [get_bd_intf_pins axi_ic_ctrl_mgmt_slow/M05_AXI] [get_bd_intf_pins mgmt_platform_info/S_AXI]
+  
+  # User PF AXI-Lite Control
+  connect_bd_intf_net -intf_net pcie_axi_bridge_user_ip_m_axi [get_bd_intf_pins pcie_axi_bridge_user/M_AXI] [get_bd_intf_pins axi_ic_ctrl_user/S00_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_user_ip_m00_axi [get_bd_intf_pins axi_ic_ctrl_user/M00_AXI] [get_bd_intf_pins mailbox/S1_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_user_ip_m01_axi [get_bd_intf_pins axi_ic_ctrl_user/M01_AXI] [get_bd_intf_pins axi_firewall_ctrl_user/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_user_ip_m02_axi [get_bd_intf_pins axi_ic_ctrl_user/M02_AXI] [get_bd_intf_pins user_bar_layout/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_user_ip_m03_axi [get_bd_intf_pins axi_ic_ctrl_user/M03_AXI] [get_bd_intf_pins user_platform_info/S_AXI]
+  
+  if {$C_HAS_USER_AXI_CC} {
+  
+      # Connect through the AXI Clock Converter if enabled
+      connect_bd_intf_net -intf_net axi_firewall_ctrl_user_ip_m_axi [get_bd_intf_pins axi_firewall_ctrl_user/M_AXI] [get_bd_intf_pins user_axi_cc/S_AXI]
+      connect_bd_intf_net -intf_net user_axi_cc_ip_m_axi [get_bd_intf_pins user_axi_cc/M_AXI] [get_bd_intf_pins axi_vip_ctrl_user/S_AXI]
+      
+  } else {
+      
+      connect_bd_intf_net -intf_net axi_firewall_ctrl_user_ip_m_axi [get_bd_intf_pins axi_firewall_ctrl_user/M_AXI] [get_bd_intf_pins axi_vip_ctrl_user/S_AXI]
+      
+  }
+  
+  connect_bd_intf_net -intf_net axi_vip_ctrl_user_ip_m_axi [get_bd_intf_pins axi_vip_ctrl_user/M_AXI] [get_bd_intf_ports m_axi_ctrl_user]
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create port connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Control/Status
+  connect_bd_net -net pcie_ip_phy_rdy_out [get_bd_pins pcie/phy_rdy_out] [get_bd_ports pcie_phy_rdy]
+  connect_bd_net -net pcie_ip_user_lnk_up [get_bd_pins pcie/user_lnk_up] [get_bd_ports pcie_user_lnk_up] [get_bd_pins pcie_credit_handler/pcie_link_up] [get_bd_pins psreset_static_pcie/dcm_locked] [get_bd_pins psreset_pcie/dcm_locked]
+  connect_bd_net -net pcie_link_up_mon_ip_gpio_0 [get_bd_pins pcie_link_mon/gpio_io_o] [get_bd_pins pcie_credit_handler/pcie_link_up_toggle_clear]
+  connect_bd_net -net pcie_credit_handler_ip_pcie_link_up_toggle_status [get_bd_pins pcie_credit_handler/pcie_link_up_toggle_status] [get_bd_pins pcie_link_mon/gpio2_io_i]
+  connect_bd_net -net vcc_ip_dout [get_bd_pins vcc/dout] [get_bd_pins pcie/cfg_config_space_enable] [get_bd_pins pcie/cfg_link_training_enable]
+  connect_bd_net -net axi_firewall_ctrl_mgmt_ip_mi_w_error [get_bd_pins axi_firewall_ctrl_mgmt/mi_w_error] [get_bd_pins irq_or_ctrl_mgmt_firewall/Op1]
+  connect_bd_net -net axi_firewall_ctrl_mgmt_ip_mi_r_error [get_bd_pins axi_firewall_ctrl_mgmt/mi_r_error] [get_bd_pins irq_or_ctrl_mgmt_firewall/Op2]
+  connect_bd_net -net axi_firewall_ctrl_user_ip_mi_w_error [get_bd_pins axi_firewall_ctrl_user/mi_w_error] [get_bd_pins irq_or_ctrl_user_firewall/Op1]
+  connect_bd_net -net axi_firewall_ctrl_user_ip_mi_r_error [get_bd_pins axi_firewall_ctrl_user/mi_r_error] [get_bd_pins irq_or_ctrl_user_firewall/Op2]
+  connect_bd_net -net irq_or_ctrl_mgmt_firewall_ip_Res [get_bd_pins irq_or_ctrl_mgmt_firewall/Res] [get_bd_pins irq_or_ctrl_axi_firewalls/Op1]
+  connect_bd_net -net irq_or_ctrl_user_firewall_ip_Res [get_bd_pins irq_or_ctrl_user_firewall/Res] [get_bd_pins irq_or_ctrl_axi_firewalls/Op2]
+  connect_bd_net -net gnd_ip_dout [get_bd_pins gnd/dout] [get_bd_pins flash_programmer/usrcclkts]
+  
+  # PCIE ICAP Reset
+  connect_bd_net -net icap_reset_hier_conf_req_type [get_bd_pins icap_reset/conf_req_type] [get_bd_pins pcie/conf_req_type]
+  connect_bd_net -net icap_reset_hier_conf_req_reg_num [get_bd_pins icap_reset/conf_req_reg_num] [get_bd_pins pcie/conf_req_reg_num]
+  connect_bd_net -net icap_reset_hier_conf_req_data [get_bd_pins icap_reset/conf_req_data] [get_bd_pins pcie/conf_req_data]
+  connect_bd_net -net icap_reset_hier_vcc [get_bd_pins icap_reset/vcc] [get_bd_pins pcie/conf_req_valid] [get_bd_pins pcie/cap_gnt]
+  connect_bd_net -net icap_reset_hier_gnd [get_bd_pins icap_reset/gnd] [get_bd_pins pcie/cap_rel]
+  
+  # Clocks
+  connect_bd_net -net pcie_ip_user_clk [get_bd_pins pcie/user_clk] [get_bd_pins aclk_pcie_clk_adapt/clk_in] [get_bd_pins pcie_cq_axis_clk_adapt/s_axis_aclk] [get_bd_pins pcie_rc_axis_clk_adapt/s_axis_aclk] [get_bd_pins pcie_cc_axis_clk_adapt/m_axis_aclk] [get_bd_pins pcie_rq_axis_clk_adapt/m_axis_aclk]
+  
+  connect_bd_net -net pcie_user_clk_adapt_ip_clk_out \
+      [get_bd_pins aclk_pcie_clk_adapt/clk_out] [get_bd_ports aclk_pcie] [get_bd_pins pcie_cq_axis_clk_adapt/m_axis_aclk] [get_bd_pins pcie_rc_axis_clk_adapt/m_axis_aclk] [get_bd_pins pcie_cc_axis_clk_adapt/s_axis_aclk] [get_bd_pins pcie_rq_axis_clk_adapt/s_axis_aclk] \
+      [get_bd_pins pcie_axi_bridge_mgmt/aclk] [get_bd_pins pcie_axi_bridge_user/aclk] [get_bd_pins pcie_credit_handler/user_clk] [get_bd_pins axi_ic_ctrl_mgmt_fast/ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/S00_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/M01_ACLK] \
+      [get_bd_pins axi_ic_ctrl_mgmt_fast/M02_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/M03_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/M04_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/M05_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_fast/M06_ACLK] [get_bd_pins axi_ic_ctrl_user/ACLK] [get_bd_pins axi_ic_ctrl_user/S00_ACLK] [get_bd_pins axi_ic_ctrl_user/M00_ACLK] \
+      [get_bd_pins axi_ic_ctrl_user/M01_ACLK] [get_bd_pins axi_ic_ctrl_user/M02_ACLK] [get_bd_pins axi_ic_ctrl_user/M03_ACLK] [get_bd_pins axi_firewall_ctrl_mgmt/aclk] [get_bd_pins axi_firewall_ctrl_user/aclk] [get_bd_pins mailbox/S0_AXI_ACLK] [get_bd_pins mailbox/S1_AXI_ACLK] [get_bd_pins axi_vip_ctrl_mgmt/aclk] \
+      [get_bd_pins psreset_static_pcie/slowest_sync_clk] [get_bd_pins psreset_pcie/slowest_sync_clk] [get_bd_pins clkwiz_level0_periph/clk_in1] [get_bd_pins pcie_ext_cap/user_clk] [get_bd_pins pcie_link_mon/s_axi_aclk] [get_bd_pins icap_reset/aclk_pcie] [get_bd_pins user_bar_layout/S_AXI_ACLK] [get_bd_pins user_platform_info/S_AXI_ACLK]
+      
+  if {$C_HAS_USER_AXI_CC} {
+  
+      connect_bd_net -net [get_bd_nets pcie_user_clk_adapt_ip_clk_out] [get_bd_pins user_axi_cc/s_axi_aclk]
+      
+  } else {
+  
+      connect_bd_net -net [get_bd_nets pcie_user_clk_adapt_ip_clk_out] [get_bd_pins axi_vip_ctrl_user/aclk]
+      
+  }
+      
+  connect_bd_net -net pcie_refclk_ibuf_ip_ibuf_ds_odiv2 [get_bd_pins pcie_refclk_ibuf/IBUF_DS_ODIV2] [get_bd_pins pcie/sys_clk]
+  connect_bd_net -net pcie_refclk_ibuf_ip_ibuf_out [get_bd_pins pcie_refclk_ibuf/IBUF_OUT] [get_bd_pins pcie/sys_clk_gt]
+  connect_bd_net -net clkwiz_level0_periph_ip_clk_out1 [get_bd_pins clkwiz_level0_periph/clk_out1] [get_bd_pins aclk_ctrl_2x_clk_adapt/clk_in]
+  connect_bd_net -net aclk_ctrl_2x_clk_adapt_ip_clk_out [get_bd_pins aclk_ctrl_2x_clk_adapt/clk_out] [get_bd_ports aclk_ctrl_2x]
+  connect_bd_net -net clkwiz_level0_periph_ip_clk_out2 [get_bd_pins clkwiz_level0_periph/clk_out2] [get_bd_pins aclk_ctrl_clk_adapt/clk_in]
+  connect_bd_net -net aclk_ctrl_clk_adapt_ip_clk_out \
+      [get_bd_pins aclk_ctrl_clk_adapt/clk_out] [get_bd_ports aclk_ctrl] [get_bd_pins psreset_static_ctrl/slowest_sync_clk] [get_bd_pins psreset_ctrl/slowest_sync_clk] [get_bd_pins axi_ic_ctrl_mgmt_fast/M00_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/S00_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/M00_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/ACLK] \
+      [get_bd_pins axi_ic_ctrl_mgmt_slow/M01_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/M02_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/M03_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/M04_ACLK] [get_bd_pins axi_ic_ctrl_mgmt_slow/M05_ACLK] [get_bd_pins flash_programmer/s_axi_aclk] [get_bd_pins flash_programmer/ext_spi_clk] [get_bd_pins pr_isolate/s_axi_aclk] \
+      [get_bd_pins uuid_rom/S_AXI_ACLK] [get_bd_pins build_info/S_AXI_ACLK] [get_bd_pins mgmt_bar_layout/S_AXI_ACLK] [get_bd_pins mgmt_platform_info/S_AXI_ACLK]
+  
+  if {$C_HAS_USER_AXI_CC} {
+  
+      connect_bd_net -net [get_bd_nets aclk_ctrl_clk_adapt_ip_clk_out] [get_bd_pins user_axi_cc/m_axi_aclk] [get_bd_pins axi_vip_ctrl_user/aclk]
+      
+  }
+  
+  # Connect the PCIe Core Clock if enabled
+  if {$pcie_enable_more_clk} {
+  
+      connect_bd_net -net pcie_ip_core_clk [get_bd_pins pcie/core_clk] [get_bd_pins aclk_pcie_2x_clk_adapt/clk_in]
+      connect_bd_net -net pcie_core_clk_adapt_ip_clk_out [get_bd_pins aclk_pcie_2x_clk_adapt/clk_out] [get_bd_ports aclk_pcie_2x]
+    
+  }
+  
+  # Resets
+  connect_bd_net -net pcie_ip_user_reset [get_bd_pins pcie/user_reset] [get_bd_pins psreset_static_pcie/ext_reset_in] [get_bd_pins clkwiz_level0_periph/reset] [get_bd_pins psreset_static_ctrl/ext_reset_in]
+  connect_bd_net -net pcie_ip_cfg_hot_reset_out [get_bd_pins pcie/cfg_hot_reset_out] [get_bd_pins psreset_static_pcie/aux_reset_in]
+  connect_bd_net -net pr_isolate_ip_gpio_0 [get_bd_pins pr_isolate/gpio_io_o] [get_bd_pins pr_isolate/gpio2_io_i] [get_bd_pins psreset_pcie/aux_reset_in] [get_bd_pins psreset_ctrl/aux_reset_in]
+  
+  connect_bd_net -net psreset_static_pcie_ip_interconnect_aresetn \
+      [get_bd_pins psreset_static_pcie/interconnect_aresetn] [get_bd_pins pcie_axi_bridge_mgmt/aresetn] [get_bd_pins pcie_axi_bridge_user/aresetn] [get_bd_pins pcie_credit_handler/user_resetn] [get_bd_pins axi_ic_ctrl_mgmt_fast/ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/S00_ARESETN] \
+      [get_bd_pins axi_ic_ctrl_mgmt_fast/M01_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/M02_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/M03_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/M04_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/M05_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_fast/M06_ARESETN] [get_bd_pins axi_ic_ctrl_user/ARESETN] \
+      [get_bd_pins axi_ic_ctrl_user/S00_ARESETN] [get_bd_pins axi_ic_ctrl_user/M00_ARESETN] [get_bd_pins axi_ic_ctrl_user/M01_ARESETN] [get_bd_pins axi_ic_ctrl_user/M02_ARESETN] [get_bd_pins axi_ic_ctrl_user/M03_ARESETN] [get_bd_pins psreset_pcie/ext_reset_in] [get_bd_ports aresetn_pcie_blp] \
+      [get_bd_pins psreset_static_ctrl/aux_reset_in] [get_bd_pins pcie_ext_cap/user_resetn]
+      
+  connect_bd_net -net psreset_static_pcie_ip_peripheral_aresetn \
+      [get_bd_pins psreset_static_pcie/peripheral_aresetn] [get_bd_pins mailbox/S0_AXI_ARESETN] [get_bd_pins mailbox/S1_AXI_ARESETN] [get_bd_pins axi_firewall_ctrl_mgmt/aresetn] [get_bd_pins axi_firewall_ctrl_user/aresetn] \
+      [get_bd_pins axi_vip_ctrl_mgmt/aresetn] [get_bd_pins pcie_link_mon/s_axi_aresetn] [get_bd_pins icap_reset/aresetn_pcie] [get_bd_pins user_bar_layout/S_AXI_ARESETN] [get_bd_pins user_platform_info/S_AXI_ARESETN]
+      
+  if {$C_HAS_USER_AXI_CC} {
+  
+      connect_bd_net -net [get_bd_nets psreset_static_pcie_ip_peripheral_aresetn] [get_bd_pins user_axi_cc/s_axi_aresetn]
+      
+  } else {
+  
+      connect_bd_net -net [get_bd_nets psreset_static_pcie_ip_peripheral_aresetn] [get_bd_pins axi_vip_ctrl_user/aresetn]
+      
+  }   
+      
+  connect_bd_net -net psreset_pcie_ip_interconnect_aresetn [get_bd_pins psreset_pcie/interconnect_aresetn] [get_bd_ports aresetn_pcie]
+  connect_bd_net -net pcie_perst_n [get_bd_ports pcie_perst_n] [get_bd_pins pcie/sys_reset]
+  connect_bd_net -net clkwiz_level0_periph_ip_locked [get_bd_pins clkwiz_level0_periph/locked] [get_bd_pins psreset_static_ctrl/dcm_locked] [get_bd_pins psreset_ctrl/dcm_locked]
+  
+  connect_bd_net -net psreset_static_ctrl_ip_interconnect_aresetn \
+      [get_bd_pins psreset_static_ctrl/interconnect_aresetn] [get_bd_pins psreset_ctrl/ext_reset_in] [get_bd_ports aresetn_ctrl_blp] [get_bd_pins axi_ic_ctrl_mgmt_fast/M00_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/S00_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/ARESETN] \
+      [get_bd_pins axi_ic_ctrl_mgmt_slow/M00_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/M01_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/M02_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/M03_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/M04_ARESETN] [get_bd_pins axi_ic_ctrl_mgmt_slow/M05_ARESETN]
+  
+  connect_bd_net -net psreset_static_ctrl_ip_peripheral_aresetn [get_bd_pins psreset_static_ctrl/peripheral_aresetn] [get_bd_pins flash_programmer/s_axi_aresetn] [get_bd_pins pr_isolate/s_axi_aresetn] [get_bd_pins build_info/S_AXI_ARESETN] [get_bd_pins uuid_rom/S_AXI_ARESETN] \
+      [get_bd_pins mgmt_bar_layout/S_AXI_ARESETN] [get_bd_pins mgmt_platform_info/S_AXI_ARESETN]
+      
+  connect_bd_net -net psreset_ctrl_ip_interconnect_aresetn [get_bd_pins psreset_ctrl/interconnect_aresetn] [get_bd_ports aresetn_ctrl]
+  
+  if {$C_HAS_USER_AXI_CC} {
+  
+      connect_bd_net -net psreset_static_ctrl_ip_peripheral_aresetn [get_bd_pins psreset_static_ctrl/peripheral_aresetn] [get_bd_pins user_axi_cc/m_axi_aresetn] [get_bd_pins axi_vip_ctrl_user/aresetn]
+      
+  }
+  
+  # Interrupts
+  connect_bd_net -net mailbox_ip_interrupt_1 [get_bd_pins mailbox/interrupt_1] [get_bd_ports interrupt_user_mailbox]
+  connect_bd_net -net mailbox_ip_interrupt_0 [get_bd_pins mailbox/interrupt_0] [get_bd_ports interrupt_mgmt_mailbox]
+  connect_bd_net -net irq_or_ctrl_axi_firewalls_ip_Res [get_bd_pins irq_or_ctrl_axi_firewalls/Res] [get_bd_ports interrupt_firewall]
+  connect_bd_net -net flash_programmer_ip_ip2intc_irpt [get_bd_pins flash_programmer/ip2intc_irpt] [get_bd_ports interrupt_flash_programmer]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (3) Create address segments
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  ###################
+  # Internal Segments
+  ###################
+  
+  # Management PF
+  assign_bd_address -offset 0x01F00000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins build_info/S_AXI]]
+  assign_bd_address -offset 0x01F01000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins pr_isolate/S_AXI]]
+  assign_bd_address -offset 0x01F02000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins axi_firewall_ctrl_mgmt/S_AXI_CTL]]
+  assign_bd_address -offset 0x01F03000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins axi_firewall_ctrl_user/S_AXI_CTL]]
+  assign_bd_address -offset $uuid_rom_addr                  -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins uuid_rom/S_AXI]]
+  assign_bd_address -offset 0x01F05000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins pcie_link_mon/S_AXI]]
+  assign_bd_address -offset $flash_programmer_addr          -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins flash_programmer/AXI_LITE]]
+  assign_bd_address -offset 0x01F07000                      -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins icap_reset/mcap_enable/S_AXI]]
+  assign_bd_address -offset ${mgmt_bar_layout_table_addr}0  -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins mgmt_bar_layout/S_AXI]]
+  assign_bd_address -offset $mgmt_platform_info_addr        -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins mgmt_platform_info/S_AXI]]
+  assign_bd_address -offset $mgmt_mailbox_addr              -range 64k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins mailbox/S0_AXI]]
+  
+  # User PF
+  assign_bd_address -offset $user_mailbox_addr              -range 64k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_user/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins mailbox/S1_AXI]]
+  assign_bd_address -offset ${user_bar_layout_table_addr}0  -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_user/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins user_bar_layout/S_AXI]]
+  assign_bd_address -offset $user_platform_info_addr        -range 4k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_user/M_AXI]] [get_bd_addr_segs -of [get_bd_intf_pins user_platform_info/S_AXI]]
+  
+  ###################
+  # External Segments
+  ###################
+  
+  # Create a 31MB master aperture window for the mgmt/user control interfaces - all downstream peripherals map within this range (0x0000_0000 - 0x01EF_FFFF)
+  set m_axi_ctrl_addr_aperture [ list \
+      offset 0x00000000 range 16M \
+      offset 0x01000000 range 8M \
+      offset 0x01800000 range 4M \
+      offset 0x01C00000 range 2M \
+      offset 0x01E00000 range 1M \
+  ]
+  
+  # Management PF
+  assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_mgmt/m_axi]] -dict $m_axi_ctrl_addr_aperture [get_bd_addr_segs -of [get_bd_intf_ports m_axi_ctrl_mgmt]]
+  
+  # User PF
+  assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins pcie_axi_bridge_user/m_axi]] -dict $m_axi_ctrl_addr_aperture [get_bd_addr_segs -of [get_bd_intf_ports m_axi_ctrl_user]]
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore

@@ -1,0 +1,123 @@
+<ENTRY>
+{
+ "thisFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin.package_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:57 2021",
+ "timestampMillis": "1640973657566",
+ "buildStep": {
+  "cmdId": "b97faa6d-836c-4e34-975e-a6ff4656d8f3",
+  "name": "v++",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x/package/package.steps.log",
+  "commandLine": "/tools/Xilinx/Vitis/2021.1/bin/unwrapped/lnx64.o/v++  --vivado.prop \"run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\" -p ./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin -t hw --platform xilinx_u2_gen3x4_xdma_gc_2_202110_1 --package.out_dir ./package.hw -o ./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin ",
+  "args": [
+   "-p",
+   "./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+   "-t",
+   "hw",
+   "--platform",
+   "xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "--package.out_dir",
+   "./package.hw",
+   "-o",
+   "./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:57 2021",
+ "timestampMillis": "1640973657566",
+ "status": {
+  "cmdId": "b97faa6d-836c-4e34-975e-a6ff4656d8f3",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "Fri Dec 31 13:01:01 2021",
+ "timestampMillis": "1640973661644",
+ "buildSummary": {
+  "hardwarePlatform": "xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm",
+  "hardwareDsa": "hw.xsa",
+  "platformDirectory": "/opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+  "runtime": "OpenCL",
+  "systemConfig": "Linux",
+  "flow": "BF_PACKAGE",
+  "target": "TT_HW",
+  "binaryContainer": {
+   "base": {
+    "type": "BT_UKNOWN",
+    "name": "ro",
+    "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin",
+    "reports": [],
+    "uuid": ""
+   },
+   "kernels": []
+  },
+  "kernels": [],
+  "toolVersion": "Vitis V++ Compiler Release 2021.1. SW Build 3246112 on 2021-06-09-14:19:56",
+  "inputBinaryContainer": {
+   "base": {
+    "type": "BT_UKNOWN",
+    "name": "ro.link",
+    "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+    "reports": [],
+    "uuid": "66aca2ae-62ff-471a-833c-65b54b6917a0"
+   },
+   "kernels": []
+  }
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:01:02 2021",
+ "timestampMillis": "1640973662111",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x/reports/package/v++_package_ro_guidance.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:01:02 2021",
+ "timestampMillis": "1640973662111",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x/v++_package_ro_guidance.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:01:02 2021",
+ "timestampMillis": "1640973662112",
+ "status": {
+  "cmdId": "b97faa6d-836c-4e34-975e-a6ff4656d8f3",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>

@@ -1,0 +1,13 @@
+<: setFileUsedIn {synthesis implementation} :>
+<: ;#Component and file information :>
+<: set ComponentName [getComponentNameString] :>
+<: setOutputDirectory "./" :>
+<: setFileName $ComponentName :>
+<: setFileExtension ".xdc" :>
+<: setFileProcessingOrder late :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+
+# Tag the UUID ROM instance to allow it to be identified in the partition netlist
+create_property -type bool -default_value 0 BLP_LOGIC_UUID_ROM cell
+set_property BLP_LOGIC_UUID_ROM 1 [get_cells -hier uuid_rom]

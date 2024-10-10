@@ -1,0 +1,17 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_synth"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+# ------------------------------------------------------------------------------
+# Additional timing constraints
+# ------------------------------------------------------------------------------
+create_clock -period 10.0 -name ref_clk [get_ports ref_clk_clk_p[0]]
+create_clock -period 10.000 -name c1_sys_clk_p [get_ports c1_sys_clk_p]
+create_clock -period 10.000 -name pcie_rp0_refclk -waveform {0.000 5.000} [get_ports ref_clk_ds_clk_p[0]]
+
+
+# Use ultraram for mailbox
+set_property RAM_STYLE ULTRA [get_cells -hierarchical -filter {NAME=~*mailbox*/U0/*/*/*/ram_mem_reg*}]

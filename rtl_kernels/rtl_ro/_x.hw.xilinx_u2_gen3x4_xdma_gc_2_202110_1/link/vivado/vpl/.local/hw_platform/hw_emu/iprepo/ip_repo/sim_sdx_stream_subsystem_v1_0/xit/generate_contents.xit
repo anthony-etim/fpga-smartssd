@@ -1,0 +1,174 @@
+# d52cbaca0ef8cf4fd3d6354deb5066970fb6511d02d18d15835e6014ed847fb0
+# (c) Copyright 2018 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+# ----------------------------------------------------------------------
+# Import metadata
+# source_ipfile xit/harvest.xit
+
+# ----------------------------------------------------------------------
+# SDK Requires this:
+set_driver_mode subcore
+# ----------------------------------------------------------------------
+set clock_associations {}
+set clock_definitions {}
+set max_num_interfaces 16
+source_ipfile xit/generate_clock_associations.xit
+set NUM_SI [dict get $CONFIG NUM_SI ]
+set NUM_MI [dict get $CONFIG NUM_MI ]
+if { ${NUM_MI}==0 && ${NUM_SI}==0 } {
+  set sim_stma_0 [create_bd_cell -type ip -vlnv xilinx.com:xilinx:sim_stma:1.0 sim_stma_0]
+  set_property -dict [list CONFIG.NUM_SI 1 CONFIG.NUM_MI 1 ] $sim_stma_0
+  for {set i 0 } {$i<16 } { incr i } {
+   set index $i
+   if { $i<10} { set index "0$i" } 
+   set_property -dict [list CONFIG.ROUTE_ID${index} [dict get $CONFIG ROUTE_ID${index}] CONFIG.FLOW_ID${index} [dict get $CONFIG FLOW_ID${index}] ] $sim_stma_0
+  }
+  foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH ] {
+       set_property -dict [list CONFIG.C_S_STM_H2C_A_AXI_S_$prop [dict get $CONFIG intf_ports S_STM_H2C_A_AXIS $prop]] $sim_stma_0
+    }
+  set_property -dict [list CONFIG.C_S_STM_H2C_A_AXI_S_TDATA_WIDTH [expr [dict get $CONFIG intf_ports S_STM_H2C_A_AXIS TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+  foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH ] {
+      set_property -dict [list CONFIG.C_M_STM_C2H_A_AXI_S_$prop [dict get $CONFIG intf_ports M_STM_C2H_A_AXIS $prop]] $sim_stma_0
+  }
+  set_property -dict [list CONFIG.C_M_STM_C2H_A_AXI_S_TDATA_WIDTH [expr [dict get $CONFIG intf_ports M_STM_C2H_A_AXIS TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+  connect_bd_intf_net [get_bd_intf_pins sim_stma_0/S_STM_H2C_A_AXI_S] [get_bd_intf_pins S_STM_H2C_A_AXIS]
+  connect_bd_intf_net [get_bd_intf_pins sim_stma_0/M_STM_C2H_A_AXI_S] [get_bd_intf_pins M_STM_C2H_A_AXIS]
+  connect_bd_net [get_bd_ports [dict get $clock_associations S_STM_H2C_A_AXIS]] [get_bd_pins sim_stma_0/s_stm_h2c_a_axi_s_aclk]
+  connect_bd_net [get_bd_ports [dict get $clock_associations M_STM_C2H_A_AXIS]] [get_bd_pins sim_stma_0/m_stm_c2h_a_axi_s_aclk]
+  connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/s_stm_h2c_a_axi_s_aresetn]
+  connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/m_stm_c2h_a_axi_s_aresetn]
+  connect_bd_net [get_bd_ports [dict get $clock_associations S_STM_H2C_A_AXIS]] [get_bd_pins sim_stma_0/s00_axis_aclk]
+  connect_bd_net [get_bd_ports [dict get $clock_associations M_STM_C2H_A_AXIS]] [get_bd_pins sim_stma_0/m00_axis_aclk]
+  connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/s00_axis_aresetn]
+  connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/m00_axis_aresetn]
+
+} else {
+
+set sim_stma_0 [create_bd_cell -type ip -vlnv xilinx.com:xilinx:sim_stma:1.0 sim_stma_0]
+set_property -dict [list CONFIG.NUM_SI 1 CONFIG.NUM_MI 1 ] $sim_stma_0
+set_property -dict [list CONFIG.NUM_SI [dict get $CONFIG NUM_SI] CONFIG.NUM_MI [dict get $CONFIG NUM_MI] ] $sim_stma_0
+for {set i 0 } {$i<16 } { incr i } {
+  set index $i
+  if { $i<10} { set index "0$i" } 
+  set_property -dict [list CONFIG.ROUTE_ID${index} [dict get $CONFIG ROUTE_ID${index}] CONFIG.FLOW_ID${index} [dict get $CONFIG FLOW_ID${index}] ] $sim_stma_0
+}
+foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH ] {
+       set_property -dict [list CONFIG.C_S_STM_H2C_A_AXI_S_$prop [dict get $CONFIG intf_ports S_STM_H2C_A_AXIS $prop]] $sim_stma_0
+    }
+set_property -dict [list CONFIG.C_S_STM_H2C_A_AXI_S_TDATA_WIDTH [expr [dict get $CONFIG intf_ports S_STM_H2C_A_AXIS TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH ] {
+    set_property -dict [list CONFIG.C_M_STM_C2H_A_AXI_S_$prop [dict get $CONFIG intf_ports M_STM_C2H_A_AXIS $prop]] $sim_stma_0
+}
+set_property -dict [list CONFIG.C_M_STM_C2H_A_AXI_S_TDATA_WIDTH [expr [dict get $CONFIG intf_ports M_STM_C2H_A_AXIS TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+
+
+
+#Configure interface properties
+for {set i 0 } {$i<[dict get $CONFIG NUM_MI ] } { incr i } {
+    set index $i
+    if { $i<10} { set index "0$i" }
+    set s "M${index}_AXIS"
+    set krn_intf  [format {%s%02d_AXIS} $s $i]
+foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH] { 
+       set_property -dict [list CONFIG.C_${s}_$prop [dict get $CONFIG intf_ports $s $prop]] $sim_stma_0
+    }
+    set_property -dict [list CONFIG.C_${s}_TDATA_WIDTH [expr [dict get $CONFIG intf_ports $s TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+}
+
+for {set i 0 } {$i<[dict get $CONFIG NUM_SI ] } { incr i } {
+  set index $i
+  if { $i<10} { set index "0$i" } 
+  set s "S${index}_AXIS"
+foreach prop [list HAS_TLAST HAS_TKEEP HAS_TSTRB TID_WIDTH TDEST_WIDTH TUSER_WIDTH] {
+    set_property -dict [list CONFIG.C_${s}_$prop [dict get $CONFIG intf_ports $s $prop]] $sim_stma_0
+  }
+  set_property -dict [list CONFIG.C_${s}_TDATA_WIDTH [expr [dict get $CONFIG intf_ports $s TDATA_NUM_BYTES]*8 ] ] $sim_stma_0
+}
+
+
+#Configure Route ID and Flow ID
+
+#Connect Clock reset
+connect_bd_net [get_bd_ports [dict get $clock_associations S_STM_H2C_A_AXIS]] [get_bd_pins sim_stma_0/s_stm_h2c_a_axi_s_aclk]
+connect_bd_net [get_bd_ports [dict get $clock_associations M_STM_C2H_A_AXIS]] [get_bd_pins sim_stma_0/m_stm_c2h_a_axi_s_aclk]
+connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/s_stm_h2c_a_axi_s_aresetn]
+connect_bd_net [get_bd_ports aresetn] [get_bd_pins sim_stma_0/m_stm_c2h_a_axi_s_aresetn]
+
+for {set i 0 } {$i<[dict get $CONFIG NUM_MI ] } { incr i } {
+    set index $i
+    if { $i<10} { set index "0$i" } 
+    connect_bd_net [get_bd_ports [dict get $clock_associations M${index}_AXIS]] [get_bd_pins sim_stma_0/m${index}_axis_aclk]
+    connect_bd_net [get_bd_pins aresetn] [get_bd_pins sim_stma_0/m${index}_axis_aresetn]
+}
+
+for {set i 0 } {$i<[dict get $CONFIG NUM_SI ] } { incr i } {
+  set index $i
+  if { $i<10} { set index "0$i" } 
+  connect_bd_net [get_bd_pins [dict get $clock_associations S${index}_AXIS]] [get_bd_pins sim_stma_0/s${index}_axis_aclk]
+  connect_bd_net [get_bd_pins aresetn] [get_bd_pins sim_stma_0/s${index}_axis_aresetn]
+}
+
+#Connect interfaces 
+connect_bd_intf_net [get_bd_intf_pins sim_stma_0/S_STM_H2C_A_AXI_S] [get_bd_intf_pins S_STM_H2C_A_AXIS]
+connect_bd_intf_net [get_bd_intf_pins sim_stma_0/M_STM_C2H_A_AXI_S] [get_bd_intf_pins M_STM_C2H_A_AXIS]
+
+#Connect Master 
+for {set i 0 } {$i<[dict get $CONFIG NUM_MI ] } { incr i } {
+  set index $i
+  if { $i<10} { set index "0$i" } 
+  connect_bd_intf_net [get_bd_intf_pins sim_stma_0/M${index}_AXIS] [get_bd_intf_pins M${index}_AXIS]
+}
+
+#Connect Slaves
+for {set i 0 } {$i<[dict get $CONFIG NUM_SI ] } { incr i } {
+  set index $i
+  if { $i<10} { set index "0$i" } 
+  connect_bd_intf_net [get_bd_intf_pins sim_stma_0/S${index}_AXIS] [get_bd_intf_pins S${index}_AXIS]
+}
+}
+
+

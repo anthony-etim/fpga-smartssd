@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="impl_1" LaunchPart="xcku15p-ffva1156-2LV-e" LaunchConfig="config_1" LaunchTime="1640970792">
+  <File Type="RBD_FILE" Name="level0_wrapper.rbd"/>
+  <File Type="NPI_FILE" Name="level0_wrapper.npi"/>
+  <File Type="RNPI_FILE" Name="level0_wrapper.rnpi"/>
+  <File Type="CFI_FILE" Name="level0_wrapper.cfi"/>
+  <File Type="RCFI_FILE" Name="level0_wrapper.rcfi"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="level0_wrapper_postroute_physopt_bb.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="level0_wrapper_postroute_physopt.dcp"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="level0_wrapper.ltx"/>
+  <File Type="BITSTR-SYSDEF" Name="level0_wrapper.sysdef"/>
+  <File Type="BITSTR-MMI" Name="level0_wrapper.mmi"/>
+  <File Type="BITSTR-BMM" Name="level0_wrapper_bd.bmm"/>
+  <File Type="BITSTR-NKY" Name="level0_wrapper.nky"/>
+  <File Type="BITSTR-RBT" Name="level0_wrapper.rbt"/>
+  <File Type="BG-BGN" Name="level0_wrapper.bgn"/>
+  <File Type="OPT-HWDEF" Name="level0_wrapper.hwdef"/>
+  <File Type="BG-BIT" Name="level0_wrapper.bit"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="PA-TCL" Name="level0_wrapper.tcl"/>
+  <File Type="REPORTS-TCL" Name="level0_wrapper_reports.tcl"/>
+  <File Type="BG-DRC" Name="level0_wrapper.drc"/>
+  <File Type="BG-PARTITION-LTX" Name="level0_i_ulp_my_rm.ltx"/>
+  <File Type="BG-PARTITION-CELL-BIT" Name="level0_i_ulp_my_rm_partial.bit"/>
+  <File Type="PDI-FILE" Name="level0_wrapper.pdi"/>
+  <File Type="RDI-RDI" Name="level0_wrapper.vdi"/>
+  <File Type="BG-BIN" Name="level0_wrapper.bin"/>
+  <File Type="BITSTR-MSK" Name="level0_wrapper.msk"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="level0_wrapper_incremental_reuse_pre_placed.rpt"/>
+  <File Type="ROUTE-DCP" Name="level0_wrapper_routed.dcp"/>
+  <File Type="ROUTE-PARTITION-CELL-DCP" Name="level0_i_ulp_my_rm_routed.dcp"/>
+  <File Type="ROUTE-ERROR-DCP" Name="level0_wrapper_routed_error.dcp"/>
+  <File Type="ROUTE-BLACKBOX-DCP" Name="level0_wrapper_routed_bb.dcp"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="hw_bb_locked_timing_summary_routed.rpt"/>
+  <File Type="ROUTE-TIMING-PB" Name="level0_wrapper_timing_summary_routed.pb"/>
+  <File Type="ROUTE-TIMING-RPX" Name="hw_bb_locked_timing_summary_routed.rpx"/>
+  <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
+    <Filter Type="Srcs"/>
+    <File Path="$PPRDIR/../.local/hw_platform/hw_bb_locked.dcp">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="DesignMode" Val="RTL"/>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1">
+    <Filter Type="Constrs"/>
+    <File Path="$PPRDIR/../.local/hw_platform/tcl_hooks/impl.xdc">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../output/dont_partition.xdc">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="ConstrsType" Val="XDC"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1">
+    <Filter Type="Utils"/>
+    <File Path="$PPRDIR/../scripts/_full_init_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;INIT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_init_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;INIT_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_opt_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;OPT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_opt_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;OPT_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_place_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;PLACE_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_place_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;PLACE_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_post_route_phys_opt_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;POST_ROUTE_PHYS_OPT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_route_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;ROUTE_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_write_bitstream_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;WRITE_BITSTREAM;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_write_bitstream_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;WRITE_BITSTREAM;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2021"/>
+    <Step Id="init_design" PreStepTclHook="$PPRDIR/../scripts/_full_init_pre.tcl" PostStepTclHook="$PPRDIR/../scripts/_full_init_post.tcl"/>
+    <Step Id="opt_design" PreStepTclHook="$PPRDIR/../scripts/_full_opt_pre.tcl" PostStepTclHook="$PPRDIR/../scripts/_full_opt_post.tcl"/>
+    <Step Id="power_opt_design"/>
+    <Step Id="place_design" PreStepTclHook="$PPRDIR/../scripts/_full_place_pre.tcl" PostStepTclHook="$PPRDIR/../scripts/_full_place_post.tcl"/>
+    <Step Id="post_place_power_opt_design"/>
+    <Step Id="phys_opt_design"/>
+    <Step Id="route_design" PostStepTclHook="$PPRDIR/../scripts/_full_route_post.tcl"/>
+    <Step Id="post_route_phys_opt_design" PostStepTclHook="$PPRDIR/../scripts/_full_post_route_phys_opt_post.tcl"/>
+    <Step Id="write_bitstream" PreStepTclHook="$PPRDIR/../scripts/_full_write_bitstream_pre.tcl" PostStepTclHook="$PPRDIR/../scripts/_full_write_bitstream_post.tcl"/>
+    <Step Id="write_device_image"/>
+  </Strategy>
+  <BlockFileSet Type="BlockSrcs" Name="bd_0349_xsdbm_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_9997_axi_jtag_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="my_rm"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_9997_bsip_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_0349_lut_buffer_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_9997_bs_switch_1_0"/>
+</GenRun>

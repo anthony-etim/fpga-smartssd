@@ -1,0 +1,58 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+<: set partition_name [get_parameter_property "PARTITION_NAME"] :>
+<: set has_axi_hwicap [get_parameter_property "HAS_AXI_HWICAP"] :>
+<: set has_jtag_axi_master [get_parameter_property "HAS_JTAG_AXI_MASTER"] :>
+<: set has_uuid_rom [get_parameter_property "HAS_UUID_ROM"] :>
+<: set has_user_debug [get_parameter_property "HAS_USER_DEBUG"] :>
+<: set has_memory_calib_status [get_parameter_property "HAS_MEMORY_CALIB_STATUS"] :>
+<: set has_flash_programmer [get_parameter_property "HAS_FLASH_PROGRAMMER"] :>
+<: set has_mgmt_debug [get_parameter_property "HAS_MGMT_DEBUG"] :>
+<: set regslice_uuid_rom [get_parameter_property "REGSLICE_UUID_ROM"] :>
+<: set regslice_user_debug_bridge [get_parameter_property "REGSLICE_USER_DEBUG_BRIDGE"] :>
+<: set regslice_memory_calib_status [get_parameter_property "REGSLICE_MEMORY_CALIB_STATUS"] :>
+<: set regslice_flash_programmer [get_parameter_property "REGSLICE_FLASH_PROGRAMMER"] :>
+<: set regslice_mgmt_debug [get_parameter_property "REGSLICE_MGMT_DEBUG"] :>
+<: set bufgctrls {X0Y0 X0Y1 X0Y2 X0Y3} :>
+<: if {[getProjectDevice] == {xcu30}} { set bufgctrls {X1Y0 X1Y1 X1Y2 X1Y3} }:>
+
+<: if {$partition_name == "BLP" && $has_axi_hwicap} { :>
+create_clock -period 10.000 [get_ports clk_icap]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 0 :> [get_ports clk_icap]
+set Period_clk_icap    [get_property PERIOD [get_clocks -of_objects [get_ports clk_icap]]]
+<: } :>
+
+<: if {($has_axi_hwicap) || ($has_jtag_axi_master)} { :>
+create_clock -period 4.000 [get_ports aclk_pcie]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 1 :> [get_ports aclk_pcie]
+set Period_aclk_pcie   [get_property PERIOD [get_clocks -of_objects [get_ports aclk_pcie]]]
+<: } :>
+
+<: if {($has_uuid_rom) || ($has_user_debug) || ($has_memory_calib_status) || ($has_flash_programmer) || ($has_axi_hwicap) || ($has_mgmt_debug)} { :>
+create_clock -period 20.000 [get_ports aclk_ctrl]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 2 :> [get_ports aclk_ctrl]
+set Period_aclk_ctrl   [get_property PERIOD [get_clocks -of_objects [get_ports aclk_ctrl]]]
+<: } :>
+
+<: if {($has_uuid_rom && $regslice_uuid_rom == "TDM") || ($has_user_debug && $regslice_user_debug_bridge == "TDM") || ($has_memory_calib_status && $regslice_memory_calib_status == "TDM") || ($has_flash_programmer && $regslice_flash_programmer == "TDM") || ($has_mgmt_debug && $regslice_mgmt_debug == "TDM")} { :>
+create_generated_clock -multiply_by 2 -source [get_ports aclk_ctrl] [get_ports aclk_ctrl_2x]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 3 :> [get_ports aclk_ctrl_2x]
+<: } :>
+
+<: if {($has_mgmt_debug && $partition_name == "PLP")} { :>
+create_clock -period 30.000 [get_ports s0_bscan_tck]
+<: } :>
+
+<: if {$partition_name == "BLP" && $has_axi_hwicap} { :>
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports clk_icap]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_pcie
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports clk_icap]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_clk_icap
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports clk_icap]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_ctrl
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports clk_icap]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_clk_icap
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_pcie
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_ctrl
+<: } :>

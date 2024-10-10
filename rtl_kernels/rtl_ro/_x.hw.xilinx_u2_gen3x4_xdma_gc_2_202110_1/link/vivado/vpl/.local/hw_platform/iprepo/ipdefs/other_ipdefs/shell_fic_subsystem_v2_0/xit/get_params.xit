@@ -1,0 +1,306 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+set shell_subsystem                             [::ipxit::current_inst]
+
+#==========================================================================================================================================#
+# Get Project settings
+#==========================================================================================================================================#
+
+# N/A
+
+#==========================================================================================================================================#
+# Get user parameters
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# BUILD INFO
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_SUBSYSTEM_ID                              [get_property CONFIG.VERSION.SUBSYSTEM_ID                       $shell_subsystem]
+set C_VIV_VERSION                               [get_property CONFIG.VERSION.VIV_VERSION                        $shell_subsystem]
+set C_MAJOR_VERSION                             [get_property CONFIG.VERSION.MAJOR_VERSION                      $shell_subsystem]
+set C_MINOR_VERSION                             [get_property CONFIG.VERSION.MINOR_VERSION                      $shell_subsystem]
+set C_CORE_REVISION                             [get_property CONFIG.VERSION.CORE_REVISION                      $shell_subsystem]
+set C_PATCH_REVISION                            [get_property CONFIG.VERSION.PATCH_REVISION                     $shell_subsystem]
+set C_PERFORCE_CL                               [get_property CONFIG.VERSION.PERFORCE_CL                        $shell_subsystem]
+set C_RESERVED_TAG                              [get_property CONFIG.VERSION.RESERVED_TAG                       $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_USER_PCIE_CLK
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_AXI_USER_PCIE_CLK                         [get_property CONFIG.AXI_USER_PCIE_CLK                          $shell_subsystem]
+
+set user_clk aclk_ctrl
+set user_rst aresetn_ctrl
+
+if {$C_AXI_USER_PCIE_CLK == true} {
+
+    set user_clk aclk_pcie
+    set user_rst aresetn_pcie
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# PCIE_LINK_CAP_MAX
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_PCIE_LINK_CAP_MAX                         [get_property CONFIG.PCIE_LINK_CAP_MAX                          $shell_subsystem]
+
+# Set PCIe link width depending on C_PCIE_LINK_CAP_MAX parameter
+
+# 1 == Gen3x16 (512) Default
+# 2 == Gen3x4  (256)
+# 3 == Gen3x4  (128)
+
+set pcie_link_width 512
+
+if {$C_PCIE_LINK_CAP_MAX == 2} {
+
+    set pcie_link_width 256
+
+}
+
+if {$C_PCIE_LINK_CAP_MAX == 3} {
+
+    set pcie_link_width 128
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ENABLE_M2M
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_ENABLE_M2M                                [get_property CONFIG.ENABLE_M2M                                 $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ENABLE_P2P
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_ENABLE_P2P                                [get_property CONFIG.ENABLE_P2P                                 $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# C_SLR_DIST_DATA_*
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_SLR_DIST_DATA_DMA                         [get_property CONFIG.SLR_DIST_DATA_DMA                          $shell_subsystem]
+set C_SLR_DIST_DATA_M2M                         [get_property CONFIG.SLR_DIST_DATA_M2M                          $shell_subsystem]
+set C_SLR_DIST_DATA_P2P                         [get_property CONFIG.SLR_DIST_DATA_P2P                          $shell_subsystem]
+
+# Load regslice settings into a dictionary
+
+foreach {datapath_name} [list DMA M2M P2P] {
+
+    set instance_name C_SLR_DIST_DATA_${datapath_name}
+
+    if {[expr {[subst $$instance_name] > 1}]} {
+
+        dict set datapath_regslice_settings ${datapath_name} regval "15"
+        dict set datapath_regslice_settings ${datapath_name} num_slr_crossings "[subst $$instance_name]"
+        dict set datapath_regslice_settings ${datapath_name} pipelines_middle "1"
+
+    } elseif {[expr {[subst $$instance_name] == 1}]} {
+
+        dict set datapath_regslice_settings ${datapath_name} regval "10"
+        dict set datapath_regslice_settings ${datapath_name} num_slr_crossings "0"
+        dict set datapath_regslice_settings ${datapath_name} pipelines_middle "0"
+
+    } else  {
+
+        dict set datapath_regslice_settings ${datapath_name} regval "1"
+        dict set datapath_regslice_settings ${datapath_name} num_slr_crossings "0"
+        dict set datapath_regslice_settings ${datapath_name} pipelines_middle "0"
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# NUM_SLR
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_NUM_SLR                                   [get_property CONFIG.NUM_SLR                                    $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLR_DIST_ISOLATED_CTRL_*
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_SLR_DIST_ISOLATED_CTRL_0                  [get_property CONFIG.SLR_DIST_ISOLATED_CTRL_0                   $shell_subsystem]
+set C_SLR_DIST_ISOLATED_CTRL_1                  [get_property CONFIG.SLR_DIST_ISOLATED_CTRL_1                   $shell_subsystem]
+set C_SLR_DIST_ISOLATED_CTRL_2                  [get_property CONFIG.SLR_DIST_ISOLATED_CTRL_2                   $shell_subsystem]
+set C_SLR_DIST_ISOLATED_CTRL_3                  [get_property CONFIG.SLR_DIST_ISOLATED_CTRL_3                   $shell_subsystem]
+set C_SLR_DIST_ISOLATED_CTRL_DEBUG              [get_property CONFIG.SLR_DIST_ISOLATED_CTRL_USER_DBG            $shell_subsystem]
+
+# Load regslice settings into a dictionary
+
+set isolated_ctrl_index 0
+
+# Loop through all interfaces and set reg_slice mode to "Light" (7)
+
+while {${isolated_ctrl_index} < 5} {
+
+    set isolated_ctrl_suffix ${isolated_ctrl_index}
+
+    if {${isolated_ctrl_index} == 4} {
+
+        set isolated_ctrl_suffix DEBUG
+
+    }
+
+    dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix regval "7"
+    dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix num_slr_crossings "0"
+    dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix pipelines_middle "0"
+
+    set instance_dist C_SLR_DIST_ISOLATED_CTRL_${isolated_ctrl_suffix}
+
+    if {[expr {[subst $$instance_dist] == 0}]} {
+
+        dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix  num_isolated_ctrl_regslice 1
+
+    } elseif {[expr {[subst $$instance_dist] == 1}]} {
+
+        dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix  num_isolated_ctrl_regslice 2
+
+    } elseif {[expr {[subst $$instance_dist] == 2}]} {
+
+        dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix  num_isolated_ctrl_regslice 4
+
+    } elseif {[expr {[subst $$instance_dist] == 3}]} {
+
+        dict set isolated_ctrl_regslice_settings $isolated_ctrl_suffix  num_isolated_ctrl_regslice 6
+
+    }
+
+    incr isolated_ctrl_index
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# NUM_ISOLATED_STREAM
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_NUM_ISOLATED_STREAM                       [get_property CONFIG.NUM_ISOLATED_STREAM                        $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLR_DIST_ISOLATED_STREAM_*
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_SLR_DIST_ISOLATED_STREAM_0                [get_property CONFIG.SLR_DIST_ISOLATED_STREAM_0                 $shell_subsystem]
+set C_SLR_DIST_ISOLATED_STREAM_1                [get_property CONFIG.SLR_DIST_ISOLATED_STREAM_1                 $shell_subsystem]
+set C_SLR_DIST_ISOLATED_STREAM_2                [get_property CONFIG.SLR_DIST_ISOLATED_STREAM_2                 $shell_subsystem]
+set C_SLR_DIST_ISOLATED_STREAM_3                [get_property CONFIG.SLR_DIST_ISOLATED_STREAM_3                 $shell_subsystem]
+
+# Load regslice settings into a dictionary
+
+set isolated_stream_index 0
+
+while {$isolated_stream_index < 4} {
+
+    set instance_name C_SLR_DIST_ISOLATED_STREAM_${isolated_stream_index}
+
+    if {[expr {[subst $$instance_name] > 1}]} {
+
+        dict set isolated_stream_regslice_settings $isolated_stream_index regval "15"
+        dict set isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings "[subst $$instance_name]"
+        dict set isolated_stream_regslice_settings $isolated_stream_index pipelines_middle "1"
+
+    } elseif {[expr {[subst $$instance_name] == 1}]} {
+
+        dict set isolated_stream_regslice_settings $isolated_stream_index regval "12"
+        dict set isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings "0"
+        dict set isolated_stream_regslice_settings $isolated_stream_index pipelines_middle "0"
+
+    } else  {
+
+        dict set isolated_stream_regslice_settings $isolated_stream_index regval "8"
+        dict set isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings "0"
+        dict set isolated_stream_regslice_settings $isolated_stream_index pipelines_middle "0"
+
+    }
+
+    incr isolated_stream_index
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# OFFSET and RANGE
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_OFFSET_M_AXI_CTRL_MGMT_0_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_MGMT_0_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_MGMT_0_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_MGMT_0_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_MGMT_1_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_MGMT_1_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_MGMT_1_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_MGMT_1_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_MGMT_2_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_MGMT_2_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_MGMT_2_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_MGMT_2_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_MGMT_3_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_MGMT_3_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_MGMT_3_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_MGMT_3_SEG                $shell_subsystem]
+
+set C_OFFSET_M_AXI_CTRL_USER_0_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_USER_0_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_USER_0_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_USER_0_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_USER_1_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_USER_1_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_USER_1_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_USER_1_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_USER_2_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_USER_2_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_USER_2_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_USER_2_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_USER_3_SEG              [get_property CONFIG.OFFSET_M_AXI_CTRL_USER_3_SEG               $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_USER_3_SEG               [get_property CONFIG.RANGE_M_AXI_CTRL_USER_3_SEG                $shell_subsystem]
+set C_OFFSET_M_AXI_CTRL_USER_DBG_SEG            [get_property CONFIG.OFFSET_M_AXI_CTRL_USER_DBG_SEG             $shell_subsystem]
+set C_RANGE_M_AXI_CTRL_USER_DBG_SEG             [get_property CONFIG.RANGE_M_AXI_CTRL_USER_DBG_SEG              $shell_subsystem]
+
+
+set C_OFFSET_M_AXI_DATA_DMA_SEG                 [get_property CONFIG.OFFSET_M_AXI_DATA_DMA_SEG                  $shell_subsystem]
+set C_RANGE_M_AXI_DATA_DMA_SEG                  [get_property CONFIG.RANGE_M_AXI_DATA_DMA_SEG                   $shell_subsystem]
+set C_OFFSET_M_AXI_DATA_M2M_SEG                 [get_property CONFIG.OFFSET_M_AXI_DATA_M2M_SEG                  $shell_subsystem]
+set C_RANGE_M_AXI_DATA_M2M_SEG                  [get_property CONFIG.RANGE_M_AXI_DATA_M2M_SEG                   $shell_subsystem]
+set C_OFFSET_M_AXI_DATA_P2P_SEG                 [get_property CONFIG.OFFSET_M_AXI_DATA_P2P_SEG                  $shell_subsystem]
+set C_RANGE_M_AXI_DATA_P2P_SEG                  [get_property CONFIG.RANGE_M_AXI_DATA_P2P_SEG                   $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#

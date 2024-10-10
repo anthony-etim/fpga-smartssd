@@ -1,0 +1,385 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Run through whole data path
+# - Instantiate HBM
+# - Create cells in pipeline path
+# - Connect between cells
+# - Connect to HBM
+# - Connect HBM clocks
+# - Map addresses
+
+# Instantiate HBM
+source_ipfile xit/generate_contents_hbm.xit
+
+# ----------------------------------------------------------------------
+# Generate a reset source per SLR
+
+# Check if clock switch reset sources are required
+set fb_clock_reset 0
+if {[regexp -- {.*es1.*} [get_project_property PART]]} {
+   set fb_clock_reset  1
+}
+
+set num_slr0_masters 0
+set num_slr1_masters 0
+set num_slr2_masters 0
+
+for {set i 0} {$i < [dict get $CONFIG total_hbm_num_mi]} {incr i} {
+   set slr_config  [config_get_slr $i $CONFIG]
+   if {[config_get_saxi_en $i $CONFIG]} {
+      if {$slr_config eq "SLR0"} {
+         incr num_slr0_masters
+      } elseif {$slr_config eq "SLR1"} {
+         incr num_slr1_masters
+      } elseif {$slr_config eq "SLR2"} {
+         incr num_slr2_masters
+      }
+   }
+}
+
+# Always include SLR0 - potentially required whether a kernel is in SLR0
+set cattrip_net "cattrip_net"
+set hbm_reset_sync_SLR0 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_SLR0]
+set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_SLR0
+connect_bd_net      [get_bd_pins $hbm_reset_sync_SLR0/ext_reset_in]     [get_bd_ports hbm_aresetn]
+connect_bd_net      [get_bd_pins $hbm_reset_sync_SLR0/slowest_sync_clk] [get_bd_ports hbm_aclk]
+connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_SLR0/aux_reset_in]
+
+# Additional reset syncs for FB clock
+if {$fb_clock_reset} {
+
+   set hbm_reset_sync_switch0_SLR0 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch0_SLR0]
+   set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch0_SLR0
+   connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR0/ext_reset_in]     [get_bd_ports hbm_aresetn]
+   connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR0/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_0]
+   connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch0_SLR0/aux_reset_in]
+   
+   if {[dict get $CONFIG HBM_NUM_STACKS] > 1} {
+      set hbm_reset_sync_switch1_SLR0 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch1_SLR0]
+      set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch1_SLR0
+      connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR0/ext_reset_in]     [get_bd_ports hbm_aresetn]
+      connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR0/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_1]
+      connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch1_SLR0/aux_reset_in]
+   }
+}
+
+if {$num_slr1_masters > "0"} {
+  set hbm_reset_sync_SLR1 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_SLR1]
+  set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_SLR1
+  connect_bd_net      [get_bd_pins $hbm_reset_sync_SLR1/ext_reset_in]     [get_bd_ports hbm_aresetn]
+  connect_bd_net      [get_bd_pins $hbm_reset_sync_SLR1/slowest_sync_clk] [get_bd_ports hbm_aclk]
+  connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_SLR1/aux_reset_in]
+  
+  # Additional reset syncs for FB clock
+  if {$fb_clock_reset} {
+     set hbm_reset_sync_switch0_SLR1 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch0_SLR1]
+     set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch0_SLR1
+     connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR1/ext_reset_in]     [get_bd_ports hbm_aresetn]
+     connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR1/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_0]
+     connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch0_SLR1/aux_reset_in]
+   
+     if {[dict get $CONFIG HBM_NUM_STACKS] > 1} {
+        set hbm_reset_sync_switch1_SLR1 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch1_SLR1]
+        set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch1_SLR1
+        connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR1/ext_reset_in]     [get_bd_ports hbm_aresetn]
+        connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR1/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_1]
+        connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch1_SLR1/aux_reset_in]
+     }
+  }
+
+}
+
+if {$num_slr2_masters > "0"} {
+  set hbm_reset_sync_SLR2 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_SLR2]
+  set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_SLR2
+  connect_bd_net [get_bd_pins $hbm_reset_sync_SLR2/ext_reset_in]     [get_bd_ports hbm_aresetn]
+  connect_bd_net [get_bd_pins $hbm_reset_sync_SLR2/slowest_sync_clk] [get_bd_ports hbm_aclk]
+  connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_SLR2/aux_reset_in]
+
+  # Additional reset syncs for FB clock
+  if {$fb_clock_reset} {
+     set hbm_reset_sync_switch0_SLR2 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch0_SLR2]
+     set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch0_SLR2
+     connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR2/ext_reset_in]     [get_bd_ports hbm_aresetn]
+     connect_bd_net      [get_bd_pins $hbm_reset_sync_switch0_SLR2/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_0]
+     connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch0_SLR2/aux_reset_in]
+   
+     if {[dict get $CONFIG HBM_NUM_STACKS] > 1} {
+        set hbm_reset_sync_switch1_SLR2 [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch1_SLR2]
+        set_property -dict [list CONFIG.C_AUX_RESET_HIGH 1] $hbm_reset_sync_switch1_SLR2
+        connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR2/ext_reset_in]     [get_bd_ports hbm_aresetn]
+        connect_bd_net      [get_bd_pins $hbm_reset_sync_switch1_SLR2/slowest_sync_clk] [get_bd_pins hbm_inst/HBM_FB_SWITCH_CLK_1]
+        connect_bd_net -net $cattrip_net [get_bd_pins $hbm_reset_sync_switch1_SLR2/aux_reset_in]
+     }
+  }
+}
+
+# Generate pipelines
+# - Create cells in pipeline path
+# - Connect between cells
+# - Connect to HBM
+# - Connect HBM clocks
+source_ipfile xit/generate_contents_pipeline.xit
+
+# - Map addresses
+for {set i 0} {$i < [dict get $CONFIG total_hmss_num_mi]} {incr i} {
+  if {[config_get_saxi_en $i $CONFIG]} {
+     if [get_param bd.hooks.addr.debug_scoped_use_ms_name] {
+        # Which interface address space is to be mapped
+        set si [get_bd_intf_ports [format S%.2d $i]_AXI]
+
+        # Which interface are we mapping from
+        set si_hbm_port [format SAXI_%.2d [dict get $CALC kernel_connections $i]][dict get $CONFIG hbm_axi_port_append]
+        set si_hbm [get_bd_intf_pins hbm_inst/$si_hbm_port]
+
+        # Get the desired memory segments specified on command line
+        set des_mem_segment [config_get_memsegs $i $CONFIG]
+        set all_mem_segments [dict get $CALC MEM_USED]
+
+        # Now loop through all available memory segments mapping or excluding
+        foreach mem_segment [dict keys [dict get $HBM_MEM_INFO RANGE_OFFSET]] {
+
+           # Assign and exclude by default
+           set range  [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 0]
+           set offset [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 1]
+           set all_seg_index [lsearch -exact $all_mem_segments $mem_segment]
+           # Does this segment exist on the HBM?
+           if {$all_seg_index > -1} {
+              # Is this segment required for this interface?
+              set seg_index [lsearch -exact $des_mem_segment $mem_segment]
+
+              # Only include and assign if desired
+              if {$seg_index > -1} {
+                 # Create and exclude the segment in master address space
+                 set hbm_mem_seg [create_bd_addr_seg -offset $offset -range $range [get_bd_addr_space -of $si] [get_bd_addr_segs -patterns $si_hbm/$mem_segment] $mem_segment]
+
+                 # Remove from desired segments
+                 set des_mem_segment [lreplace $des_mem_segment $seg_index $seg_index]
+              }
+           }
+        }
+        
+        # If the length of the desired mem segments is not zero then we have a problem i.e. a segment has sneaked through that is not of form HBM_MEMnn
+        if {[llength $des_mem_segment] > 0} {
+           send_msg_id {hbm_memory_subsystem 3-1} ERROR "Memory segments - $des_mem_segment - did not find a home on port $si. Are they valid?"
+        }
+
+     } else {
+       send_msg_id {hbm_memory_subsystem 3-1} ERROR "Vivado param bd.hooks.addr.debug_scoped_use_ms_name must be set for this IP to function."
+     }
+  }
+}
+
+# ----------------------------------------------------------------------
+# Run through whole control path
+# - Instantiate AXI-APB bridge
+# - Connect bridge
+# - Connect clocks/resets
+# - Map addresses
+set num_stacks [llength [dict get $CALC CTRL_USED]]
+
+# Create bridge
+set axi_apb_bridge_inst [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_apb_bridge:3.0 axi_apb_bridge_inst]
+set_property -dict [list CONFIG.C_M_APB_PROTOCOL {apb3} CONFIG.C_APB_NUM_SLAVES [llength [dict get $CALC CTRL_USED]]] $axi_apb_bridge_inst
+   
+# Connect s_axi_ctrl bus
+connect_bd_intf_net [get_bd_intf_ports S_AXI_CTRL] [get_bd_intf_pins $axi_apb_bridge_inst/AXI4_LITE]
+set apb_port_list [list APB_M APB_M2]
+
+# Connect APB clock/reset
+connect_bd_net [get_bd_ports ctrl_aclk] [get_bd_pins $axi_apb_bridge_inst/s_axi_aclk]
+connect_bd_net [get_bd_ports ctrl_aresetn] [get_bd_pins $axi_apb_bridge_inst/s_axi_aresetn]
+
+# Connect only required control interfaces/reference clocks
+for {set i 0} {$i < $num_stacks} {incr i} {
+
+   set ctrl_segment [format HBM_CTRL%.2d $i]
+
+   # Pop the first APB port
+   set apb_port [lindex $apb_port_list $i]
+
+   # Connect APB ports to bridges
+   connect_bd_intf_net [get_bd_intf_pins axi_apb_bridge_inst/$apb_port] [get_bd_intf_pins hbm_inst/SAPB_$i]
+
+   # Connect APB clock/reset
+   connect_bd_net [get_bd_ports ctrl_aclk] [get_bd_pins hbm_inst/APB_${i}_PCLK]
+   if {$i > 0 } {
+      if [dict exists $CONFIG ADVANCED_PROPERTIES HBM_STAGED_CALIBRATION] {
+         if [dict get $CONFIG ADVANCED_PROPERTIES HBM_STAGED_CALIBRATION] {
+            send_msg_id {hbm_memory_subsystem 3-1} INFO "GEN_CONTENTS::Enabling staged calibration on HBM...stack 1 in reset until stack 0 calibrates..."
+            set hbm_reset_sync_switch1_apb_low_power [create_bd_cell -vlnv xilinx.com:ip:proc_sys_reset hbm_reset_sync_switch1_apb_low_power]
+            connect_bd_net [get_bd_pins $hbm_reset_sync_switch1_apb_low_power/ext_reset_in]     [get_bd_ports ctrl_aresetn]
+            connect_bd_net [get_bd_pins $hbm_reset_sync_switch1_apb_low_power/slowest_sync_clk] [get_bd_pins hbm_inst/APB_${i}_PCLK]
+            connect_bd_net [get_bd_pins $hbm_reset_sync_switch1_apb_low_power/aux_reset_in]     [get_bd_pins $hbm_inst/apb_complete_0]
+            connect_bd_net [get_bd_pins $hbm_reset_sync_switch1_apb_low_power/interconnect_aresetn] [get_bd_pins hbm_inst/APB_${i}_PRESET_N]
+         } else {
+            connect_bd_net [get_bd_ports ctrl_aresetn] [get_bd_pins hbm_inst/APB_${i}_PRESET_N]
+         }
+      } else {
+         connect_bd_net [get_bd_ports ctrl_aresetn] [get_bd_pins hbm_inst/APB_${i}_PRESET_N]
+      }
+   } else {
+      connect_bd_net [get_bd_ports ctrl_aresetn] [get_bd_pins hbm_inst/APB_${i}_PRESET_N]
+   }
+
+   # Connect HBM ref clock/reset
+   connect_bd_net [get_bd_ports hbm_ref_clk] [get_bd_pins hbm_inst/HBM_REF_CLK_${i}]
+
+   # Map memory segments
+   set si_hbm [get_bd_intf_pins hbm_inst/SAPB_${i}]
+   # Get the range/offset information for this segment
+   if [dict exists $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] {
+      set range  [lindex [dict get $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] 0]
+      set offset [lindex [dict get $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] 1]
+      set ctrl_mem_seg [create_bd_addr_seg -offset $offset -range $range [get_bd_addr_space -of [get_bd_intf_ports S_AXI_CTRL]] [get_bd_addr_segs -of $si_hbm] $ctrl_segment]
+   }
+}
+
+# ----------------------------------------------------------------------
+# Combine individual MC Init Complete signals to single bit
+# Concatenate to a bus for reduction
+set num_stacks [llength [dict get $CALC CTRL_USED]]
+
+set init_concat [create_bd_cell -vlnv xilinx.com:ip:xlconcat:2.1 init_concat]
+set_property CONFIG.NUM_PORTS $num_stacks $init_concat
+
+for {set i 0} {$i < $num_stacks} {incr i} {
+
+   connect_bd_net [get_bd_pins $hbm_inst/apb_complete_${i}] [get_bd_pins $init_concat/In${i}]
+
+}
+
+set init_reduce [create_bd_cell -vlnv xilinx.com:ip:util_reduced_logic init_reduce]
+set_property -dict "CONFIG.C_SIZE $num_stacks CONFIG.C_OPERATION and" $init_reduce
+
+connect_bd_net [get_bd_pins $init_concat/Dout] [get_bd_pins $init_reduce/op1]
+connect_bd_net [get_bd_pins $init_reduce/res] [get_bd_ports hbm_mc_init_seq_complete]
+
+# ----------------------------------------------------------------------
+# Connect temperatures
+
+if {$num_stacks > 1} {
+   connect_bd_net [get_bd_pins $hbm_inst/DRAM_0_STAT_TEMP] [get_bd_ports DRAM_0_STAT_TEMP]
+   connect_bd_net [get_bd_pins $hbm_inst/DRAM_1_STAT_TEMP] [get_bd_ports DRAM_1_STAT_TEMP]
+} else {
+   connect_bd_net [get_bd_pins $hbm_inst/DRAM_0_STAT_TEMP] [get_bd_ports DRAM_0_STAT_TEMP]
+   connect_bd_net [get_bd_pins $hbm_inst/DRAM_0_STAT_TEMP] [get_bd_ports DRAM_1_STAT_TEMP]
+}
+
+# ----------------------------------------------------------------------
+# If both HBM stacks are active:
+#    Create a util_vector block and configure it to be an 'OR' gate
+#    Combine individual DRAM_STAT_CATTRIP signals to single bit
+# If only HBM stack 0 is active pass the interrupt from stack 0 straight to output
+set num_stacks [llength [dict get $CALC CTRL_USED]]
+
+if {$num_stacks > 1} {
+   set util_vector [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic]
+   set_property -dict [list CONFIG.C_SIZE {1} CONFIG.C_OPERATION {or} CONFIG.LOGO_FILE {data/sym_orgate.png}] $util_vector
+   connect_bd_net [get_bd_pins $util_vector/Op1] [get_bd_pins $hbm_inst/DRAM_0_STAT_CATTRIP]
+   connect_bd_net [get_bd_pins $util_vector/Op2] [get_bd_pins $hbm_inst/DRAM_1_STAT_CATTRIP]
+   # Note net naming is important here
+   connect_bd_net -net $cattrip_net [get_bd_pins $util_vector/Res] [get_bd_ports DRAM_STAT_CATTRIP]
+} elseif {$num_stacks == 1} {
+   # Note: Net naming is important here
+   connect_bd_net -net $cattrip_net [get_bd_pins $hbm_inst/DRAM_0_STAT_CATTRIP] [get_bd_ports DRAM_STAT_CATTRIP]
+} else {
+   send_msg_id {hbm_memory_subsystem 3-1} ERROR "GEN_CONTENTS::No HBM stacks used num_stacks = $num_stacks..."
+}
+
+# ----------------------------------------------------------------------
+# Establish Hierarchy
+#
+# Group IP instances into hierarchies to improve visual layout
+
+# Data path into different paths
+for {set i 0} {$i < [dict get $CONFIG total_hbm_num_mi]} {incr i} {
+   set path_name path_$i
+   group_bd_cells $path_name [get_bd_cells -quiet -regexp .*_${i}]
+}
+
+# Init Complete
+group_bd_cells init_logic [get_bd_cells -quiet -regexp init_.*]
+
+# ----------------------------------------------------------------------
+# Over-ride IP properties
+# Tweaking HBM PLL frequency etc
+
+if [dict exists $CONFIG ADVANCED_PROPERTIES IP_OVERRIDE] {
+   foreach cell [dict keys [dict get $CONFIG ADVANCED_PROPERTIES IP_OVERRIDE]] {
+      set config_list {}
+      # Check that the cell exists
+      if {[llength [get_bd_cells $cell]] == 1} {
+          set params [dict get $CONFIG ADVANCED_PROPERTIES IP_OVERRIDE $cell]
+          # Check that key-value pair is good
+          if {[expr [llength $params] % 2] == 0} {
+             # Loop through keys setting properties if they exist
+             foreach key [dict keys $params] {
+                if {[llength [get_property $key [get_bd_cells $cell]]] > 0} {
+                   set value [dict get $CONFIG ADVANCED_PROPERTIES IP_OVERRIDE $cell $key]
+                   lappend config_list [list $key $value]
+                } else {
+                   send_msg_id {hbm_memory_subsystem 3-1} WARNING "GEN_CONTENTS::Not applying IP_OVERRIDE for $key for cell $cell...$key is not a valid property"
+                }
+             }
+             set config_list [concat {*}$config_list]
+             send_msg_id {hbm_memory_subsystem 3-1} INFO "GEN_CONTENTS::Updating cell $cell with config $config_list"
+             set_property -dict $config_list [get_bd_cells $cell]
+          } else {
+             send_msg_id {hbm_memory_subsystem 3-1} WARNING "GEN_CONTENTS::Not applying IP_OVERRIDE for cell $cell...$params is not a valid key-value pair list"
+          }
+      } else {
+         send_msg_id {hbm_memory_subsystem 3-1} WARNING "GEN_CONTENTS::Not applying IP_OVERRIDE for cell $cell...does not exist"
+      }
+   }
+}

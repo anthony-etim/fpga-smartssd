@@ -1,0 +1,215 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+source_ipfile xit/debug_util.xit
+
+dbg_brk
+dbg_puts "BEGIN: UPDATE_PORTS"
+# ----------------------------------------------------------------------
+set ip [::ipxit::current_inst]  
+
+# ----------------------------------------------------------------------
+# 
+set config {}
+set clock_associations {}
+set rst_associations {}
+set partition_clock_map {}
+
+# ----------------------------------------------------------------------
+if {[get_property CONFIG.DICT $ip] != 0} {
+  set config [string tolower [get_property CONFIG.DICT $ip]]
+}
+
+# proc pdict { d {i 0} {c " "}} {
+#   set s ""
+#   set p [string repeat $c $i ]
+#   dict for {k v } $d {
+#     if {([llength $v] % 2) || ([llength $v] == 0)} {
+#       append s "$p{$k $v}\n"
+#     } else {
+#       append s "$p{$k\n[pdict $v [expr $i+2]]$p}\n"
+#     }
+#   }
+#   if {[string length $s] > 0} {
+#     return $s
+#   }
+# }
+
+# dbg_puts "-- CONFIG.DICT: [pdict $config]"
+
+set config_mode [get_property CONFIG.MODE $ip]
+dbg_puts "-- CONFIG.MODE: $config_mode" 
+
+# ----------------------------------------------------------------------
+dbg_brk
+dbg_puts "BEGIN: GENERATE_PORTS"
+
+dict for {type instances} $config {
+  dbg_brk
+  dbg_puts "-- type: $type"
+
+  dict for {inst_root_name spec} $instances {
+    dbg_puts "-- instance_root_name: $inst_root_name"
+
+    foreach role {s m} dir {i o} mode {Slave Master} {
+      set inst {}
+      if {![dict exists $spec gen_params ${role}_partition]} {
+        send_msg ERROR 1 "${role}_partition was not specified for $inst_root_name"
+      }
+
+      set partition [dict get $spec gen_params ${role}_partition]
+      set inst_prefix ${partition}_${role}
+      set inst_name [string toupper ${inst_prefix}_${type}_${inst_root_name}]
+
+      if {[regexp {axi|axis} $type]} {
+        set vlnv_map {
+          axi xilinx.com:interface:aximm_rtl:1.0 
+          axis xilinx.com:interface:axis_rtl:1.0
+        }        
+        set inst [create_bd_intf_port -mode $mode -vlnv [dict get $vlnv_map $type] $inst_name]        
+      }
+    
+      if {[string match bscan $type]} {
+        set inst [create_bd_intf_port -mode $mode -vlnv xilinx.com:interface:bscan_rtl:1.0 -default_portmap $inst_name]               
+      }   
+
+      if {[string match aclk $type]} {
+        set inst [create_bd_port -dir $dir -type clk [string tolower $inst_name]]        
+        dict set partition_clock_map $partition ${type}_${inst_root_name} $inst_name
+      }
+    
+      if {[string match aresetn $type]} {
+        set inst [create_bd_port -dir $dir -from 0 -to 0 -type rst [string tolower $inst_name]]
+        
+        if {[dict exists $spec gen_params aclk_src]} {
+          set aclk_src_value [dict get $spec gen_params aclk_src]
+          foreach aclk_src [split $aclk_src_value :] {
+            set clock_port_name [string tolower ${inst_prefix}_$aclk_src] 
+            dict lappend rst_associations $clock_port_name $inst_name  
+          }
+        } else {
+          send_msg CRITICAL_WARNING 1 "aclk_src was not specified for $inst_root_name"
+        }        
+      } 
+
+      if {[string match irq $type] || [string match data $type]} {          
+        set inst_name [string tolower $inst_name]
+        set port_width 1
+        if {[dict exists $spec ip_params config.width]} {
+          set port_width [dict get $spec ip_params config.width]
+        }
+        if {[dict exists $spec bif_params config.portwidth]} {
+          set port_width [dict get $spec bif_params config.portwidth] 
+        }
+        set type_remap [dict get {irq interrupt data data} $type]
+        set inst [create_bd_port -dir $dir -from [ expr $port_width - 1 ] -to 0 -type $type_remap $inst_name]             
+      }
+    
+      if {[string match pcie $type]} {
+        set inst [create_bd_intf_port -mode $mode -vlnv [dict get $spec gen_params vlnv] -default_portmap $inst_name]
+      }
+
+      if {[string match icap $type] || [string match cap $type] || [string match mbdebug $type]} {
+        set vlnv xilinx.com:interface:${type}_rtl:1.0
+        set type_remap {mbdebug xilinx.com:interface:mbdebug_rtl:3.0}
+        if {[dict exists $type_remap $type]} {
+          set vlnv [dict get $type_remap $type]
+        }
+        set inst [create_bd_intf_port -mode $mode -vlnv $vlnv -default_portmap $inst_name]
+      }
+
+      # --------------------------------------------------
+      # TODO: Remove this $inst guard once decouple is deprecated
+      if {[llength $inst] == 1} {
+        dbg_puts "inst: $inst"
+        foreach key {bif_params} {
+          if {[dict exists $spec $key]} {
+#            dbg_puts "-- assign $key: [dict get $spec $key]"
+            set_property -dict [dict get $spec $key] $inst
+          } else {
+#            dbg_puts "-- assign $key: none"
+          }
+        }
+      }
+
+      if {$type != "aclk" && $type != "aresetn"} {
+        if {[dict exists $spec gen_params aclk_src]} {
+          set clk_port_name [dict get $partition_clock_map [string tolower $partition] [dict get $spec gen_params aclk_src]]
+          dict lappend clock_associations $clk_port_name $inst_name
+        } else {
+          send_msg CRITICAL_WARNING 1 "aclk_src was not specified for $inst_root_name"
+        }
+      }        
+    }
+  }
+}
+
+dbg_puts "END: GENERATE_PORTS"
+
+dbg_brk
+dbg_puts "BEGIN: UPDATE_CLOCK_ASSOCIATIONS"
+dict for {clock_port_name associated_interfaces} $clock_associations {
+  set clock_port [get_bd_ports ${clock_port_name}]
+  set_property CONFIG.ASSOCIATED_BUSIF [join $associated_interfaces :] $clock_port
+  set_property CONFIG.ASSOCIATED_BUSIF.VALUE_SRC CONSTANT $clock_port 
+}
+dbg_puts "END: UPDATE_CLOCK_ASSOCIATIONS"
+dbg_brk
+
+dbg_brk
+dbg_puts "BEGIN: UPDATE_RST_ASSOCIATIONS"
+dict for {clock_port_name associated_interfaces} $rst_associations {
+  set clock_port [get_bd_ports ${clock_port_name}]
+  set_property CONFIG.ASSOCIATED_RESET [join $associated_interfaces :] $clock_port 
+}
+dbg_puts "END: UPDATE_RST_ASSOCIATIONS"
+dbg_brk
+
+dbg_puts "END: UPDATE_PORTS"
+dbg_brk

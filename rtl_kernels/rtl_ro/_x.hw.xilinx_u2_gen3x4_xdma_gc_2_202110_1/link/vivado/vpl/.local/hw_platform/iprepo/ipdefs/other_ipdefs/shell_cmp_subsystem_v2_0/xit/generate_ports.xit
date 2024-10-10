@@ -1,0 +1,321 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (1) Create interface ports
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+    set m_axi_jtag [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_jtag ]
+    set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+    ] $m_axi_jtag
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    set m_debug_hub_user [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:bscan_rtl:1.0 m_debug_hub_user ]
+    set s_axi_ctrl_user_debug [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_debug ]
+    set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.HAS_QOS                      {0}                                                                                             \
+        CONFIG.HAS_CACHE                    {0}                                                                                             \
+        CONFIG.HAS_BURST                    {0}                                                                                             \
+        CONFIG.HAS_LOCK                     {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+    ] $s_axi_ctrl_user_debug
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+# MGMT_DEBUG
+# INTC
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_HAS_MEMORY_CALIB_STATUS == true) || ($C_HAS_FLASH_PROGRAMMER == true) || ($C_HAS_AXI_HWICAP == true) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+    set s_axi_ctrl_mgmt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt ]
+    set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.HAS_QOS                      {0}                                                                                             \
+        CONFIG.HAS_CACHE                    {0}                                                                                             \
+        CONFIG.HAS_BURST                    {0}                                                                                             \
+        CONFIG.HAS_LOCK                     {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+    ] $s_axi_ctrl_mgmt
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    # Add Microblaze debug ports
+
+    for {set i 0} {$i < $C_NUM_MB_DEBUG_PORTS} {incr i} {
+
+        set mdm_mbdebug_${i} [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:mbdebug_rtl:3.0 mdm_mbdebug_${i} ]
+
+    }
+
+    set m0_bscan [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:bscan_rtl:1.0 m0_bscan ]
+
+    # Add MDM Slave AXI Lite Interface
+
+    set s_axi_mdm [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_mdm ]
+    set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.HAS_QOS                      {0}                                                                                             \
+        CONFIG.HAS_CACHE                    {0}                                                                                             \
+        CONFIG.HAS_BURST                    {0}                                                                                             \
+        CONFIG.HAS_LOCK                     {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+    ] $s_axi_mdm
+
+}
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    set s0_bscan [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:bscan_rtl:1.0 s0_bscan ]
+
+}
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        set s_icap [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:icap_rtl:1.0 s_icap]
+        set s_icap_arb [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:cap_rtl:1.0 s_icap_arb]
+
+    }
+
+}
+
+#==========================================================================================================================================#
+# (2) Create ports
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    set clk_icap [ create_bd_port -dir I -type clk clk_icap ]
+    set_property -dict [ list \
+        CONFIG.FREQ_HZ           {100000000} \
+        CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+    ] $clk_icap
+    set interrupt_axi_hwicap [ create_bd_port -dir O -type intr interrupt_axi_hwicap ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {(($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true))} {
+
+    set aclk_pcie [ create_bd_port -dir I -type clk aclk_pcie ]
+    set_property -dict [ list \
+        CONFIG.ASSOCIATED_RESET  {aresetn_pcie} \
+        CONFIG.FREQ_HZ           {250000000} \
+        CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+    ] $aclk_pcie
+    set aresetn_pcie [ create_bd_port -dir I -type rst aresetn_pcie ]
+
+}
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+        set_property -dict [ list \
+            CONFIG.ASSOCIATED_BUSIF {m_axi_jtag} \
+        ] $aclk_pcie
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+# MGMT_DEBUG
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {(($C_HAS_UUID_ROM == true) || ($C_HAS_USER_DEBUG == true) || ($C_HAS_AXI_HWICAP == true) || ($C_HAS_MEMORY_CALIB_STATUS == true) || ($C_HAS_FLASH_PROGRAMMER == true) || ($C_HAS_MGMT_DEBUG == true))} {
+
+    set aclk_ctrl [ create_bd_port -dir I -type clk aclk_ctrl ]
+    set_property -dict [ list \
+        CONFIG.ASSOCIATED_RESET  {aresetn_ctrl} \
+        CONFIG.FREQ_HZ           {50000000} \
+        CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+    ] $aclk_ctrl
+
+    set aresetn_ctrl [ create_bd_port -dir I -type rst aresetn_ctrl ]
+
+    if {($C_REGSLICE_MEMORY_CALIB_STATUS == "TDM") || ($C_REGSLICE_FLASH_PROGRAMMER == "TDM") || ($C_REGSLICE_UUID_ROM == "TDM") || ($C_REGSLICE_USER_DEBUG_BRIDGE == "TDM") || (($C_REGSLICE_MGMT_DEBUG == "TDM") && ($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+        set aclk_ctrl_2x [ create_bd_port -dir I -type clk aclk_ctrl_2x ]
+        set_property -dict [ list \
+            CONFIG.FREQ_HZ           {100000000} \
+            CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+        ] $aclk_ctrl_2x
+
+    }
+
+}
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) || (($C_HAS_AXI_HWICAP == true) || ($C_HAS_MEMORY_CALIB_STATUS == true) || ($C_HAS_FLASH_PROGRAMMER == true) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)))} {
+
+    if {(($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true))} {
+
+          dbg_puts "Associating s_axi_ctrl_mgmt to aclk_pcie"
+
+          set_property -dict [ list \
+              CONFIG.ASSOCIATED_BUSIF  {s_axi_ctrl_mgmt} \
+          ] $aclk_pcie
+
+    } else {
+
+          dbg_puts "Associating s_axi_ctrl_mgmt to aclk_ctrl"
+
+          set_property -dict [ list \
+              CONFIG.ASSOCIATED_BUSIF  {s_axi_ctrl_mgmt} \
+          ] $aclk_ctrl
+
+    }
+
+}
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    set_property -dict [ list \
+        CONFIG.ASSOCIATED_BUSIF {s_axi_ctrl_user_debug} \
+    ] $aclk_ctrl
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# FLASH_PROGRAMMER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_FLASH_PROGRAMMER == true)} {
+
+    set interrupt_flash_programmer [ create_bd_port -dir O -type intr interrupt_flash_programmer ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    set aresetn_ctrl_plp [ create_bd_port -dir I -type rst aresetn_ctrl_plp ]
+    set_property -dict [ list \
+      CONFIG.POLARITY {ACTIVE_LOW} \
+    ] $aresetn_ctrl_plp
+
+    set interrupt_mdm_board_control [ create_bd_port -dir O -type intr interrupt_mdm_board_control ]
+
+    set mdm_debug_sys_rst_cmc [ create_bd_port -dir O -type rst mdm_debug_sys_rst_cmc ]
+    set_property -dict [ list \
+      CONFIG.POLARITY {ACTIVE_HIGH} \
+    ] $mdm_debug_sys_rst_cmc
+
+    set mdm_debug_sys_rstn_ert [ create_bd_port -dir O -type rst mdm_debug_sys_rstn_ert ]
+    set_property -dict [ list \
+      CONFIG.POLARITY {ACTIVE_LOW} \
+    ] $mdm_debug_sys_rstn_ert
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MEMORY_CALIB_STATUS == true)} {
+
+    set memory_calib_complete [ create_bd_port -dir I -from [ expr $C_NUM_MEMORY_CALIB - 1 ] -to 0 memory_calib_complete ]
+
+}

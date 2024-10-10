@@ -1,0 +1,75 @@
+{
+    "schema_version": {
+        "schema": "JSON",
+        "creation_date": "Tue Apr 25 00:16:18 2023 GMT"
+    },
+    "devices": [
+        {
+            "interface_type": "pcie",
+            "device_id": "0000:0e:00.1",
+            "thermals": [
+                {
+                    "location_id": "pcb_top_front",
+                    "description": "PCB Top Front",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "pcb_top_rear",
+                    "description": "PCB Top Rear",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "pcb_bottom_front",
+                    "description": "PCB Bottom Front",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_0",
+                    "description": "Cage0",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_1",
+                    "description": "Cage1",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_2",
+                    "description": "Cage2",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_3",
+                    "description": "Cage3",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "fpga0",
+                    "description": "FPGA",
+                    "temp_C": "59",
+                    "is_present": "true"
+                },
+                {
+                    "location_id": "int_vcc",
+                    "description": "Int Vcc",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "fpga_hbm",
+                    "description": "FPGA HBM",
+                    "temp_C": "0",
+                    "is_present": "false"
+                }
+            ]
+        }
+    ]
+}
+

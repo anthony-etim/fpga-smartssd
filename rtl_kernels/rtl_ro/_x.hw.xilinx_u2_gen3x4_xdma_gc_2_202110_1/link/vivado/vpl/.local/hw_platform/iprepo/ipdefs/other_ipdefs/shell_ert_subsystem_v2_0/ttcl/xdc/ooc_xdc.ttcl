@@ -1,0 +1,34 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+<: set bufgctrls {X0Y0 X0Y1 X0Y2 X0Y3} :>
+<: if {[getProjectDevice] == {xcu30}} { set bufgctrls {X1Y0 X1Y1 X1Y2 X1Y3} }:>
+
+create_clock -period 4.000 [get_ports aclk_pcie]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 0 :> [get_ports aclk_pcie]
+
+create_clock -period 20.000 [get_ports aclk_ctrl]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 1 :> [get_ports aclk_ctrl]
+
+create_clock -period 20.000 [get_ports mdm_mbdebug_clk]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 2 :> [get_ports mdm_mbdebug_clk]
+
+create_clock -period 20.000 [get_ports mdm_mbdebug_update]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 3 :> [get_ports mdm_mbdebug_update]
+
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_ports mdm_mbdebug_clk]]
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_ports mdm_mbdebug_update]]
+
+set_clock_groups -logically_exclusive \
+  -group [get_clocks -of_objects [get_ports mdm_mbdebug_clk]] \
+  -group [get_clocks -of_objects [get_ports mdm_mbdebug_update]]
+
+set Period_aclk_pcie   [get_property PERIOD [get_clocks -of_objects [get_ports aclk_pcie]]]
+set Period_aclk_ctrl  [get_property PERIOD [get_clocks -of_objects [get_ports aclk_ctrl]]]
+
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_pcie
+set_max_delay -datapath_only -from [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_ctrl]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  -to [filter [all_registers -clock [get_clocks -of_objects [get_ports aclk_pcie]]] {PRIMITIVE_TYPE !~ "BMEM*" && PRIMITIVE_TYPE !~ "BLOCKRAM*"}]  $Period_aclk_ctrl

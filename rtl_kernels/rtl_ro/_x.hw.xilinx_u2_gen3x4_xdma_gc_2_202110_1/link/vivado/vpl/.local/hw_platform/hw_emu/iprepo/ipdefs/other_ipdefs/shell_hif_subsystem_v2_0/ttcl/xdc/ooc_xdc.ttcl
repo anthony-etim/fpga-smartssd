@@ -1,0 +1,9 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+
+create_clock -period 10.000 [get_ports pcie_refclk_clk_p]

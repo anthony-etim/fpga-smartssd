@@ -1,0 +1,992 @@
+<ENTRY>
+{
+ "thisFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.link_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:35 2021",
+ "timestampMillis": "1640970035816",
+ "buildStep": {
+  "cmdId": "66aca2ae-62ff-471a-833c-65b54b6917a0",
+  "name": "v++",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/link.steps.log",
+  "commandLine": "/tools/Xilinx/Vitis/2021.1/bin/unwrapped/lnx64.o/v++  --vivado.prop \"run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\" -t hw --platform xilinx_u2_gen3x4_xdma_gc_2_202110_1 --save-temps -l --temp_dir ./_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1 -o./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin _x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo ",
+  "args": [
+   "-t",
+   "hw",
+   "--platform",
+   "xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "--save-temps",
+   "-l",
+   "--temp_dir",
+   "./_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "-o./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+   "_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:35 2021",
+ "timestampMillis": "1640970035816",
+ "status": {
+  "cmdId": "66aca2ae-62ff-471a-833c-65b54b6917a0",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "Fri Dec 31 12:00:39 2021",
+ "timestampMillis": "1640970039624",
+ "buildSummary": {
+  "hardwarePlatform": "xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm",
+  "hardwareDsa": "hw.xsa",
+  "platformDirectory": "/opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+  "runtime": "OpenCL",
+  "systemConfig": "Linux",
+  "flow": "BF_LINK",
+  "target": "TT_HW",
+  "binaryContainer": {
+   "base": {
+    "type": "BT_UKNOWN",
+    "name": "ro.link",
+    "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+    "reports": [],
+    "uuid": ""
+   },
+   "kernels": []
+  },
+  "kernels": [
+   {
+    "base": {
+     "type": "KERNEL",
+     "name": "krnl_ro_rtl",
+     "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo",
+     "reports": [],
+     "uuid": ""
+    },
+    "sources": [
+     "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/krnl_ro_rtl/krnl_ro_rtl/cpu_sources/vmul_cmodel.cpp"
+    ],
+    "psSources": [],
+    "cuNames": [
+     "krnl_ro_rtl_1"
+    ],
+    "type": "RTL",
+    "frequency": 0,
+    "freqUnits": ""
+   }
+  ],
+  "toolVersion": "Vitis V++ Compiler Release 2021.1. SW Build 3246112 on 2021-06-09-14:19:56"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:39 2021",
+ "timestampMillis": "1640970039724",
+ "buildStep": {
+  "cmdId": "11fe1032-f9ab-4abb-921e-805d4d4f63c7",
+  "name": "system_link",
+  "logFile": "",
+  "commandLine": "system_link --xo /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo -keep --xpfm /opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1/xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm --target hw --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link",
+  "args": [
+   "--xo",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo",
+   "-keep",
+   "--xpfm",
+   "/opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1/xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm",
+   "--target",
+   "hw",
+   "--output_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int",
+   "--temp_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:39 2021",
+ "timestampMillis": "1640970039724",
+ "status": {
+  "cmdId": "11fe1032-f9ab-4abb-921e-805d4d4f63c7",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:49 2021",
+ "timestampMillis": "1640970049345",
+ "status": {
+  "cmdId": "11fe1032-f9ab-4abb-921e-805d4d4f63c7",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:49 2021",
+ "timestampMillis": "1640970049346",
+ "buildStep": {
+  "cmdId": "9e71302c-7678-4878-b3f6-059ef0f2db71",
+  "name": "cf2sw",
+  "logFile": "",
+  "commandLine": "cf2sw -sdsl /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat -rtd /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw.rtd -nofilter /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw_full.rtd -xclbin /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.1.xml",
+  "args": [
+   "-sdsl",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat",
+   "-rtd",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw.rtd",
+   "-nofilter",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw_full.rtd",
+   "-xclbin",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml",
+   "-o",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.1.xml"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:49 2021",
+ "timestampMillis": "1640970049346",
+ "status": {
+  "cmdId": "9e71302c-7678-4878-b3f6-059ef0f2db71",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051539",
+ "status": {
+  "cmdId": "9e71302c-7678-4878-b3f6-059ef0f2db71",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051540",
+ "buildStep": {
+  "cmdId": "9174dc70-fe88-41bc-b0a1-cd1e8c82203b",
+  "name": "rtd2_system_diagram",
+  "logFile": "",
+  "commandLine": "rtd2SystemDiagram",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051540",
+ "status": {
+  "cmdId": "9174dc70-fe88-41bc-b0a1-cd1e8c82203b",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051746",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModel.json",
+  "name": "",
+  "fileType": "JSON",
+  "reportType": "SYSTEM_DIAGRAM",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051746",
+ "status": {
+  "cmdId": "9174dc70-fe88-41bc-b0a1-cd1e8c82203b",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051747",
+ "buildStep": {
+  "cmdId": "723c59e6-bfad-4ba0-9bfe-2b710cd81e8f",
+  "name": "vpl",
+  "logFile": "",
+  "commandLine": "vpl -t hw -f xilinx_u2_gen3x4_xdma_gc_2_202110_1 --remote_ip_cache /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/.ipcache -s --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --log_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link --report_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link --config /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini -k /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_info.dat --webtalk_flag Vitis --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link --no-info --iprepo /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/ip_repo/xilinx_com_RTLKernel_krnl_ro_rtl_int_1_0 --messageDb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link/vpl.pb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/dr.bd.tcl",
+  "args": [
+   "-t",
+   "hw",
+   "-f",
+   "xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "--remote_ip_cache",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/.ipcache",
+   "-s",
+   "--output_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int",
+   "--log_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link",
+   "--report_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link",
+   "--config",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini",
+   "-k",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_info.dat",
+   "--webtalk_flag",
+   "Vitis",
+   "--temp_dir",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link",
+   "--no-info",
+   "--iprepo",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/ip_repo/xilinx_com_RTLKernel_krnl_ro_rtl_int_1_0",
+   "--messageDb",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link/vpl.pb",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/dr.bd.tcl"
+  ],
+  "iniFiles": [
+   {
+    "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini",
+    "content": "[advanced]\nmisc=report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\nmisc=report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\nparam=compiler.enablePerformanceTrace=1\nparam=compiler.vppCurrentWorkingDir=/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater\nmisc=BinaryName=ro.link\n\n[connectivity]\nnk=krnl_ro_rtl:1:krnl_ro_rtl_1\n\n[vivado]\nprop=run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\n\n"
+   }
+  ],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:51 2021",
+ "timestampMillis": "1640970051748",
+ "status": {
+  "cmdId": "723c59e6-bfad-4ba0-9bfe-2b710cd81e8f",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:53 2021",
+ "timestampMillis": "1640970053190",
+ "buildStep": {
+  "cmdId": "8239aa6b-0f69-41b5-9216-05c972de0700",
+  "name": "vpl",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/link.steps.log",
+  "commandLine": "/tools/Xilinx/Vitis/2021.1/bin/unwrapped/lnx64.o/vpl -t hw -f xilinx_u2_gen3x4_xdma_gc_2_202110_1 --remote_ip_cache /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/.ipcache -s --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --log_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link --report_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link --config /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini -k /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_info.dat --webtalk_flag Vitis --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link --no-info --iprepo /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/ip_repo/xilinx_com_RTLKernel_krnl_ro_rtl_int_1_0 --messageDb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link/vpl.pb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/dr.bd.tcl ",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:53 2021",
+ "timestampMillis": "1640970053190",
+ "status": {
+  "cmdId": "8239aa6b-0f69-41b5-9216-05c972de0700",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_VivadoProject",
+ "dateTimestamp": "Fri Dec 31 12:00:56 2021",
+ "timestampMillis": "1640970056715",
+ "vivadoProject": {
+  "openDir": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl",
+  "openScript": "openprj.tcl",
+  "relativeProject": "prj/prj.xpr"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 12:00:56 2021",
+ "timestampMillis": "1640970056715",
+ "buildStep": {
+  "cmdId": "e2da5868-d50e-49fd-9ebd-5a0138eaa00c",
+  "name": "vivado",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/vivado.log",
+  "commandLine": "vivado -log vivado.log -applog -m64 -messageDb vivado.pb -mode batch -source vpl.tcl -notrace",
+  "args": [
+   "-log",
+   "vivado.log",
+   "-applog",
+   " -m64",
+   "-messageDb",
+   "vivado.pb",
+   "-mode",
+   "batch",
+   "-source",
+   "vpl.tcl",
+   "-notrace"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:00:56 2021",
+ "timestampMillis": "1640970056715",
+ "status": {
+  "cmdId": "e2da5868-d50e-49fd-9ebd-5a0138eaa00c",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 12:10:48 2021",
+ "timestampMillis": "1640970648222",
+ "buildStep": {
+  "cmdId": "657a4134-f678-41a6-80cb-cc74e11aff0d",
+  "name": "vivado.impl",
+  "logFile": "",
+  "commandLine": "",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:10:48 2021",
+ "timestampMillis": "1640970648222",
+ "status": {
+  "cmdId": "657a4134-f678-41a6-80cb-cc74e11aff0d",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 12:10:48 2021",
+ "timestampMillis": "1640970648222",
+ "buildStep": {
+  "cmdId": "d2c1bf45-f41f-4734-820e-51d9c55fcc67",
+  "name": "vivado.impl.impl_1",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1/runme.log",
+  "commandLine": "",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:10:48 2021",
+ "timestampMillis": "1640970648222",
+ "status": {
+  "cmdId": "d2c1bf45-f41f-4734-820e-51d9c55fcc67",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 12:55:13 2021",
+ "timestampMillis": "1640973313923",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_service.json",
+  "name": "",
+  "fileType": "JSON",
+  "reportType": "KERNEL_SERVICE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 12:55:13 2021",
+ "timestampMillis": "1640973313924",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_service.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "KERNEL_SERVICE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643275",
+ "status": {
+  "cmdId": "e2da5868-d50e-49fd-9ebd-5a0138eaa00c",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643285",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_slr_util_routed.rpt",
+  "name": "",
+  "fileType": "TEXT",
+  "reportType": "GLOBAL_SLR_UTIL_ROUTED",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643285",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_full_util_routed.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_UTILIZATION_ROUTE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643286",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_full_util_routed.rpt",
+  "name": "",
+  "fileType": "TEXT",
+  "reportType": "GLOBAL_UTILIZATION_ROUTE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643286",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_slr_util_placed.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_SLR_UTIL_PLACED",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643286",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_slr_util_routed.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_SLR_UTIL_ROUTED",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643286",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_slr_util_placed.rpt",
+  "name": "",
+  "fileType": "TEXT",
+  "reportType": "GLOBAL_SLR_UTIL_PLACED",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643319",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpt",
+  "name": "",
+  "fileType": "TEXT",
+  "reportType": "GLOBAL_REPORT_TIMING_SUMMARY",
+  "cmdId": "d2c1bf45-f41f-4734-820e-51d9c55fcc67"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643327",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpx",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_REPORT_TIMING_SUMMARY",
+  "cmdId": "d2c1bf45-f41f-4734-820e-51d9c55fcc67"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643327",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpv",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_REPORT_TIMING_SUMMARY_CONCISE",
+  "cmdId": "d2c1bf45-f41f-4734-820e-51d9c55fcc67"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643337",
+ "status": {
+  "cmdId": "8239aa6b-0f69-41b5-9216-05c972de0700",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643348",
+ "status": {
+  "cmdId": "723c59e6-bfad-4ba0-9bfe-2b710cd81e8f",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643349",
+ "buildStep": {
+  "cmdId": "75628015-0781-405e-9146-43bd451e33a6",
+  "name": "rtdgen",
+  "logFile": "",
+  "commandLine": "rtdgen",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643349",
+ "status": {
+  "cmdId": "75628015-0781-405e-9146-43bd451e33a6",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643350",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_xml.rtd",
+  "name": "",
+  "fileType": "JSON",
+  "reportType": "XCLBIN_INFO",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643351",
+ "buildStep": {
+  "cmdId": "af506b06-dc25-4537-96f6-60c2bc34a374",
+  "name": "cf2sw",
+  "logFile": "",
+  "commandLine": "cf2sw -a /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/address_map.xml -sdsl /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat -xclbin /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml -rtd /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml",
+  "args": [
+   "-a",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/address_map.xml",
+   "-sdsl",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat",
+   "-xclbin",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml",
+   "-rtd",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd",
+   "-o",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:43 2021",
+ "timestampMillis": "1640973643351",
+ "status": {
+  "cmdId": "af506b06-dc25-4537-96f6-60c2bc34a374",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645346",
+ "status": {
+  "cmdId": "af506b06-dc25-4537-96f6-60c2bc34a374",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645346",
+ "buildStep": {
+  "cmdId": "5c536d96-6974-4564-b99e-9eb4b678dfbc",
+  "name": "rtdgen",
+  "logFile": "",
+  "commandLine": "writeSystemDiagram",
+  "args": [
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645346",
+ "status": {
+  "cmdId": "5c536d96-6974-4564-b99e-9eb4b678dfbc",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645347",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json",
+  "name": "",
+  "fileType": "JSON",
+  "reportType": "SYSTEM_DIAGRAM_PLUS",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645347",
+ "status": {
+  "cmdId": "5c536d96-6974-4564-b99e-9eb4b678dfbc",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645347",
+ "status": {
+  "cmdId": "75628015-0781-405e-9146-43bd451e33a6",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645348",
+ "buildStep": {
+  "cmdId": "84746ed8-fee4-4b86-a0a8-f8be0141a2c4",
+  "name": "xclbinutil",
+  "logFile": "",
+  "commandLine": "xclbinutil --add-section BITSTREAM:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/partial.bit --force --target hw --key-value SYS:dfx_enable:true --add-section :JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd --append-section :JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/appendSection.rtd --add-section CLOCK_FREQ_TOPOLOGY:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_xml.rtd --add-section BUILD_METADATA:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_build.rtd --add-section EMBEDDED_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml --add-section SYSTEM_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json --key-value SYS:PlatformVBNV:xilinx_u2_gen3x4_xdma_gc_2_202110_1 --output /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+  "args": [
+   "--add-section",
+   "BITSTREAM:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/partial.bit",
+   "--force",
+   "--target",
+   "hw",
+   "--key-value",
+   "SYS:dfx_enable:true",
+   "--add-section",
+   ":JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd",
+   "--append-section",
+   ":JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/appendSection.rtd",
+   "--add-section",
+   "CLOCK_FREQ_TOPOLOGY:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_xml.rtd",
+   "--add-section",
+   "BUILD_METADATA:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_build.rtd",
+   "--add-section",
+   "EMBEDDED_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml",
+   "--add-section",
+   "SYSTEM_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json",
+   "--key-value",
+   "SYS:PlatformVBNV:xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "--output",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645348",
+ "status": {
+  "cmdId": "84746ed8-fee4-4b86-a0a8-f8be0141a2c4",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645569",
+ "status": {
+  "cmdId": "84746ed8-fee4-4b86-a0a8-f8be0141a2c4",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645570",
+ "buildStep": {
+  "cmdId": "08ff9787-214e-4705-9300-c32e9ef35012",
+  "name": "xclbinutilinfo",
+  "logFile": "",
+  "commandLine": "xclbinutil --quiet --force --info /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.info --input /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+  "args": [
+   "--quiet",
+   "--force",
+   "--info",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.info",
+   "--input",
+   "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645570",
+ "status": {
+  "cmdId": "08ff9787-214e-4705-9300-c32e9ef35012",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645892",
+ "status": {
+  "cmdId": "08ff9787-214e-4705-9300-c32e9ef35012",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645893",
+ "buildStep": {
+  "cmdId": "b65344ff-b09e-44ff-804e-568f0c18075f",
+  "name": "generate_sc_driver",
+  "logFile": "",
+  "commandLine": "",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645893",
+ "status": {
+  "cmdId": "b65344ff-b09e-44ff-804e-568f0c18075f",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645893",
+ "status": {
+  "cmdId": "b65344ff-b09e-44ff-804e-568f0c18075f",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:45 2021",
+ "timestampMillis": "1640973645895",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/system_estimate_ro.link.xtxt",
+  "name": "",
+  "fileType": "TEXT",
+  "reportType": "GLOBAL_SYSTEM_ESTIMATE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:46 2021",
+ "timestampMillis": "1640973646119",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/v++_link_ro.link_guidance.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:46 2021",
+ "timestampMillis": "1640973646119",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/v++_link_ro.link_guidance.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 13:00:46 2021",
+ "timestampMillis": "1640973646121",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_heater/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/optraceViewer.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "OPERATION_TRACE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 13:00:46 2021",
+ "timestampMillis": "1640973646122",
+ "status": {
+  "cmdId": "66aca2ae-62ff-471a-833c-65b54b6917a0",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>

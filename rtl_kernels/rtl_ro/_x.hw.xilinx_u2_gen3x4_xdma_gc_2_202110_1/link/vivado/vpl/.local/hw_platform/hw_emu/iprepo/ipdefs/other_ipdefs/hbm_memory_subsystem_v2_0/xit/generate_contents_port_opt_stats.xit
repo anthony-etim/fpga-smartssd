@@ -1,0 +1,239 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+
+# ######################################################################
+# mean
+##
+#
+# @brief  Get the mean of a list
+#
+# @param  l list
+# @return mean Sum of all values in list
+#
+#
+
+proc mean {l} {
+
+    # Initialise
+    set total 0
+    set l_linear [concat {*}$l]
+    set l_length [llength $l_linear]
+
+    # Get mean
+    foreach nxt $l_linear {
+        set total [expr $total + $nxt]
+    }
+    set mean [expr $total/$l_length]
+    return $mean
+}
+
+# ######################################################################
+# calc_link_balance
+##
+#
+# @brief  Get the "balance" across "lateral" links for this result
+#
+# @param  r current result
+# @return balance Sum of all values in list
+#
+#
+
+proc calc_link_balance {r} {
+
+    # Initialise
+    set num_l [llength $r]
+    set num_d 2
+    set max 0
+    set min 1000
+
+    # Loop through the links storing the max and the min
+    for {set l 0} {$l < $num_l} {incr l} {
+       for {set d 0} {$d < $num_d} {incr d} {
+          set clink [concat {*}[lindex $r $l $d]]
+          # Get the min and store the min and max means
+          set cmean [mean $clink]
+          # Update max
+          if {$cmean > $max} {
+             set max $cmean
+          }
+          # Update min
+          if {$cmean < $min} {
+             set min $cmean
+          }
+       }
+    }
+    set balance [expr $max - $min]
+    return $balance
+
+}
+
+# ######################################################################
+# calc_stats
+##
+#
+# @brief  Calc statistics on a particular reset
+#
+# @param  result Result to calculate stats upon
+# @return stats  Stats on this result
+#                - Peak
+#                - Balance
+#                - Mean
+
+proc calc_stats {result} {
+
+   # Initialise
+   set stats [lrepeat 3 0]
+   set l_result [concat {*}[concat {*}[concat {*}$result]]]
+
+   # Calculate the metrics
+   # Get peak
+   lset stats 0 [lindex [lsort -decreasing -real $l_result] 0]
+   # Figure out balance between lateral links
+   lset stats 1 [calc_link_balance $result]
+   # Mean of all node links
+   lset stats 2 [mean $l_result]
+
+   return $stats
+
+}
+
+# ######################################################################
+# calc_opt_position_stats
+##
+#
+# @brief  Calculate the optimum switch location for this kernel
+#
+#
+# @param  Stats      Stats for this kernel at all potential positions
+# @return connection Final connection for this kernel
+#
+
+proc calc_opt_position_stats {stats} {
+
+     # Initialise
+     set num_l 2
+     set num_s 8
+     set connection [lrepeat 2 1000]
+
+     # For each stat looping through each potential switch/link and
+     # calculating the best - may be "joint best"
+
+     # First look at peak
+     set min 1000
+     for {set s 0} {$s < $num_s} {incr s} {
+        for {set l 0} {$l < $num_l} {incr l} {
+           # Insanely need to set precision...TCL can be a bit funny with
+           # rounding at the LSBS i.e. different rounding for the same number at 
+           # fractional bit 17
+           set current [format %.12f [lindex $stats $s $l 0]]
+           # New minimum - clear list
+           if {$current < $min} {
+              set switch_mins_peak $s
+              set link_mins_peak $l
+              set min $current
+           # Joint minimum - add to list
+           } elseif {$current == $min} {
+              lappend switch_mins_peak $s
+              lappend link_mins_peak $l
+           }
+        }
+     }
+
+     # Next look at balance
+     # - Note looking through only the peak results from previous stage
+     set min 1000
+     for {set idx 0} {$idx < [llength $switch_mins_peak]} {incr idx} {
+        set s [lindex $switch_mins_peak $idx]
+        set l [lindex $link_mins_peak $idx]
+        # Insanely need to set precision...TCL can be a bit funny with
+        # rounding at the LSBS i.e. different rounding for the same number at
+        # fractional bit 17
+        set current [format %.12f [lindex $stats $s $l 1]]
+        # New minimum - clear list
+        if {$current < $min} {
+           set switch_mins_bal $s
+           set link_mins_bal $l
+           set min $current
+        # Joint minimum - add to list
+        } elseif {$current == $min} {
+           lappend switch_mins_bal $s
+           lappend link_mins_bal $l
+        }
+     }
+
+     # Next look at mean
+     # - Note looking through only the peak/balance results from previous stages
+     set min 1000
+     for {set idx 0} {$idx < [llength $switch_mins_bal]} {incr idx} {
+        set s [lindex $switch_mins_bal $idx]
+        set l [lindex $link_mins_bal $idx]
+        # Insanely need to set precision...TCL can be a bit funny with
+        # rounding at the LSBS i.e. different rounding for the same number at
+        # fractional bit 17
+        set current [format %.12f [lindex $stats $s $l 2]]
+        # New minimum - clear list
+        if {$current < $min} {
+           set switch_mins_mean $s
+           set link_mins_mean $l
+           set min $current
+        # Joint minimum - add to list
+        } elseif {$current == $min} {
+           lappend switch_mins_mean $s
+           lappend link_mins_mean $l
+        }
+     }
+
+     lset connection 0 [lindex $switch_mins_mean 0]
+     lset connection 1 [lindex $link_mins_mean 0]
+
+     return $connection
+
+}

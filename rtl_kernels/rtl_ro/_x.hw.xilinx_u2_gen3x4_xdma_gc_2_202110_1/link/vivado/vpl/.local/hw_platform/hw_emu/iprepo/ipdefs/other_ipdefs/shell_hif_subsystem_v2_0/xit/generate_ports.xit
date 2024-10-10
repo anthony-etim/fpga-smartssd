@@ -1,0 +1,244 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create interface ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # PCIE IP external interfaces
+  set pcie4_mgt [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie_7x_mgt_rtl:1.0 pcie4_mgt ]
+  set pcie_refclk [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 pcie_refclk ]
+
+  # PCIE IP Configuration Interfaces
+  set m_pcie4_cfg_fc [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie_cfg_fc_rtl:1.0 m_pcie4_cfg_fc ]
+  set m_pcie4_cfg_mesg_rcvd [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie3_cfg_msg_received_rtl:1.0 m_pcie4_cfg_mesg_rcvd ]
+  set m_pcie4_cfg_mesg_tx [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie3_cfg_mesg_tx_rtl:1.0 m_pcie4_cfg_mesg_tx ]
+  set m_pcie4_cfg_status [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie4_cfg_status_rtl:1.0 m_pcie4_cfg_status ]
+  set s_pcie4_cfg_control [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie4_cfg_control_rtl:1.0 s_pcie4_cfg_control ]
+  set s_pcie4_cfg_external_msix [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie4_cfg_msix_rtl:1.0 s_pcie4_cfg_external_msix ]
+  set s_pcie4_cfg_interrupt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie3_cfg_interrupt_rtl:1.0 s_pcie4_cfg_interrupt ]
+  set s_pcie4_cfg_mgmt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie4_cfg_mgmt_rtl:1.0 s_pcie4_cfg_mgmt ]
+
+  # PCIE IP AXI-Stream Interfaces
+
+  # Set tdata/tuser port widths based on configured link width
+  if {$C_PCIE_LINK_CAP_MAX eq "Gen3x4"} {
+
+      set tdata_num_bytes 16
+      set cq_tuser_width 88
+      set cc_tuser_width 33
+      set rq_tuser_width 62
+      set rc_tuser_width 75
+
+  } elseif {$C_PCIE_LINK_CAP_MAX eq "Gen3x8"} {
+
+      set tdata_num_bytes 32
+      set cq_tuser_width 88
+      set cc_tuser_width 33
+      set rq_tuser_width 62
+      set rc_tuser_width 75
+
+  } else {
+
+      set tdata_num_bytes 64
+      set cq_tuser_width 183
+      set cc_tuser_width 81
+      set rq_tuser_width 137
+      set rc_tuser_width 161
+
+  }
+
+  set m_pcie_axis_cq [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_pcie_axis_cq ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES $tdata_num_bytes \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH $cq_tuser_width \
+  ] $m_pcie_axis_cq
+
+  set m_pcie_axis_rc [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_pcie_axis_rc ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES $tdata_num_bytes \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH $rc_tuser_width \
+  ] $m_pcie_axis_rc
+
+  set s_pcie_axis_cc [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_pcie_axis_cc ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES $tdata_num_bytes \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH $cc_tuser_width \
+  ] $s_pcie_axis_cc
+
+  set s_pcie_axis_rq [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_pcie_axis_rq ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.LAYERED_METADATA {undef} \
+      CONFIG.TDATA_NUM_BYTES $tdata_num_bytes \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH $rq_tuser_width \
+  ] $s_pcie_axis_rq
+
+  # Management PF AXI-Lite Control Interface
+  set m_axi_ctrl_mgmt [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap m_axi_ctrl_mgmt ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+  ] $m_axi_ctrl_mgmt
+
+  # User PF AXI-Lite Control Interface
+  set m_axi_ctrl_user [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap m_axi_ctrl_user ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+  ] $m_axi_ctrl_user
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Status/Control ports
+  set pcie_user_lnk_up [ create_bd_port -dir O pcie_user_lnk_up ]
+  set pcie_phy_rdy [ create_bd_port -dir O pcie_phy_rdy ]
+
+  # Interrupt ports
+  set interrupt_user_mailbox [ create_bd_port -dir O interrupt_user_mailbox ]
+  set interrupt_mgmt_mailbox [ create_bd_port -dir O interrupt_mgmt_mailbox ]
+  set interrupt_firewall [ create_bd_port -dir O interrupt_firewall ]
+  set interrupt_flash_programmer [ create_bd_port -dir O interrupt_flash_programmer ]
+
+  # PERST Reset
+  set pcie_perst_n [ create_bd_port -dir I -type rst pcie_perst_n ]
+
+  # PCIE clocks and reset ports
+  set aclk_pcie [ create_bd_port -dir O -type clk aclk_pcie ]
+
+  # Determine aclk_pcie associated bus interfaces
+  if {$C_HAS_USER_AXI_CC} {
+
+      set aclk_pcie_busif "s_pcie_axis_cc:s_pcie_axis_rq:m_pcie_axis_cq:m_pcie_axis_rc:m_axi_ctrl_mgmt"
+
+  } else {
+
+      set aclk_pcie_busif "s_pcie_axis_cc:s_pcie_axis_rq:m_pcie_axis_cq:m_pcie_axis_rc:m_axi_ctrl_mgmt:m_axi_ctrl_user"
+
+  }
+
+  set_property -dict [ list \
+      CONFIG.ASSOCIATED_BUSIF $aclk_pcie_busif \
+      CONFIG.ASSOCIATED_RESET {aresetn_pcie:aresetn_pcie_blp} \
+  ] $aclk_pcie
+
+  # Enable the PCIe Core clock output when configured for Gen3x8 or Gen3x16, not applicable for Gen3x4 as Core clock = User clock
+  if {$C_PCIE_LINK_CAP_MAX ne "Gen3x4"} {
+
+      # Gen3x8 doesn't support 2x core clock for -2LV parts
+      if {$C_PCIE_LINK_CAP_MAX ne "Gen3x8" || $C_SPEEDGRADE ne "-2LV"} {
+
+          set aclk_pcie_2x [ create_bd_port -dir O -type clk aclk_pcie_2x ]
+
+      }
+
+  }
+
+  set aresetn_pcie [ create_bd_port -dir O -type rst aresetn_pcie ]
+  set aresetn_pcie_blp [ create_bd_port -dir O -type rst aresetn_pcie_blp ]
+
+  # Control clocks and reset ports
+
+  set aclk_ctrl [ create_bd_port -dir O -type clk aclk_ctrl ]
+
+  # Determine aclk_ctrl associated bus interfaces
+  if {$C_HAS_USER_AXI_CC} {
+
+      set aclk_ctrl_busif "m_axi_ctrl_user"
+
+  } else {
+
+      set aclk_ctrl_busif ""
+
+  }
+
+  set_property -dict [ list \
+      CONFIG.ASSOCIATED_BUSIF $aclk_ctrl_busif \
+      CONFIG.ASSOCIATED_RESET {aresetn_ctrl:aresetn_ctrl_blp} \
+  ] $aclk_ctrl
+
+  set aclk_ctrl_2x [ create_bd_port -dir O -type clk aclk_ctrl_2x ]
+
+  set aresetn_ctrl [ create_bd_port -dir O -type rst aresetn_ctrl ]
+  set aresetn_ctrl_blp [ create_bd_port -dir O -type rst aresetn_ctrl_blp ]

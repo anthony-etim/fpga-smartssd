@@ -1,0 +1,174 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (1) Create interface ports
+#==========================================================================================================================================#
+
+  # Create interface ports
+
+  set m_axi_ctrl_user_ert [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_ert ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+   ] $m_axi_ctrl_user_ert
+
+  if {$C_REMOVE_KDMA == false} {
+
+    set m_axi_data_copy [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_copy ]
+    set_property -dict [ list \
+      CONFIG.ADDR_WIDTH                     {64}                                                                                            \
+      CONFIG.DATA_WIDTH                     $C_M_AXI_GMEM_DATA_WIDTH                                                                        \
+      CONFIG.MAX_BURST_LENGTH               {256}                                                                                           \
+      CONFIG.SUPPORTS_NARROW_BURST          {0}                                                                                             \
+      CONFIG.NUM_READ_OUTSTANDING           {16}                                                                                            \
+      CONFIG.NUM_WRITE_OUTSTANDING          {16}                                                                                            \
+      CONFIG.NUM_READ_THREADS               {2}                                                                                             \
+      CONFIG.NUM_WRITE_THREADS              {2}                                                                                             \
+      CONFIG.INSERT_VIP                     {0}                                                                                             \
+     ] $m_axi_data_copy
+
+  }
+
+  set m_axi_mdm [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_mdm ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+   ] $m_axi_mdm
+
+  set mdm_mbdebug [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:mbdebug_rtl:3.0 mdm_mbdebug ]
+
+  set s_axi_ctrl_mgmt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.HAS_QOS                      {0}                                                                                             \
+        CONFIG.HAS_CACHE                    {0}                                                                                             \
+        CONFIG.HAS_BURST                    {0}                                                                                             \
+        CONFIG.HAS_LOCK                     {0}                                                                                             \        
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+   ] $s_axi_ctrl_mgmt
+
+  set s_axi_ctrl_user [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user ]
+  set_property -dict [ list \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.HAS_QOS                      {0}                                                                                             \
+        CONFIG.HAS_CACHE                    {0}                                                                                             \
+        CONFIG.HAS_BURST                    {0}                                                                                             \
+        CONFIG.HAS_LOCK                     {0}                                                                                             \        
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+   ] $s_axi_ctrl_user
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  if {$C_REMOVE_KDMA == false} {
+
+    set aclk_pcie [ create_bd_port -dir I -type clk aclk_pcie ]
+    set_property -dict [ list \
+     CONFIG.ASSOCIATED_BUSIF {m_axi_ctrl_user_ert:m_axi_data_copy} \
+     CONFIG.ASSOCIATED_RESET {aresetn_pcie} \
+     CONFIG.FREQ_HZ {250000000} \
+     CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+   ] $aclk_pcie
+
+  } else {
+
+    set aclk_pcie [ create_bd_port -dir I -type clk aclk_pcie ]
+    set_property -dict [ list \
+     CONFIG.ASSOCIATED_BUSIF {m_axi_ctrl_user_ert} \
+     CONFIG.ASSOCIATED_RESET {aresetn_pcie} \
+     CONFIG.FREQ_HZ {250000000} \
+     CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+   ] $aclk_pcie
+
+  }
+
+  set aclk_ctrl [ create_bd_port -dir I -type clk aclk_ctrl ]
+  set_property -dict [ list \
+   CONFIG.ASSOCIATED_BUSIF {m_axi_mdm:s_axi_ctrl_mgmt:s_axi_ctrl_user} \
+   CONFIG.ASSOCIATED_RESET {aresetn_ctrl} \
+   CONFIG.FREQ_HZ {50000000} \
+   CONFIG.FREQ_HZ.VALUE_SRC {PROPAGATED} \
+ ] $aclk_ctrl
+
+  set aresetn_ctrl [ create_bd_port -dir I -type rst aresetn_ctrl ]
+
+  set aresetn_pcie [ create_bd_port -dir I -type rst aresetn_pcie ]
+
+  set interrupt_cu [ create_bd_port -dir I -from 127 -to 0 interrupt_cu ]
+
+  set interrupt_dma [ create_bd_port -dir O -from 3 -to 0 interrupt_dma ]
+
+  set interrupt_mdm [ create_bd_port -dir I -type intr interrupt_mdm ]
+
+  set mb_debug_sys_rstn [ create_bd_port -dir I -type rst mb_debug_sys_rstn ]
+  set_property -dict [ list \
+   CONFIG.POLARITY {ACTIVE_LOW} \
+ ] $mb_debug_sys_rstn
+
+  set interrupt_host [ create_bd_port -dir O -type intr interrupt_host ]

@@ -1,0 +1,168 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+set shell_subsystem                             [::ipxit::current_inst]
+
+#==========================================================================================================================================#
+# Get Project settings
+#==========================================================================================================================================#
+
+# N/A
+
+#==========================================================================================================================================#
+# Get user parameters
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# HAS_HBM_CLK
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_HBM_CLK_FREQ                              [get_property CONFIG.HAS_HBM_CLK                                $shell_subsystem]
+
+set hbm_clock_frequency 400
+
+if {$C_HBM_CLK_FREQ == 1} {
+
+    set C_HAS_HBM_CLK                           false
+
+} elseif {$C_HBM_CLK_FREQ == 2} {
+
+    set C_HAS_HBM_CLK                           true
+
+} elseif {$C_HBM_CLK_FREQ == 3} {
+
+    set C_HAS_HBM_CLK                           true
+    set hbm_clock_frequency 450
+
+}
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE  [get_property CONFIG.EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE  $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE [get_property CONFIG.EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ENABLE_KERNEL_CONT_CLOCK
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_ENABLE_KERNEL_CONT_CLOCK                  [get_property CONFIG.ENABLE_KERNEL_CONT_CLOCK                   $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ENABLE_KERNEL2_CONT_CLOCK
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_ENABLE_KERNEL2_CONT_CLOCK                 [get_property CONFIG.ENABLE_KERNEL2_CONT_CLOCK                  $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#  FREQ_CNT_REF_CLK_HZ
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_NUM_SLR                                   [get_property CONFIG.NUM_SLR                                    $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#  FREQ_CNT_REF_CLK_HZ
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_FREQ_CNT_REF_CLK_HZ                       [get_property CONFIG.FREQ_CNT_REF_CLK_HZ                        $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# CLOCK METADATA HANDLING
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_CLK_DOMAIN_CLK_KERNEL                     [get_property CONFIG.CLK_DOMAIN_CLK_KERNEL                      $shell_subsystem]
+set C_CLK_DOMAIN_CLK_KERNEL_2                   [get_property CONFIG.CLK_DOMAIN_CLK_KERNEL_2                    $shell_subsystem]
+set C_CLK_DOMAIN_CLK_HBM                        [get_property CONFIG.CLK_DOMAIN_CLK_HBM                         $shell_subsystem]
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# TEST_CLOCK
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_TEST_CLOCK                                [get_property CONFIG.TEST_CLOCK                                 $shell_subsystem]
+
+set clk_kernel_frequency 300
+set clk_kernel2_frequency 500
+
+if {$C_TEST_CLOCK > 0} {
+
+    set clk_kernel_frequency $C_TEST_CLOCK
+    set clk_kernel2_frequency $C_TEST_CLOCK
+
+}
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# BUILD INFO
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_SUBSYSTEM_ID                              [get_property CONFIG.VERSION.SUBSYSTEM_ID                       $shell_subsystem]
+set C_VIV_VERSION                               [get_property CONFIG.VERSION.VIV_VERSION                        $shell_subsystem]
+set C_MAJOR_VERSION                             [get_property CONFIG.VERSION.MAJOR_VERSION                      $shell_subsystem]
+set C_MINOR_VERSION                             [get_property CONFIG.VERSION.MINOR_VERSION                      $shell_subsystem]
+set C_CORE_REVISION                             [get_property CONFIG.VERSION.CORE_REVISION                      $shell_subsystem]
+set C_PATCH_REVISION                            [get_property CONFIG.VERSION.PATCH_REVISION                     $shell_subsystem]
+set C_PERFORCE_CL                               [get_property CONFIG.VERSION.PERFORCE_CL                        $shell_subsystem]
+set C_RESERVED_TAG                              [get_property CONFIG.VERSION.RESERVED_TAG                       $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#

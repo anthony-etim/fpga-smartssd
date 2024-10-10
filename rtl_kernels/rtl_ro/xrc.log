@@ -1,0 +1,10 @@
+Fri Dec 31 12:52:52 2021: Server was asked to start on port: '35137'
+Fri Dec 31 12:52:52 2021: Server is using token UUID: 'bdf8c24f-88f8-4f0c-be92-167ed28d2904'
+Fri Dec 31 12:52:52 2021: Attempting to start server on port '35137'
+Fri Dec 31 12:52:52 2021: XRC main fifo: created main fifo '/tmp/xrcmainbdf8c24f-88f8-4f0c-be92-167ed28d2904', fd read = 15
+Fri Dec 31 12:52:52 2021: Running Rule Check Server
+Fri Dec 31 12:52:52 2021: Version 1.6.1
+Fri Dec 31 12:52:52 2021: Rule Check Server: Accepted socket connection from client
+Fri Dec 31 12:52:52 2021: EXCHANGE_TOKEN received, server token: bdf8c24f-88f8-4f0c-be92-167ed28d2904, passed token: bdf8c24f-88f8-4f0c-be92-167ed28d2904
+Fri Dec 31 12:52:52 2021: SESSION_MGR: creating session with session uuid: 'b60d4134-b8ed-4875-a5bf-cb2e46e037b0' and name 'v++_package_ro'
+Fri Dec 31 12:52:56 2021: SESSION_MGR: closing session for UUID 'b60d4134-b8ed-4875-a5bf-cb2e46e037b0' with name 'v++_package_ro'

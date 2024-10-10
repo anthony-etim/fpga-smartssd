@@ -1,0 +1,38 @@
+{
+    "partition_metadata": {
+        "addressable_endpoints": {
+            "ep_ddr_mem_ctrl_00": {
+                "pcie_physical_function": "0x0",
+                "register_abstraction_name": "xilinx.com:reg_abs:ddr4_ctrl:1.0",
+                "range": "0x0000000000800000",
+                "offset": "0x0000000001000000"
+            },
+            "ep_freq_cnt_aclk_kernel_00": {
+                "pcie_physical_function": "0x0",
+                "register_abstraction_name": "xilinx.com:reg_abs:frequency_counter:1.0",
+                "range": "0x0000000000001000",
+                "offset": "0x0000000000052000"
+            }
+        },
+        "interfaces": [
+            {
+                "interface_uuid": "194a2bb6ba20ee1870f9c56330d365fc"
+            }
+        ],
+        "schema_version": {
+            "minor": "0x0",
+            "major": "0x1"
+        }
+    },
+    "ip_layout": {
+        "m_count": "1",
+        "m_ip_data": [
+            {
+                "m_name": "AXI-LITE-BANK0",
+                "m_type": "IP_DDR4_CONTROLLER",
+                "properties": "0",
+                "m_base_address": "0x1000000"
+            }
+        ]
+    }
+}

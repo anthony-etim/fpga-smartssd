@@ -1,0 +1,123 @@
+<ENTRY>
+{
+ "thisFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin.package_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "Fri Dec 31 12:54:51 2021",
+ "timestampMillis": "1640973291015",
+ "buildStep": {
+  "cmdId": "50f11952-475d-44eb-a754-c24a38a66863",
+  "name": "v++",
+  "logFile": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/_x/package/package.steps.log",
+  "commandLine": "/tools/Xilinx/Vitis/2021.1/bin/unwrapped/lnx64.o/v++  --vivado.prop \"run.__KERNEL__.{STEPS.SYNTH_DESIGN.ARGS.MORE OPTIONS}={-directive sdx_optimization_effort_high}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_route_design_summary steps {route_design} runs {impl_1} options {-max_paths 10}\" --advanced.misc \"report=type report_timing_summary name impl_report_timing_summary_post_route_phys_opt_design_summary steps {post_route_phys_opt_design} runs {impl_1} options {-max_paths 10}\" -p ./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin -t hw --platform xilinx_u2_gen3x4_xdma_gc_2_202110_1 --package.out_dir ./package.hw -o ./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin ",
+  "args": [
+   "-p",
+   "./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+   "-t",
+   "hw",
+   "--platform",
+   "xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+   "--package.out_dir",
+   "./package.hw",
+   "-o",
+   "./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin"
+  ],
+  "iniFiles": [],
+  "cwd": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:54:51 2021",
+ "timestampMillis": "1640973291015",
+ "status": {
+  "cmdId": "50f11952-475d-44eb-a754-c24a38a66863",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "Fri Dec 31 12:54:55 2021",
+ "timestampMillis": "1640973295249",
+ "buildSummary": {
+  "hardwarePlatform": "xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm",
+  "hardwareDsa": "hw.xsa",
+  "platformDirectory": "/opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1",
+  "runtime": "OpenCL",
+  "systemConfig": "Linux",
+  "flow": "BF_PACKAGE",
+  "target": "TT_HW",
+  "binaryContainer": {
+   "base": {
+    "type": "BT_UKNOWN",
+    "name": "ro",
+    "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xclbin",
+    "reports": [],
+    "uuid": ""
+   },
+   "kernels": []
+  },
+  "kernels": [],
+  "toolVersion": "Vitis V++ Compiler Release 2021.1. SW Build 3246112 on 2021-06-09-14:19:56",
+  "inputBinaryContainer": {
+   "base": {
+    "type": "BT_UKNOWN",
+    "name": "ro.link",
+    "file": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin",
+    "reports": [],
+    "uuid": "7137cea2-8ca2-4e5e-8db4-45b6fd235867"
+   },
+   "kernels": []
+  }
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 12:54:55 2021",
+ "timestampMillis": "1640973295710",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/_x/reports/package/v++_package_ro_guidance.html",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "Fri Dec 31 12:54:55 2021",
+ "timestampMillis": "1640973295711",
+ "report": {
+  "path": "/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro1/_x/v++_package_ro_guidance.pb",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "Fri Dec 31 12:54:55 2021",
+ "timestampMillis": "1640973295711",
+ "status": {
+  "cmdId": "50f11952-475d-44eb-a754-c24a38a66863",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>

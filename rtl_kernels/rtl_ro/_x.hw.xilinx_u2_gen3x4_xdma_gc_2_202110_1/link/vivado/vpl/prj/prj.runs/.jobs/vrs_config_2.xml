@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="0">
+	<Run Id="ulp_psreset_gate_pr_data_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_data_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_psreset_gate_pr_ddrmem_1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_ddrmem_1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_psreset_gate_pr_kernel_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_kernel_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado" IsOrderedIPRun="true">
+		<Parent Id="ulp_psreset_gate_pr_ddrmem_1_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_psreset_gate_pr_kernel2_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_kernel2_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_ii_level0_wire_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_ii_level0_wire_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_bram_ctrl_0_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_bram_ctrl_0_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_bram_ctrl_0_bram_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_bram_ctrl_0_bram_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_0_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_0_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_0_p_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_0_p_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado" IsOrderedIPRun="true">
+		<Parent Id="ulp_axi_vip_0_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_ddr1_clk_bufg_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_ddr1_clk_bufg_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_ddr1_clk_ibufds_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_ddr1_clk_ibufds_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_ddrmem_1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_ddrmem_1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_psreset_ddrmem_n_1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_ddrmem_n_1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_regslice_periph_null_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_regslice_periph_null_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_user_debug_bridge_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_user_debug_bridge_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado">
+		<Parent Id="bd_9997_bs_switch_1_0_synth_1"/>
+		<Parent Id="bd_9997_axi_jtag_0_synth_1"/>
+		<Parent Id="bd_9997_bsip_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_debug_bridge_xsdbm_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_debug_bridge_xsdbm_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado">
+		<Parent Id="bd_0349_lut_buffer_0_synth_1"/>
+		<Parent Id="bd_0349_xsdbm_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_fpga_dna_module_0_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_fpga_dna_module_0_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_protocol_convert_0_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_protocol_convert_0_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_cdc_data_static_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_cdc_data_static_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_cdc_data_static1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_cdc_data_static1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_gpio_null_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_gpio_null_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_ctrl_mgntpf_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_ctrl_mgntpf_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_ctrl_userpf_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_ctrl_userpf_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_data_static_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_data_static_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_axi_vip_data_static1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_axi_vip_data_static1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_freq_counter_0_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_freq_counter_0_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_regslice_control_mgntpf_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_regslice_control_mgntpf_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_regslice_control_userpf_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_regslice_control_userpf_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_regslice_data_static_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_regslice_data_static_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_regslice_data_static1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_regslice_data_static1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_logic_reset_op_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_logic_reset_op_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_psreset_gate_pr_control_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_psreset_gate_pr_control_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_xbar_3_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_xbar_3_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_xbar_2_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_xbar_2_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s02_regslice_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s02_regslice_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s03_regslice_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s03_regslice_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_auto_us_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_us_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_auto_rs_w_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_rs_w_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_auto_cc_2_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_cc_2_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s03_mmu_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s03_mmu_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="bd_0349_lut_buffer_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/bd_0349_lut_buffer_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="bd_9997_bs_switch_1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/bd_9997_bs_switch_1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="bd_9997_axi_jtag_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/bd_9997_axi_jtag_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s01_regslice_2_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s01_regslice_2_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s00_regslice_21_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s00_regslice_21_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_xbar_4_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_xbar_4_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_xbar_5_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_xbar_5_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="bd_0349_xsdbm_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/bd_0349_xsdbm_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="bd_9997_bsip_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/bd_9997_bsip_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_krnl_ro_rtl_1_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_krnl_ro_rtl_1_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s00_regslice_20_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s00_regslice_20_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado" IsOrderedIPRun="true">
+		<Parent Id="ulp_s02_regslice_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_auto_us_cc_df_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_us_cc_df_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s01_regslice_1_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s01_regslice_1_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s00_regslice_19_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s00_regslice_19_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado" IsOrderedIPRun="true">
+		<Parent Id="ulp_s02_regslice_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_auto_cc_1_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_cc_1_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_auto_cc_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_auto_cc_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_s00_regslice_22_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_s00_regslice_22_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado" IsOrderedIPRun="true">
+		<Parent Id="ulp_regslice_control_userpf_0_synth_1"/>
+	</Run>
+	<Run Id="ulp_m00_regslice_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_m00_regslice_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="ulp_m01_regslice_0_synth_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/ulp_m01_regslice_0_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Run Id="impl_1" LaunchDir="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1" FlowId="Vivado_Implementation" FromStepId="init_design" ToStepId="write_bitstream">
+		<Parent Id="ulp_psreset_gate_pr_data_0_synth_1"/>
+		<Parent Id="ulp_psreset_gate_pr_ddrmem_1_0_synth_1"/>
+		<Parent Id="ulp_psreset_gate_pr_kernel_0_synth_1"/>
+		<Parent Id="ulp_psreset_gate_pr_kernel2_0_synth_1"/>
+		<Parent Id="ulp_ii_level0_wire_0_synth_1"/>
+		<Parent Id="ulp_axi_bram_ctrl_0_0_synth_1"/>
+		<Parent Id="ulp_axi_bram_ctrl_0_bram_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_0_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_0_p_0_synth_1"/>
+		<Parent Id="ulp_ddr1_clk_bufg_0_synth_1"/>
+		<Parent Id="ulp_ddr1_clk_ibufds_0_synth_1"/>
+		<Parent Id="ulp_ddrmem_1_0_synth_1"/>
+		<Parent Id="ulp_psreset_ddrmem_n_1_0_synth_1"/>
+		<Parent Id="ulp_regslice_periph_null_0_synth_1"/>
+		<Parent Id="ulp_user_debug_bridge_0_synth_1"/>
+		<Parent Id="ulp_debug_bridge_xsdbm_0_synth_1"/>
+		<Parent Id="ulp_fpga_dna_module_0_0_synth_1"/>
+		<Parent Id="ulp_axi_protocol_convert_0_0_synth_1"/>
+		<Parent Id="ulp_axi_cdc_data_static_0_synth_1"/>
+		<Parent Id="ulp_axi_cdc_data_static1_0_synth_1"/>
+		<Parent Id="ulp_axi_gpio_null_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_ctrl_mgntpf_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_ctrl_userpf_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_data_static_0_synth_1"/>
+		<Parent Id="ulp_axi_vip_data_static1_0_synth_1"/>
+		<Parent Id="ulp_freq_counter_0_0_synth_1"/>
+		<Parent Id="ulp_regslice_control_mgntpf_0_synth_1"/>
+		<Parent Id="ulp_regslice_control_userpf_0_synth_1"/>
+		<Parent Id="ulp_regslice_data_static_0_synth_1"/>
+		<Parent Id="ulp_regslice_data_static1_0_synth_1"/>
+		<Parent Id="ulp_logic_reset_op_0_synth_1"/>
+		<Parent Id="ulp_psreset_gate_pr_control_0_synth_1"/>
+		<Parent Id="ulp_xbar_3_synth_1"/>
+		<Parent Id="ulp_xbar_2_synth_1"/>
+		<Parent Id="ulp_s02_regslice_0_synth_1"/>
+		<Parent Id="ulp_s03_regslice_0_synth_1"/>
+		<Parent Id="ulp_auto_us_0_synth_1"/>
+		<Parent Id="ulp_auto_rs_w_0_synth_1"/>
+		<Parent Id="ulp_auto_cc_2_synth_1"/>
+		<Parent Id="ulp_s03_mmu_0_synth_1"/>
+		<Parent Id="bd_0349_lut_buffer_0_synth_1"/>
+		<Parent Id="bd_9997_bs_switch_1_0_synth_1"/>
+		<Parent Id="bd_9997_axi_jtag_0_synth_1"/>
+		<Parent Id="ulp_s01_regslice_2_synth_1"/>
+		<Parent Id="ulp_s00_regslice_21_synth_1"/>
+		<Parent Id="ulp_xbar_4_synth_1"/>
+		<Parent Id="ulp_xbar_5_synth_1"/>
+		<Parent Id="bd_0349_xsdbm_0_synth_1"/>
+		<Parent Id="bd_9997_bsip_0_synth_1"/>
+		<Parent Id="ulp_krnl_ro_rtl_1_0_synth_1"/>
+		<Parent Id="ulp_s00_regslice_20_synth_1"/>
+		<Parent Id="ulp_auto_us_cc_df_0_synth_1"/>
+		<Parent Id="ulp_s01_regslice_1_synth_1"/>
+		<Parent Id="ulp_s00_regslice_19_synth_1"/>
+		<Parent Id="ulp_auto_cc_1_synth_1"/>
+		<Parent Id="ulp_auto_cc_0_synth_1"/>
+		<Parent Id="ulp_s00_regslice_22_synth_1"/>
+		<Parent Id="ulp_m00_regslice_0_synth_1"/>
+		<Parent Id="ulp_m01_regslice_0_synth_1"/>
+	</Run>
+	<Parameters>
+		<Parameter Name="runs.monitorLSFJobs" Val="true" Type="bool"/>
+		<Parameter Name="runs.enableClusterConf" Val="true" Type="bool"/>
+	</Parameters>
+</Runs>
+

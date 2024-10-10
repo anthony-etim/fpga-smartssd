@@ -1,0 +1,267 @@
+#============================================================================================================================================================#
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+#
+#============================================================================================================================================================#
+
+set shell_subsystem                                   [::ipxit::current_inst]
+
+#============================================================================================================================================================#
+# Get Project settings
+#============================================================================================================================================================#
+
+set C_DEVICE                                          [string toupper [xit::get_project_property DEVICE]]
+set C_PACKAGE                                         [string toupper [xit::get_project_property PACKAGE]]
+set C_SPEEDGRADE                                      [string toupper [xit::get_project_property SPEEDGRADE]]
+
+#============================================================================================================================================================#
+# Get user parameters
+#============================================================================================================================================================#
+
+# Subsystem Version Properties
+set C_SUBSYSTEM_ID                                    [get_property CONFIG.VERSION.SUBSYSTEM_ID                                           $shell_subsystem]
+set C_VIV_VERSION                                     [get_property CONFIG.VERSION.VIV_VERSION                                            $shell_subsystem]
+set C_MAJOR_VERSION                                   [get_property CONFIG.VERSION.MAJOR_VERSION                                          $shell_subsystem]
+set C_MINOR_VERSION                                   [get_property CONFIG.VERSION.MINOR_VERSION                                          $shell_subsystem]
+set C_CORE_REVISION                                   [get_property CONFIG.VERSION.CORE_REVISION                                          $shell_subsystem]
+set C_PATCH_REVISION                                  [get_property CONFIG.VERSION.PATCH_REVISION                                         $shell_subsystem]
+#set C_PERFORCE_CL                                     [get_property CONFIG.VERSION.PERFORCE_CL                                            $shell_subsystem]
+set C_RESERVED_TAG                                    [get_property CONFIG.VERSION.RESERVED_TAG                                           $shell_subsystem]
+
+variable XDMA_NUM_CHNL
+set XDMA_NUM_CHNL                                     [get_property CONFIG.XDMA_NUM_CHNL                                                  $shell_subsystem]
+
+#============================================================================================================================================================#
+# Constants with Endpoint parameters
+##============================================================================================================================================================#
+set FIREWALL_MGMT_0_OFFSET                            0x00000000000D0000
+set FIREWALL_MGMT_0_RANGE                             0x0000000000001000
+set FIREWALL_MGMT_0_PF                                0x0
+set FIREWALL_MGMT_0_REGABS                            "xilinx.com:reg_abs:axi_firewall:1.0"
+
+set FIREWALL_USER_0_OFFSET                            0x00000000000E0000
+set FIREWALL_USER_0_RANGE                             0x0000000000001000
+set FIREWALL_USER_0_PF                                0x0
+set FIREWALL_USER_0_REGABS                            "xilinx.com:reg_abs:axi_firewall:1.0"
+
+set FIREWALL_DEBUG_0_OFFSET                           0x00000000000E1000
+set FIREWALL_DEBUG_0_RANGE                            0x0000000000001000
+set FIREWALL_DEBUG_0_PF                               0x0
+set FIREWALL_DEBUG_0_REGABS                           "xilinx.com:reg_abs:axi_firewall:1.0"
+
+set CLK_KERNEL_0_OFFSET                               0x0000000000050000
+set CLK_KERNEL_0_RANGE                                0x0000000000001000
+set CLK_KERNEL_0_PF                                   0x0
+set CLK_KERNEL_0_REGABS                               "xilinx.com:reg_abs:clkwiz:1.0"
+
+set CLK_KERNEL_1_OFFSET                               0x0000000000051000
+set CLK_KERNEL_1_RANGE                                0x0000000000001000
+set CLK_KERNEL_1_PF                                   0x0
+set CLK_KERNEL_1_REGABS                               "xilinx.com:reg_abs:clkwiz:1.0"
+
+set DDR_MEM_CALIB_0_OFFSET                            0x0000000000032000
+set DDR_MEM_CALIB_0_RANGE                             0x0000000000001000
+set DDR_MEM_CALIB_0_PF                                0x0
+set DDR_MEM_CALIB_0_REGABS                            "xilinx.com:reg_abs:axi_gpio:1.0"
+
+set CARD_FLASH_0_OFFSET                               0x0000000000040000
+set CARD_FLASH_0_RANGE                                0x0000000000001000
+set CARD_FLASH_0_PF                                   0x0
+set CARD_FLASH_0_REGABS                               "xilinx.com:reg_abs:axi_quad_spi:1.0"
+
+set DDR_MEM_SRSR_0_OFFSET                             0x0000000000030000
+set DDR_MEM_SRSR_0_RANGE                              0x0000000000001000
+set DDR_MEM_SRSR_0_PF                                 0x0
+set DDR_MEM_SRSR_0_REGABS                             "xilinx.com:reg_abs:gpio_srsr_gate:1.0"
+
+set MB_MGMT_0_OFFSET                                  0x0000000000200000
+set MB_MGMT_0_RANGE                                   0x0000000000010000
+set MB_MGMT_0_PF                                      0x0
+set MB_MGMT_0_REGABS                                  "xilinx.com:reg_abs:mailbox:1.0"
+
+set DEBUG_BSCAN_0_OFFSET                              0x00000000000C0000
+set DEBUG_BSCAN_0_RANGE                               0x0000000000010000
+set DEBUG_BSCAN_0_PF                                  0x0
+set DEBUG_BSCAN_0_REGABS                              "xilinx.com:reg_abs:debug_bridge:1.0"
+
+set CMC_REGMAP_0_OFFSET                               0x0000000000120000
+set CMC_REGMAP_0_RANGE                                0x0000000000002000
+set CMC_REGMAP_0_PF                                   0x0
+set CMC_REGMAP_0_REGABS                               "xilinx.com:reg_abs:axi_bram_ctrl:1.0"
+
+set CMP_SYSMON_0_OFFSET                               0x00000000000A0000
+set CMP_SYSMON_0_RANGE                                0x0000000000010000
+set CMP_SYSMON_0_PF                                   0x0
+set CMP_SYSMON_0_REGABS                               "xilinx.com:reg_abs:system_managment_wiz:1.0"
+
+set MB_USER_0_OFFSET                                  0x0000000000210000
+set MB_USER_0_RANGE                                   0x0000000000010000
+set MB_USER_0_PF                                      0x1
+set MB_USER_0_REGABS                                  "xilinx.com:reg_abs:mailbox:1.0"
+
+set HWICAP_0_OFFSET                                   0x0000000000020000
+set HWICAP_0_RANGE                                    0x0000000000010000
+set HWICAP_0_PF                                       0x0
+set HWICAP_0_REGABS                                   "xilinx.com:reg_abs:axi_hwicap:1.0"
+
+set USR_DEBUG_0_OFFSET                                0x00000000000C0000
+set USR_DEBUG_0_RANGE                                 0x0000000000010000
+set USR_DEBUG_0_PF                                    0x1
+set USR_DEBUG_0_REGABS                                "xilinx.com:reg_abs:debug_bridge:1.0"
+
+set UUID_0_OFFSET                                     0x00000000000B0000
+set UUID_0_RANGE                                      0x0000000000001000
+set UUID_0_PF                                         0x0
+set UUID_0_REGABS                                     "xilinx.com:reg_abs:axi_bram_ctrl:1.0"
+
+
+##============================================================================================================================================================#
+# Create Metadata Dictionary
+#============================================================================================================================================================#
+
+# initialize Endpoint Dictionary
+
+set endpoint_dictionary {}
+
+# Load parameters into dictionary
+set endpoint ep_uuid_rom_00 
+dict set endpoint_dictionary $endpoint offset                       $UUID_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $UUID_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $UUID_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $UUID_0_REGABS
+
+set endpoint ep_firewall_ctrl_mgmt_00 
+dict set endpoint_dictionary $endpoint offset                       $FIREWALL_MGMT_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $FIREWALL_MGMT_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $FIREWALL_MGMT_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $FIREWALL_MGMT_0_REGABS
+
+set endpoint ep_firewall_ctrl_user_00 
+dict set endpoint_dictionary $endpoint offset                       $FIREWALL_USER_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $FIREWALL_USER_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $FIREWALL_USER_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $FIREWALL_USER_0_REGABS
+
+set endpoint ep_firewall_ctrl_debug_00 
+dict set endpoint_dictionary $endpoint offset                       $FIREWALL_DEBUG_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $FIREWALL_DEBUG_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $FIREWALL_DEBUG_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $FIREWALL_DEBUG_0_REGABS
+
+set endpoint ep_aclk_kernel_00 
+dict set endpoint_dictionary $endpoint offset                       $CLK_KERNEL_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $CLK_KERNEL_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $CLK_KERNEL_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $CLK_KERNEL_0_REGABS
+
+set endpoint ep_aclk_kernel_01 
+dict set endpoint_dictionary $endpoint offset                       $CLK_KERNEL_1_OFFSET
+dict set endpoint_dictionary $endpoint range                        $CLK_KERNEL_1_RANGE
+dict set endpoint_dictionary $endpoint pf                           $CLK_KERNEL_1_PF
+dict set endpoint_dictionary $endpoint regabs                       $CLK_KERNEL_1_REGABS
+
+set endpoint ep_ddr_mem_calib_00 
+dict set endpoint_dictionary $endpoint offset                       $DDR_MEM_CALIB_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $DDR_MEM_CALIB_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $DDR_MEM_CALIB_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $DDR_MEM_CALIB_0_REGABS
+
+set endpoint ep_card_flash_program_00 
+dict set endpoint_dictionary $endpoint offset                       $CARD_FLASH_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $CARD_FLASH_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $CARD_FLASH_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $CARD_FLASH_0_REGABS
+
+set endpoint ep_ddr_mem_srsr_gate_00 
+dict set endpoint_dictionary $endpoint offset                       $DDR_MEM_SRSR_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $DDR_MEM_SRSR_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $DDR_MEM_SRSR_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $DDR_MEM_SRSR_0_REGABS
+
+set endpoint ep_mailbox_mgmt_00 
+dict set endpoint_dictionary $endpoint offset                       $MB_MGMT_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $MB_MGMT_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $MB_MGMT_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $MB_MGMT_0_REGABS
+
+set endpoint ep_debug_bscan_mgmt_00 
+dict set endpoint_dictionary $endpoint offset                       $DEBUG_BSCAN_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $DEBUG_BSCAN_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $DEBUG_BSCAN_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $DEBUG_BSCAN_0_REGABS
+
+set endpoint ep_cmc_regmap_00 
+dict set endpoint_dictionary $endpoint offset                       $CMC_REGMAP_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $CMC_REGMAP_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $CMC_REGMAP_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $CMC_REGMAP_0_REGABS
+
+set endpoint ep_cmp_sysmon_00 
+dict set endpoint_dictionary $endpoint offset                       $CMP_SYSMON_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $CMP_SYSMON_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $CMP_SYSMON_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $CMP_SYSMON_0_REGABS
+
+set endpoint ep_mailbox_user_00
+dict set endpoint_dictionary $endpoint offset                       $MB_USER_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $MB_USER_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $MB_USER_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $MB_USER_0_REGABS
+
+set endpoint axi_hwicap
+dict set endpoint_dictionary $endpoint offset                       $HWICAP_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $HWICAP_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $HWICAP_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $HWICAP_0_REGABS
+
+set endpoint ep_debug_bscan_user_00
+dict set endpoint_dictionary $endpoint offset                       $USR_DEBUG_0_OFFSET
+dict set endpoint_dictionary $endpoint range                        $USR_DEBUG_0_RANGE
+dict set endpoint_dictionary $endpoint pf                           $USR_DEBUG_0_PF
+dict set endpoint_dictionary $endpoint regabs                       $USR_DEBUG_0_REGABS
+dict set endpoint_dictionary $endpoint is_last                      true
+

@@ -1,0 +1,576 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+
+proc connect_pipe_input {i p} {
+
+  set si [format S%.2d $i]_AXI
+  set si_port [get_bd_intf_ports $si]
+
+  set sc_name interconnect[string tolower $i]_[string tolower $p]
+  set sc_port [get_bd_intf_pins $sc_name/S00_AXI]
+  connect_bd_intf_net $si_port $sc_port
+
+}
+
+proc connect_pipe_output {CONFIG i p clock_switch} {
+
+  set vip_name [format vip_S%.2d $i]
+  set vip_port [get_bd_intf_pins $vip_name/M_AXI]
+  
+  set hbm_port_name [format hbm_inst/SAXI_%.2d $p][dict get $CONFIG hbm_axi_port_append]
+  set hbm_port [get_bd_intf_pins $hbm_port_name]
+
+  if {$clock_switch} {
+
+     set ahcs_name [format axi_hbm_clock_shim_S%.2d $p]
+     set ahcs_name [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_hbm_clock_shim $ahcs_name]
+     set ahcs_s_port_name $ahcs_name/S00_AXI
+     set ahcs_m_port_name $ahcs_name/M00_AXI
+
+     connect_bd_intf_net [get_bd_intf_pins $ahcs_name/S00_AXI] $vip_port
+     connect_bd_intf_net [get_bd_intf_pins $ahcs_name/M00_AXI] $hbm_port
+  } else {
+     connect_bd_intf_net $vip_port $hbm_port
+  }
+
+}
+
+proc create_pipeline {rs_name i slr_config bypass_reg_slice} {
+
+  set pipes_in_slr 4
+
+  set slr_config_num [regsub SLR $slr_config ""]
+
+  set regslice_pipe [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice $rs_name]
+
+  if {($slr_config eq "SLR2")} {
+    set_property -dict [list \
+      CONFIG.REG_W 15 \
+      CONFIG.REG_R 15 \
+      CONFIG.REG_B 15 \
+      CONFIG.REG_AW 15 \
+      CONFIG.REG_AR 15 \
+      CONFIG.NUM_SLR_CROSSINGS   $slr_config_num \
+      CONFIG.PIPELINES_MASTER_AW $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_AW  $pipes_in_slr \
+      CONFIG.PIPELINES_MIDDLE_AW $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_AR $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_AR  $pipes_in_slr \
+      CONFIG.PIPELINES_MIDDLE_AR $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_W  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_W   $pipes_in_slr \
+      CONFIG.PIPELINES_MIDDLE_W  $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_R  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_R   $pipes_in_slr \
+      CONFIG.PIPELINES_MIDDLE_R  $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_B  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_B   $pipes_in_slr \
+      CONFIG.PIPELINES_MIDDLE_B  $pipes_in_slr \
+    ] $regslice_pipe
+  } elseif {($slr_config eq "SLR1")} {
+      set_property -dict [list \
+      CONFIG.REG_W 15 \
+      CONFIG.REG_R 15 \
+      CONFIG.REG_B 15 \
+      CONFIG.REG_AW 15 \
+      CONFIG.REG_AR 15 \
+      CONFIG.NUM_SLR_CROSSINGS   $slr_config_num \
+      CONFIG.PIPELINES_MASTER_AW $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_AW  $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_AR $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_AR  $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_W  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_W   $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_R  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_R   $pipes_in_slr \
+      CONFIG.PIPELINES_MASTER_B  $pipes_in_slr \
+      CONFIG.PIPELINES_SLAVE_B   $pipes_in_slr \
+    ] $regslice_pipe
+
+  } else {
+    if {$bypass_reg_slice == 1} {
+       set_property -dict [list \
+         CONFIG.PROTOCOL {AXI3} \
+         CONFIG.REG_W  0 \
+         CONFIG.REG_R  0 \
+         CONFIG.REG_B  0 \
+         CONFIG.REG_AW 0 \
+         CONFIG.REG_AR 0 \
+       ] $regslice_pipe
+    } else {
+       set_property -dict [list \
+         CONFIG.REG_W  1 \
+         CONFIG.REG_R  1 \
+         CONFIG.REG_B  1 \
+         CONFIG.REG_AW 1 \
+         CONFIG.REG_AR 1 \
+       ] $regslice_pipe
+    }
+  }
+}
+
+proc create_pipe_path {i p CONFIG clock_switch current_stack} {
+
+  # Get clock/reset info
+  set clk_key        [format S%.2d_ACLK $i]
+  set rst_key        [format S%.2d_ARESETN $i]
+  set clkname        [dict get $CONFIG $clk_key]
+  set rstname        [dict get $CONFIG $rst_key]
+  set rst_exists 0
+  if {[regexp -- aresetn $rstname]} {
+     set rst_exists 1
+  }
+
+  set pipe_start_slr [config_get_slr $i     $CONFIG]
+  set rama_en        [config_get_rama_en $i $CONFIG]
+
+  # Associate bus with clock
+  set intf_name [format S%.2d_AXI $i]
+  set intf [get_bd_intf_ports $intf_name]
+  set_property CONFIG.ASSOCIATED_BUSIF [get_property NAME $intf] [get_bd_ports $clkname]
+
+  # Create an SC for this path
+  set sc_params [dict create]
+  dict set sc_params CONFIG.NUM_SI 1
+  dict set sc_params CONFIG.NUM_CLKS 2
+  if {!$rst_exists} {
+     dict set sc_params CONFIG.HAS_ARESETN {0}
+  }
+  dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ functional S00_Entry SUPPORTS_WRAP 0
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S00_Entry MMU_REGSLICE 0
+  } else {
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S00_Entry MMU_REGSLICE 1
+  }
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     M00_Exit REGSLICE 0
+  } else {
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     M00_Exit REGSLICE 1
+  }
+
+  set sc_name interconnect[string tolower $i]_[string tolower $p]
+  set rama_name rama_[string tolower $p]
+
+  set sc [create_bd_cell -vlnv xilinx.com:ip:smartconnect $sc_name]
+  set_property -dict $sc_params $sc
+
+  # Connect between SC <-> RAMA <-> RS <-> VIP
+  set rs_name          slice[string tolower $i]_[string tolower $p]
+
+  # Create pipeline checking if bypass register slice is enabled
+  set bypass_reg_slice 0
+  if [dict exists $CONFIG ADVANCED_PROPERTIES BYPASS_REG_SLICE $intf_name] {
+     set bypass_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES BYPASS_REG_SLICE $intf_name]
+  }
+  create_pipeline $rs_name $p $pipe_start_slr $bypass_reg_slice
+
+  set sc_m_port        [get_bd_intf_pins $sc_name/M00_AXI]
+  set rs_s_port        [get_bd_intf_pins $rs_name/S_AXI]
+  set rs_m_port        [get_bd_intf_pins $rs_name/M_AXI]
+
+  set HBM_DEVICE [get_project_property DEVICE]  
+  set HBM_MEM_INFO [::util_config_part::get_hbm_mem_info $HBM_DEVICE]
+
+  if  {$rama_en eq "0"} {
+     connect_bd_intf_net $sc_m_port $rs_s_port
+  } else {
+     set rama            [create_bd_cell -vlnv xilinx.com:ip:rama $rama_name]
+     if {[dict get $HBM_MEM_INFO slrs] != 1} {
+       set_property -dict [list CONFIG.SLR_ASSIGNMENTS $pipe_start_slr] $rama
+     }
+     set rama_m_port     [get_bd_intf_pins $rama_name/m_axi]
+     set rama_s_port     [get_bd_intf_pins $rama_name/s_axi]
+     connect_bd_intf_net $sc_m_port $rama_s_port
+     connect_bd_intf_net $rs_s_port $rama_m_port
+  }
+
+  # Create a VIP at the end of the pipeline of name vip_SXX where XX is the input port
+  set vip_name [format vip_S%.2d $i]
+  create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.1 $vip_name
+  set vip_s_port [get_bd_intf_pins $vip_name/S_AXI]
+
+  connect_bd_intf_net $rs_m_port $vip_s_port
+
+  connect_bd_net [get_bd_ports $clkname] [get_bd_pins $sc_name/aclk]
+
+  if {$rst_exists} {
+     connect_bd_net [get_bd_ports $rstname] [get_bd_pins $sc_name/aresetn]
+  }
+
+  # Connect clocks/resets
+  if {$clock_switch} {
+
+     set clkname [format hbm_inst/HBM_FB_SWITCH_CLK_%.1d $current_stack]
+     set rstname [format hbm_reset_sync_switch%.1d_$pipe_start_slr/interconnect_aresetn $current_stack]
+
+     connect_bd_net [get_bd_pins $clkname] [get_bd_pins $sc_name/aclk1]
+
+     if {$rama_en eq "1"} {
+        connect_bd_net [get_bd_pins $clkname] [get_bd_pins $rama_name/axi_aclk]
+        connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $rama_name/axi_aresetn]
+     }
+
+     connect_bd_net [get_bd_pins $clkname] [get_bd_pins $rs_name/aclk]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $rs_name/aresetn]
+
+     connect_bd_net [get_bd_pins $clkname] [get_bd_pins $vip_name/aclk]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $vip_name/aresetn]
+
+  } else {
+
+     set clkname hbm_aclk
+     set rstname hbm_reset_sync_$pipe_start_slr/interconnect_aresetn
+
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $sc_name/aclk1]
+
+     if {$rama_en eq "1"} {
+        connect_bd_net [get_bd_ports $clkname] [get_bd_pins $rama_name/axi_aclk]
+        connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $rama_name/axi_aresetn]
+     }
+
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $rs_name/aclk]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $rs_name/aresetn]
+
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $vip_name/aclk]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $vip_name/aresetn]
+
+  }
+
+}
+
+proc create_pipe_path_multi {i p CONFIG clock_switch current_stack} {
+
+  if {[llength $i] > 2} {
+     send_msg_id {hbm_memory_subsystem 3-1} ERROR "Ports - $i - trying to connect to same port on HBM. This is a problem."
+  } else {
+     send_msg_id {hbm_memory_subsystem 3-1} WARNING "Ports - $i - are connecting to same ports on HBM - $p - using a soft switch."
+  }
+
+  # Create an SC for this path (note this SC2:1 is after SC1:1 and reg slice)
+  set sc_params [dict create]
+  dict set sc_params CONFIG.NUM_SI 2
+  dict set sc_params CONFIG.NUM_CLKS 3
+  set sc2to1_name switch_2to1_[string tolower $p]
+  set sc2to1 [create_bd_cell -vlnv xilinx.com:ip:smartconnect $sc2to1_name]
+  set_property -dict $sc_params $sc2to1
+
+  set rama_en 0
+  # First create the individual parts of the pipe
+  for {set idx 0} {$idx < [llength $i]} {incr idx} {
+
+     set in [lindex $i $idx]
+
+     # Get clock/reset info
+     set clk_key        [format S%.2d_ACLK $in]
+     set rst_key        [format S%.2d_ARESETN $in]
+     set clkname        [dict get $CONFIG $clk_key]
+     set rstname        [dict get $CONFIG $rst_key]
+     set rst_exists 0
+     if {[regexp -- aresetn $rstname]} {
+        set rst_exists 1
+     }
+
+     # Get input port info
+     set pipe_start_slr [config_get_slr $in $CONFIG]
+     # RAMA is enabled if enabled on either path
+     if {[config_get_rama_en $in $CONFIG]} {
+        set rama_en 1
+     }
+
+     # Associate bus with clock
+     set intf_name [format S%.2d_AXI $in]
+     set si_port [get_bd_intf_ports $intf_name]
+     set_property CONFIG.ASSOCIATED_BUSIF [get_property NAME $si_port] [get_bd_ports $clkname]
+
+     set rs_name slice[string tolower $in]_[string tolower $p]
+     # Create pipeline and bypass reg slice if required
+     set bypass_reg_slice 0
+     if [dict exists $CONFIG ADVANCED_PROPERTIES BYPASS_REG_SLICE $intf_name] {
+        set bypass_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES BYPASS_REG_SLICE $intf_name]
+     }
+     create_pipeline $rs_name $p $pipe_start_slr $bypass_reg_slice
+
+     # Connect RS input to boundary
+     set rs_s_port        [get_bd_intf_pins $rs_name/S_AXI]
+     connect_bd_intf_net $si_port $rs_s_port
+
+     # Connect RS port to interconnect2:1
+     set rs_m_port [get_bd_intf_pins $rs_name/M_AXI]
+     set int2to1_s_port [get_bd_intf_pins $sc2to1_name/[format S%.2d_AXI $idx]]
+     set int2to1_clk_port [get_bd_pins $sc2to1_name/[format aclk%d [expr $idx + 1]]]
+     connect_bd_intf_net $rs_m_port $int2to1_s_port
+
+     # Clocks reset
+     if {!$rst_exists} {
+        set rst_const_name  vcc[string tolower $in]_[string tolower $p]
+        create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 $rst_const_name
+        connect_bd_net [get_bd_pins $rst_const_name/dout] [get_bd_pins $rs_name/aresetn]
+     } else {
+        connect_bd_net [get_bd_ports $rstname] [get_bd_pins $rs_name/aresetn]
+     }
+
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $rs_name/aclk]
+     connect_bd_net [get_bd_ports $clkname] $int2to1_clk_port
+
+   }
+
+   # Now create the common parts
+   # Connect clocks/resets
+   if {$clock_switch} {
+      set clkname [format hbm_inst/HBM_FB_SWITCH_CLK_%.1d $current_stack]
+      set rstname [format hbm_reset_sync_switch%.1d_$pipe_start_slr/interconnect_aresetn $current_stack]
+      
+      connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $sc2to1_name/aresetn]
+      connect_bd_net [get_bd_pins $clkname] [get_bd_pins $sc2to1_name/aclk]
+   } else {
+      set clkname hbm_aclk
+      set rstname hbm_reset_sync_SLR0/interconnect_aresetn
+
+      connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $sc2to1_name/aresetn]
+      connect_bd_net [get_bd_ports $clkname] [get_bd_pins $sc2to1_name/aclk]
+   }
+
+   # Which HBM port
+   set hbm_port_name [format hbm_inst/SAXI_%.2d $p][dict get $CONFIG hbm_axi_port_append]
+   set hbm_port [get_bd_intf_pins $hbm_port_name]
+   set int2to1_m_port [get_bd_intf_pins $sc2to1_name/M00_AXI]
+
+   set HBM_DEVICE [get_project_property DEVICE]  
+   set HBM_MEM_INFO [::util_config_part::get_hbm_mem_info $HBM_DEVICE]
+
+   # Final stage
+   if  {$rama_en eq "0"} {
+      # Put Clock Shim between SC and HBM
+      if {$clock_switch} {
+          set ahcs_name [format axi_hbm_clock_shim_S%.2d $p]
+          set ahcs_name [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_hbm_clock_shim $ahcs_name]
+          set ahcs_s_port_name $ahcs_name/S00_AXI
+          set ahcs_m_port_name $ahcs_name/M00_AXI
+
+          connect_bd_intf_net [get_bd_intf_pins $ahcs_name/S00_AXI] $int2to1_m_port
+          connect_bd_intf_net [get_bd_intf_pins $ahcs_name/M00_AXI] $hbm_port
+
+      # SC direct to HBM
+      } else {
+         connect_bd_intf_net $int2to1_m_port $hbm_port
+      }
+   } else {
+      set rama_name       rama_[string tolower $p]
+      set rama            [create_bd_cell -vlnv xilinx.com:ip:rama $rama_name]
+      # RAMA always in SLR0 after register slices etc
+      if {[dict get $HBM_MEM_INFO slrs] != 1} {
+        set_property -dict [list CONFIG.SLR_ASSIGNMENTS SLR0] $rama
+      }
+      set rama_m_port     [get_bd_intf_pins $rama_name/m_axi]
+      set rama_s_port     [get_bd_intf_pins $rama_name/s_axi]
+      connect_bd_intf_net $int2to1_m_port $rama_s_port
+
+      # Put Clock Shim between RAMA and HBM
+      if {$clock_switch} {
+         connect_bd_net [get_bd_pins $clkname] [get_bd_pins $rama_name/axi_aclk]
+         connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $rama_name/axi_aresetn]
+         set ahcs_name [format axi_hbm_clock_shim_S%.2d $p]
+         set ahcs_name [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_hbm_clock_shim $ahcs_name]
+         set ahcs_s_port_name $ahcs_name/S00_AXI
+         set ahcs_m_port_name $ahcs_name/M00_AXI
+
+         connect_bd_intf_net [get_bd_intf_pins $ahcs_name/S00_AXI] $rama_m_port
+         connect_bd_intf_net [get_bd_intf_pins $ahcs_name/M00_AXI] $hbm_port
+
+      # RAMA direct to HBM
+      } else {
+         connect_bd_net [get_bd_ports $clkname] [get_bd_pins $rama_name/axi_aclk]
+         connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $rama_name/axi_aresetn]
+         connect_bd_intf_net $hbm_port $rama_m_port
+      }
+   }
+   
+  # Update advanced properties of SC 2:1 at end as clock/bus connections can override
+  set sc_params [dict create]
+  # Want output regslice as timing has started showing up output path
+  dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     M00_Exit  REGSLICE      1
+  dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ functional S00_Entry SUPPORTS_WRAP 0
+  # Associate bus with clock
+  set in [lindex $i 0]
+  set intf_name [format S%.2d_AXI $in]
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S00_Entry MMU_REGSLICE 0
+  } else {
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S00_Entry MMU_REGSLICE 1
+  }
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     M00_Exit REGSLICE 0
+  }  
+  set in [lindex $i 1]
+  set intf_name [format S%.2d_AXI $in]
+  dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ functional S01_Entry SUPPORTS_WRAP 0
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S01_Entry MMU_REGSLICE 0
+  } else {
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     S01_Entry MMU_REGSLICE 1
+  }
+  if [dict exists $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name] {
+     set mmu_reg_slice [dict get $CONFIG ADVANCED_PROPERTIES DISABLE_SC_MMU_EXIT_REG_SLICE $intf_name]
+     dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ timing     M00_Exit REGSLICE 0
+  }
+
+  # Hard coding this as SC has been known to give out
+  dict set sc_params CONFIG.ADVANCED_PROPERTIES __view__ clocking { S01_Entry { ASSOCIATED_CLK aclk2 } S00_Entry { ASSOCIATED_CLK aclk1 } \
+                                                                    M00_Exit  { ASSOCIATED_CLK aclk } SW0 { ASSOCIATED_CLK aclk } }
+  set_property -dict $sc_params $sc2to1
+}
+
+proc connect_hbm_axi_clkreset {p clock_switch current_stack} {
+
+  set hbm_clk_name [format hbm_inst/AXI_%.2d $p]_ACLK
+  set hbm_rst_name [format hbm_inst/AXI_%.2d $p]_ARESET_N
+
+  if {$clock_switch} {
+
+     # Connect clocks/resets
+     set clkname [format hbm_inst/HBM_FB_SWITCH_CLK_%.1d $current_stack]
+     set rstname hbm_reset_sync_SLR0/interconnect_aresetn
+  
+     set ahcs_name [format axi_hbm_clock_shim_S%.2d $p]
+  
+     connect_bd_net [get_bd_pins $clkname] [get_bd_pins $ahcs_name/S00_AXI_ACLK]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $ahcs_name/S00_AXI_ARESET_N]
+  
+     # Connect clocks/resets
+     set clkname hbm_aclk
+     set rstname hbm_reset_sync_SLR0/interconnect_aresetn
+
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $hbm_rst_name]
+     connect_bd_net [get_bd_pins $rstname] [get_bd_pins $ahcs_name/M00_AXI_ARESET_N]
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $hbm_clk_name]
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $ahcs_name/M00_AXI_ACLK]
+
+  } else {
+  
+     # Connect clocks/resets
+     set clkname hbm_aclk
+     set rstname hbm_reset_sync_SLR0/interconnect_aresetn
+
+     connect_bd_net [get_bd_pins  $rstname] [get_bd_pins $hbm_rst_name]
+     connect_bd_net [get_bd_ports $clkname] [get_bd_pins $hbm_clk_name]
+
+  }
+
+}
+
+set kernel_reverse_connections [lrepeat 32 -1]
+# Reverse so that we can create paths based on kernels
+for {set i 0} {$i < [dict get $CONFIG total_hmss_num_mi]} {incr i} {
+
+   # Pipeline only enabled for
+   if {[config_get_saxi_en $i $CONFIG]} {
+      set p [dict get $CALC kernel_connections $i]
+      if {[lindex $kernel_reverse_connections $p] == -1} {
+         lset kernel_reverse_connections $p $i
+      } else {
+         lset kernel_reverse_connections $p [list $i [lindex $kernel_reverse_connections $p]]
+      }
+   }
+}
+
+# Instantiate pipelines
+for {set p 0} {$p < [dict get $CONFIG total_hbm_num_mi]} {incr p} {
+
+   # Find out if the pipeline is connected to a port that
+   # is in turn used as a switch clock
+   # Note that feedback clock is always used for this case whether an additional BUFG is instantiated or not
+   # Note this check is only required for ES devices
+   set clock_switch 0
+   if {[regexp -- .*es1.* [get_project_property PART]]} {
+      set clock_switch  [expr [lsearch -exact [dict get $CONFIG HBM_SWITCH_CLOCKS] $p] > -1]
+   }
+   set current_stack [expr int($p/16)]
+
+   # What is the port(s) that we are tying to
+   set i [lindex $kernel_reverse_connections $p]
+
+   # If port(s) is defined for particular HBM port
+   # Single pipeline path to single HBM port
+   if {[llength $i] == 1} {
+
+      if {$i > -1} {
+
+         # Create SmartConnect and Register block for this path
+         create_pipe_path $i $p $CONFIG $clock_switch $current_stack
+   
+         # Connect the slave input to SC at start of path
+         connect_pipe_input $i $p
+   
+         # Connect the output to end of path to HBM - note calculated port is used
+         connect_pipe_output $CONFIG $i $p $clock_switch
+   
+         # Connect HBM clock to AXI clocks on HBM
+         connect_hbm_axi_clkreset $p $clock_switch $current_stack
+      }
+
+   # Multiple pipeline path to single HBM port
+   } elseif {[llength $i] > 1} {
+
+         # Create SmartConnects and Register blocks for this path
+         create_pipe_path_multi $i $p $CONFIG $clock_switch $current_stack
+
+         # Connect HBM clock to AXI clocks on HBM
+         connect_hbm_axi_clkreset $p $clock_switch $current_stack
+
+   }
+
+}
+

@@ -1,0 +1,76 @@
+<: setOutputDirectory "./" :>
+<: set ComponentName [getComponentNameString] :>
+<: setFileName [ttcl_add $ComponentName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setFileUsedIn [list out_of_context synthesis implementation] :>
+# This constraints file contains default clock frequencies to be used during 
+# out-of-context flows such as OOC Synthesis and Hierarchical Designs.
+# This constraints file is not used in normal top-down synthesis (the default
+# flow of Vivado).
+
+<: set async_clks [getIntValue "c_async_clks"] :>
+<: if {$async_clks == 1} { :>
+<:   set b_index 0 :>
+<:   foreach index {0 1} { :>
+<:     set type_if [getIntValue "c_interconnect_port_${index}"] :>
+<:     if {$type_if == 2} { :>
+<:       set clock  "S${index}_AXI_ACLK" :>
+<:       set freq_mhz [get_property "PARAM_VALUE.C_${clock}_FREQ_MHZ"] :>
+<:       set period [format "%.3f" [expr 1000.0 / $freq_mhz]] :>
+create_clock -name <=: $clock :> -period <=: $period :> [get_ports <=: $clock :>]
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y<=: $b_index :> [get_ports <=: $clock :>]
+<:       incr b_index :>
+<:     } else { :>
+<:       set clock  "M${index}_AXIS_ACLK" :>
+<:       set freq_mhz [get_property "PARAM_VALUE.C_${clock}_FREQ_MHZ"] :>
+<:       set period [format "%.3f" [expr 1000.0 / $freq_mhz]] :>
+create_clock -name <=: $clock :> -period <=: $period :> [get_ports <=: $clock :>]
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y<=: $b_index :> [get_ports <=: $clock :>]
+<:       incr b_index :>
+<:       set clock  "S${index}_AXIS_ACLK" :>
+<:       set freq_mhz [get_property "PARAM_VALUE.C_${clock}_FREQ_MHZ"] :>
+<:       set period [format "%.3f" [expr 1000.0 / $freq_mhz]] :>
+create_clock -name <=: $clock :> -period <=: $period :> [get_ports <=: $clock :>]
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y<=: $b_index :> [get_ports <=: $clock :>]
+<:       incr b_index :>
+<:     } :>
+<:   } :>
+<: } else { :>
+<:   set freq_mhz 0 :>
+<:   set ms_clocks "" :>
+<:   foreach index {0 1} { :>
+<:     set type_if [getIntValue "c_interconnect_port_${index}"] :>
+<:     if {$type_if == 2} { :>
+<:       set clock "S${index}_AXI_ACLK" :>
+<:       set s_freq_mhz [get_property "PARAM_VALUE.C_${clock}_FREQ_MHZ"] :>
+<:       set freq_mhz [expr $freq_mhz > $s_freq_mhz ? $freq_mhz : $s_freq_mhz] :>
+<:       append ms_clocks " ${clock}" :>
+<:     } else { :>
+<:       set m_clock "M${index}_AXIS_ACLK" :>
+<:       set s_clock "S${index}_AXIS_ACLK" :>
+<:       set m_freq_mhz [get_property "PARAM_VALUE.C_${m_clock}_FREQ_MHZ"] :>
+<:       set s_freq_mhz [get_property "PARAM_VALUE.C_${s_clock}_FREQ_MHZ"] :>
+<:       set freq_mhz [expr $freq_mhz > $m_freq_mhz ? $freq_mhz : $m_freq_mhz] :>
+<:       set freq_mhz [expr $freq_mhz > $s_freq_mhz ? $freq_mhz : $s_freq_mhz] :>
+<:       append ms_clocks " ${m_clock} ${s_clock}" :>
+<:     } :>
+<:   } :>
+<:   set period [format "%.3f" [expr 1000.0 / $freq_mhz]] :>
+create_clock -name ms_clocks -period <=: $period :> [get_ports [list<=: $ms_clocks :>]]
+<:   set type_if_0 [getIntValue "c_interconnect_port_0"] :>
+<:   set type_if_1 [getIntValue "c_interconnect_port_1"] :>
+<:   if {$type_if_0 == 2 && $type_if_1 == 2} { :>
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports S0_AXI_ACLK]
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y1 [get_ports S1_AXI_ACLK]
+<:   } :>
+<:   if {$type_if_0 == 2 && $type_if_1 == 4} { :>
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports S0_AXI_ACLK]
+<:   } :>
+<:   if {$type_if_0 == 4 && $type_if_1 == 2} { :>
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports S0_AXIS_ACLK]
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y1 [get_ports S1_AXI_ACLK]
+<:   } :>
+<:   if {$type_if_0 == 4 && $type_if_1 == 4} { :>
+set_property -quiet HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports S0_AXIS_ACLK]
+<:   } :>
+<: } :>

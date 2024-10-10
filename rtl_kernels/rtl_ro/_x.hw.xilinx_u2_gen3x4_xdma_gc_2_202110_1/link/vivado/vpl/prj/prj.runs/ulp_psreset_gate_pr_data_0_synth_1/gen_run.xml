@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="ulp_psreset_gate_pr_data_0_synth_1" LaunchPart="xcku15p-ffva1156-2LV-e" LaunchTime="1665587170">
+  <File Type="VDS-TIMINGSUMMARY" Name="ulp_psreset_gate_pr_data_0_timing_summary_synth.rpt"/>
+  <File Type="RDS-DCP" Name="ulp_psreset_gate_pr_data_0.dcp"/>
+  <File Type="RDS-UTIL-PB" Name="ulp_psreset_gate_pr_data_0_utilization_synth.pb"/>
+  <File Type="RDS-UTIL" Name="ulp_psreset_gate_pr_data_0_utilization_synth.rpt"/>
+  <File Type="RDS-PROPCONSTRS" Name="ulp_psreset_gate_pr_data_0_drc_synth.rpt"/>
+  <File Type="RDS-RDS" Name="ulp_psreset_gate_pr_data_0.vds"/>
+  <File Type="REPORTS-TCL" Name="ulp_psreset_gate_pr_data_0_reports.tcl"/>
+  <File Type="VDS-TIMING-PB" Name="ulp_psreset_gate_pr_data_0_timing_summary_synth.pb"/>
+  <File Type="PA-TCL" Name="ulp_psreset_gate_pr_data_0.tcl"/>
+  <FileSet Name="sources" Type="BlockSrcs" RelSrcDir="$PSRCDIR/ulp_psreset_gate_pr_data_0">
+    <File Path="$PSRCDIR/my_rm/bd/ulp/ip/ulp_psreset_gate_pr_data_0/ulp_psreset_gate_pr_data_0.xci">
+      <FileInfo>
+        <Attr Name="Library" Val="xil_defaultlib"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../.local/hw_platform/bd/202110_1_dev.srcs/sources_1/bd/ulp/ip/ulp_psreset_gate_pr_data_0/ulp_psreset_gate_pr_data_0.xci"/>
+        <Attr Name="ImportTime" Val="0"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="TopModule" Val="ulp_psreset_gate_pr_data_0"/>
+      <Option Name="UseBlackboxStub" Val="1"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="BlockSrcs" RelSrcDir="$PSRCDIR/ulp_psreset_gate_pr_data_0">
+    <File Path="$PSRCDIR/my_rm/bd/ulp/ip/ulp_psreset_gate_pr_data_0/ulp_psreset_gate_pr_data_0.xci">
+      <FileInfo>
+        <Attr Name="Library" Val="xil_defaultlib"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../.local/hw_platform/bd/202110_1_dev.srcs/sources_1/bd/ulp/ip/ulp_psreset_gate_pr_data_0/ulp_psreset_gate_pr_data_0.xci"/>
+        <Attr Name="ImportTime" Val="0"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="TopModule" Val="ulp_psreset_gate_pr_data_0"/>
+      <Option Name="UseBlackboxStub" Val="1"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1">
+    <Filter Type="Utils"/>
+    <File Path="$PPRDIR/../scripts/_full_init_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;INIT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_init_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;INIT_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_opt_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;OPT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_opt_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;OPT_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_place_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;PLACE_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_place_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;PLACE_DESIGN;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_post_route_phys_opt_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;POST_ROUTE_PHYS_OPT_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_route_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;ROUTE_DESIGN;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_write_bitstream_post.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;WRITE_BITSTREAM;TCL.POST"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../scripts/_full_write_bitstream_pre.tcl">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+        <Attr Name="UsedInSteps" Val="impl_1;WRITE_BITSTREAM;TCL.PRE"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2021"/>
+    <Step Id="synth_design"/>
+  </Strategy>
+</GenRun>

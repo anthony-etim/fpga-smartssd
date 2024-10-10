@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<part_info part_name="xcku15p-ffva1156-2LV-e">
+
+  <pins>
+
+	<pin index="0"   name ="pcie_perstn_rst"  iostandard="LVCMOS18" loc="AW27"/>
+
+	<pin index="1"   name ="pex_pwrbrkn_fpga" iostandard="LVCMOS18" loc="BD28"/>
+
+    <pin index="2"   name ="HBM_CATTRIP"     iostandard="LVCMOS18" loc="J18"/>
+
+    <pin index="3"   name ="SFPDD_0_ACTIVITY_LED" iostandard="LVCMOS18" loc="E18" drive="8"/>
+    <pin index="4"   name ="SFPDD_0_STATUS_LEDG"  iostandard="LVCMOS18" loc="E16" drive="8"/>
+    <pin index="5"   name ="SFPDD_0_STATUS_LEDY"  iostandard="LVCMOS18" loc="F17" drive="8"/>
+    <pin index="6"   name ="SFPDD_1_ACTIVITY_LED" iostandard="LVCMOS18" loc="E15" drive="8"/>
+    <pin index="7"   name ="SFPDD_1_STATUS_LEDG"  iostandard="LVCMOS18" loc="F15" drive="8"/>
+    <pin index="8"   name ="SFPDD_1_STATUS_LEDY"  iostandard="LVCMOS18" loc="E17" drive="8"/>
+
+    <pin index="9"   name ="FPGA_TXD_MSP"  iostandard="LVCMOS18" loc="BB26"/>
+    <pin index="10"  name ="FPGA_RXD_MSP"  iostandard="LVCMOS18" loc="BB25"/>
+
+    <pin index="11"  name ="SI_RSTBB"    iostandard="LVCMOS18" loc="F20"/>
+    <pin index="12"  name ="SI_INTRB"    iostandard="LVCMOS18" loc="H18"/>
+    <pin index="13"  name ="SI_PLL_LOCK" iostandard="LVCMOS18" loc="G19"/>
+    <pin index="14"  name ="SI_IN_LOS"   iostandard="LVCMOS18" loc="H19"/>
+
+    <pin index="15"  name ="GPIO_MSP0"   iostandard="LVCMOS18" loc="C16"/>
+
+
+    <pin index="20"  name ="spi_1_io0_1_io"   iostandard="LVCMOS18" loc="M20"/>
+    <pin index="21"  name ="spi_1_io1_1_io"   iostandard="LVCMOS18" loc="L20"/>
+    <pin index="22"  name ="spi_1_io2_1_io"   iostandard="LVCMOS18" loc="R21"/>
+    <pin index="23"  name ="spi_1_io3_1_io"   iostandard="LVCMOS18" loc="R22"/>
+    <pin index="24"  name ="spi_1_ss_1_io"    iostandard="LVCMOS18" loc="G26"/>
+
+    <pin index="30"  name ="default_300mhz_clk0_p" iostandard="DIFF_SSTL12" loc="W23" />
+    <pin index="31"  name ="default_300mhz_clk0_n" iostandard="DIFF_SSTL12" loc="W24" />
+
+    <pin index="102" name ="ETH_rec_clk_P"    iostandard="LVDS"     loc="F19"/>
+    <pin index="103" name ="ETH_rec_clk_N"    iostandard="LVDS"     loc="F18"/>
+    <pin index="104" name ="sfp_gt_refclk0_P" iostandard="LVDS"     loc="N36"/>
+    <pin index="105" name ="sfp_gt_refclk0_N" iostandard="LVDS"     loc="N37"/>
+    <pin index="106" name ="sfp_gt_refclk1_P" iostandard="LVDS"     loc="M38"/>
+    <pin index="107" name ="sfp_gt_refclk1_N" iostandard="LVDS"     loc="M39"/>
+    <pin index="108" name ="cmc_clk_p"        iostandard="LVDS"     loc="G17" />
+    <pin index="109" name ="cmc_clk_n"        iostandard="LVDS"     loc="G16" />
+    <pin index="110" name ="hbm_clk_p"        iostandard="LVDS"     loc="BB18" />
+    <pin index="111" name ="hbm_clk_n"        iostandard="LVDS"     loc="BC18" />
+    <pin index="112" name ="iic_0_scl"  iostandard="LVCMOS18" loc="N21" drive="8" slew="SLOW"/>
+    <pin index="113" name ="iic_0_sda"  iostandard="LVCMOS18" loc="M21" drive="8" slew="SLOW"/>
+
+
+    <pin index="201"  name ="c0_ddr4_act_n"     loc="V28" />
+    <pin index="202"  name ="c0_ddr4_adr0"      loc="Y25 " />
+    <pin index="203"  name ="c0_ddr4_adr1"      loc="V21 " />
+    <pin index="204"  name ="c0_ddr4_adr2"      loc="AA20" />
+    <pin index="205"  name ="c0_ddr4_adr3"      loc="W21 " />
+    <pin index="206"  name ="c0_ddr4_adr4"      loc="W26 " />
+    <pin index="207"  name ="c0_ddr4_adr5"      loc="U22 " />
+    <pin index="208"  name ="c0_ddr4_adr6"      loc="AA22" />
+    <pin index="209"  name ="c0_ddr4_adr7"      loc="T22 " />
+    <pin index="210"  name ="c0_ddr4_adr8"      loc="AC22" />
+    <pin index="211"  name ="c0_ddr4_adr9"      loc="U21 " />
+    <pin index="212"  name ="c0_ddr4_adr10"     loc="W28 " />
+    <pin index="213"  name ="c0_ddr4_adr11"     loc="AC21" />
+    <pin index="214"  name ="c0_ddr4_adr12"     loc="U24 " />
+    <pin index="215"  name ="c0_ddr4_adr13"     loc="AB22" />
+    <pin index="216"  name ="c0_ddr4_adr14"     loc="W29 " />
+    <pin index="217"  name ="c0_ddr4_adr15"     loc="U25 " />
+    <pin index="218"  name ="c0_ddr4_adr16"     loc="V26 " />
+    <pin index="219"  name ="c0_ddr4_ba0"       loc="W25" />
+    <pin index="220"  name ="c0_ddr4_ba1"       loc="V22" />
+    <pin index="221"  name ="c0_ddr4_bg0"       loc="Y28" />
+	
+    <pin index="222"  name ="c0_ddr4_ck_c0"    loc="U27" />
+    <pin index="223"  name ="c0_ddr4_ck_t0"    loc="U26" />
+                                              
+    <pin index="224"  name ="c0_ddr4_cke0"     loc="V29" />
+	                                          
+	<pin index="225"  name ="c0_ddr4_cs_n0"    loc="V23" />
+
+    <pin index="226"  name ="c0_ddr4_dq0"      loc="AM27" />
+    <pin index="227"  name ="c0_ddr4_dq1"      loc="AJ28" />
+    <pin index="228"  name ="c0_ddr4_dq2"      loc="AM26" />
+    <pin index="229"  name ="c0_ddr4_dq3"      loc="AK28" />
+    <pin index="230"  name ="c0_ddr4_dq4"      loc="AK26" />
+    <pin index="231"  name ="c0_ddr4_dq5"      loc="AH27" />
+    <pin index="232"  name ="c0_ddr4_dq6"      loc="AK27" />
+    <pin index="233"  name ="c0_ddr4_dq7"      loc="AH28" />
+    <pin index="234"  name ="c0_ddr4_dq8"      loc="AP29" />
+    <pin index="235"  name ="c0_ddr4_dq9"      loc="AL30" />
+    <pin index="236"  name ="c0_ddr4_dq10"     loc="AN28" />
+    <pin index="237"  name ="c0_ddr4_dq11"     loc="AL29" />
+    <pin index="238"  name ="c0_ddr4_dq12"     loc="AP28" />
+    <pin index="239"  name ="c0_ddr4_dq13"     loc="AM30" />
+    <pin index="240"  name ="c0_ddr4_dq14"     loc="AN27" />
+    <pin index="241"  name ="c0_ddr4_dq15"     loc="AM29" />
+    <pin index="242"  name ="c0_ddr4_dq16"     loc="AJ30" />
+    <pin index="243"  name ="c0_ddr4_dq17"     loc="AK31" />
+    <pin index="244"  name ="c0_ddr4_dq18"     loc="AH34" />
+    <pin index="245"  name ="c0_ddr4_dq19"     loc="AJ31" />
+    <pin index="246"  name ="c0_ddr4_dq20"     loc="AH32" />
+    <pin index="247"  name ="c0_ddr4_dq21"     loc="AK32" />
+    <pin index="248"  name ="c0_ddr4_dq22"     loc="AH31" />
+    <pin index="249"  name ="c0_ddr4_dq23"     loc="AJ34" />
+    <pin index="250"  name ="c0_ddr4_dq24"     loc="AL34" />
+    <pin index="251"  name ="c0_ddr4_dq25"     loc="AP33" />
+    <pin index="252"  name ="c0_ddr4_dq26"     loc="AN33" />
+    <pin index="253"  name ="c0_ddr4_dq27"     loc="AM32" />
+    <pin index="254"  name ="c0_ddr4_dq28"     loc="AM34" />
+    <pin index="255"  name ="c0_ddr4_dq29"     loc="AN32" />
+    <pin index="256"  name ="c0_ddr4_dq30"     loc="AP31" />
+    <pin index="257"  name ="c0_ddr4_dq31"     loc="AN31" />
+    <pin index="258"  name ="c0_ddr4_dq32"     loc="AG30" />
+    <pin index="259"  name ="c0_ddr4_dq33"     loc="AC28" />
+    <pin index="260"  name ="c0_ddr4_dq34"     loc="AE30" />
+    <pin index="261"  name ="c0_ddr4_dq35"     loc="AD29" />
+    <pin index="262"  name ="c0_ddr4_dq36"     loc="AF30" />
+    <pin index="263"  name ="c0_ddr4_dq37"     loc="AD28" />
+    <pin index="264"  name ="c0_ddr4_dq38"     loc="AF28" />
+    <pin index="265"  name ="c0_ddr4_dq39"     loc="AE28" />
+    <pin index="266"  name ="c0_ddr4_dq40"     loc="AG34" />
+    <pin index="267"  name ="c0_ddr4_dq41"     loc="AD31" />
+    <pin index="268"  name ="c0_ddr4_dq42"     loc="AF32" />
+    <pin index="269"  name ="c0_ddr4_dq43"     loc="AD30" />
+    <pin index="270"  name ="c0_ddr4_dq44"     loc="AF33" />
+    <pin index="271"  name ="c0_ddr4_dq45"     loc="AC32" />
+    <pin index="272"  name ="c0_ddr4_dq46"     loc="AE32" />
+    <pin index="273" name ="c0_ddr4_dq47"     loc="AC31" />
+    <pin index="274" name ="c0_ddr4_dq48"     loc="AB31" />
+    <pin index="275" name ="c0_ddr4_dq49"     loc="AC33" />
+    <pin index="276" name ="c0_ddr4_dq50"     loc="AB30" />
+    <pin index="277" name ="c0_ddr4_dq51"     loc="AC34" />
+    <pin index="278" name ="c0_ddr4_dq52"     loc="AD33" />
+    <pin index="279" name ="c0_ddr4_dq53"     loc="AB34" />
+    <pin index="280" name ="c0_ddr4_dq54"     loc="AD34" />
+    <pin index="281" name ="c0_ddr4_dq55"     loc="AA34" />
+    <pin index="282" name ="c0_ddr4_dq56"      loc="Y30 " />
+    <pin index="283" name ="c0_ddr4_dq57"      loc="W34 " />
+    <pin index="284" name ="c0_ddr4_dq58"      loc="W30 " />
+    <pin index="285" name ="c0_ddr4_dq59"      loc="V33 " />
+    <pin index="286" name ="c0_ddr4_dq60"      loc="W31 " />
+    <pin index="287" name ="c0_ddr4_dq61"      loc="U34 " />
+    <pin index="288" name ="c0_ddr4_dq62"      loc="V31 " />
+    <pin index="289" name ="c0_ddr4_dq63"      loc="V34 " />
+    <pin index="290" name ="c0_ddr4_dq64"      loc="AA27" />
+    <pin index="291" name ="c0_ddr4_dq65"      loc="AB24" />
+    <pin index="292" name ="c0_ddr4_dq66"      loc="AB26" />
+    <pin index="293" name ="c0_ddr4_dq67"      loc="AD25" />
+    <pin index="294" name ="c0_ddr4_dq68"      loc="AB27" />
+    <pin index="295" name ="c0_ddr4_dq69"      loc="AC24" />
+    <pin index="296" name ="c0_ddr4_dq70"      loc="AD26" />
+    <pin index="297" name ="c0_ddr4_dq71"      loc="AB25" />
+    
+	<pin index="298" name ="c0_ddr4_dqs_c0"     loc="AL28" />
+    <pin index="299" name ="c0_ddr4_dqs_t0"     loc="AL27" />
+	<pin index="301" name ="c0_ddr4_dqs_c1"     loc="AP30" />
+    <pin index="302" name ="c0_ddr4_dqs_t1"     loc="AN29" />
+	<pin index="303" name ="c0_ddr4_dqs_c2"     loc="AJ33" />
+    <pin index="304" name ="c0_ddr4_dqs_t2"     loc="AH33" />
+	<pin index="305" name ="c0_ddr4_dqs_c3"     loc="AP34" />
+    <pin index="306" name ="c0_ddr4_dqs_t3"     loc="AN34" />
+	<pin index="307" name ="c0_ddr4_dqs_c4"     loc="AG29" />
+    <pin index="308" name ="c0_ddr4_dqs_t4"     loc="AF29" />
+	<pin index="309" name ="c0_ddr4_dqs_c5"     loc="AF34" />
+    <pin index="310" name ="c0_ddr4_dqs_t5"     loc="AE33" />
+	<pin index="311" name ="c0_ddr4_dqs_c6"     loc="AB29" />
+    <pin index="312" name ="c0_ddr4_dqs_t6"     loc="AA29" />
+	<pin index="313" name ="c0_ddr4_dqs_c7"     loc="Y32" />
+    <pin index="314" name ="c0_ddr4_dqs_t7"     loc="Y31" />
+	<pin index="315" name ="c0_ddr4_dqs_c8"     loc="AC27" />
+    <pin index="316" name ="c0_ddr4_dqs_t8"     loc="AC26" />
+		
+	<pin index="338" name ="c0_ddr4_odt0"      loc="V27"  />
+    <pin index="340" name ="c0_ddr4_reset_n"   iostandard="LVCMOS12"  loc="Y23" drive="8"/>
+
+    <pin index="342"  name ="c0_ddr4_dm_dbi_n0"       iostandard="POD12_DCI"       loc="AH26" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="343"  name ="c0_ddr4_dm_dbi_n1"       iostandard="POD12_DCI"       loc="AN26" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="344"  name ="c0_ddr4_dm_dbi_n2"       iostandard="POD12_DCI"       loc="AJ29" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="345"  name ="c0_ddr4_dm_dbi_n3"       iostandard="POD12_DCI"       loc="AL32" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="346"  name ="c0_ddr4_dm_dbi_n4"       iostandard="POD12_DCI"       loc="AE27" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="347"  name ="c0_ddr4_dm_dbi_n5"       iostandard="POD12_DCI"       loc="AG31" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="348"  name ="c0_ddr4_dm_dbi_n6"       iostandard="POD12_DCI"       loc="AA32" output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+    <pin index="349"  name ="c0_ddr4_dm_dbi_n7"       iostandard="POD12_DCI"       loc="W33 " output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>	
+    <pin index="350"  name ="c0_ddr4_dm_dbi_n8"       iostandard="POD12_DCI"       loc="Y26 " output_impedance="RDRV_40_40" slew="FAST" ibuf_low_pwr="FALSE" odt="RTT_60" equalization="EQ_LEVEL3" pre_emphasis="RDRV_240"/>
+
+  	<pin index="700" name ="pcie_mgt_clk_n"   iostandard="LVDS" loc="AF8"/>
+    <pin index="701" name ="pcie_mgt_clk_p"   iostandard="LVDS" loc="AF9"/>
+
+    <pin index="702" name ="pcie_rx0_n"     loc="AL1"/>
+    <pin index="703" name ="pcie_rx0_p"     loc="AL2"/>
+    <pin index="704" name ="pcie_rx1_n"     loc="AM3"/>
+    <pin index="705" name ="pcie_rx1_p"     loc="AM4"/>
+    <pin index="706" name ="pcie_rx2_n"     loc="AK3"/>
+    <pin index="707" name ="pcie_rx2_p"     loc="AK4"/>
+    <pin index="708" name ="pcie_rx3_n"     loc="AN1"/>
+    <pin index="709" name ="pcie_rx3_p"     loc="AN2"/>
+    <pin index="710" name ="pcie_rx4_n"     loc="AP3"/>
+    <pin index="711" name ="pcie_rx4_p"     loc="AP4"/>
+    <pin index="712" name ="pcie_rx5_n"     loc="AR1"/>
+    <pin index="713" name ="pcie_rx5_p"     loc="AR2"/>
+    <pin index="714" name ="pcie_rx6_n"     loc="AT3"/>
+    <pin index="715" name ="pcie_rx6_p"     loc="AT4"/>
+    <pin index="716" name ="pcie_rx7_n"     loc="AU1"/>
+    <pin index="717" name ="pcie_rx7_p"     loc="AU2"/>
+    <pin index="718" name ="pcie_rx8_n"     loc="AV3"/>
+    <pin index="719" name ="pcie_rx8_p"     loc="AV4"/>
+    <pin index="720" name ="pcie_rx9_n"     loc="AW1"/>
+    <pin index="721" name ="pcie_rx9_p"     loc="AW2"/>
+    <pin index="722" name ="pcie_rx10_n"    loc="BA1"/>
+    <pin index="723" name ="pcie_rx10_p"    loc="BA2"/>
+    <pin index="724" name ="pcie_rx11_n"    loc="BC1"/>
+    <pin index="725" name ="pcie_rx11_p"    loc="BC2"/>
+    <pin index="726" name ="pcie_rx12_n"    loc="AY3"/>
+    <pin index="727" name ="pcie_rx12_p"    loc="AY4"/>
+    <pin index="728" name ="pcie_rx13_n"    loc="BB3"/>
+    <pin index="729" name ="pcie_rx13_p"    loc="BB4"/>
+    <pin index="730" name ="pcie_rx14_n"    loc="BD3"/>
+    <pin index="731" name ="pcie_rx14_p"    loc="BD4"/>
+    <pin index="732" name ="pcie_rx15_n"    loc="BE5"/>
+    <pin index="733" name ="pcie_rx15_p"    loc="BE6"/>
+    <pin index="734" name ="pcie_tx0_n"     loc="Y4" />
+    <pin index="735" name ="pcie_tx0_p"     loc="Y5" />
+    <pin index="736" name ="pcie_tx1_n"     loc="AA6"/>
+    <pin index="737" name ="pcie_tx1_p"     loc="AA7"/>
+    <pin index="738" name ="pcie_tx2_n"     loc="AB4"/>
+    <pin index="739" name ="pcie_tx2_p"     loc="AB5"/>
+	<pin index="740" name ="pcie_tx3_n"     loc="AC6"/>
+	<pin index="741" name ="pcie_tx3_p"     loc="AC7"/>
+	<pin index="742" name ="pcie_tx4_n"     loc="AD4"/>
+	<pin index="743" name ="pcie_tx4_p"     loc="AD5"/>
+	<pin index="744" name ="pcie_tx5_n"     loc="AF4"/>
+	<pin index="745" name ="pcie_tx5_p"     loc="AF5"/>
+    <pin index="746" name ="pcie_tx6_n"     loc="AE6"/>
+    <pin index="747" name ="pcie_tx6_p"     loc="AE7"/>
+	<pin index="748" name ="pcie_tx7_n"     loc="AH4"/>
+	<pin index="749" name ="pcie_tx7_p"     loc="AH5"/>
+	<pin index="750" name ="pcie_tx8_n"     loc="AG6"/>
+	<pin index="751" name ="pcie_tx8_p"     loc="AG7"/>
+    <pin index="752" name ="pcie_tx9_n"     loc="AJ6"/>
+    <pin index="753" name ="pcie_tx9_p"     loc="AJ7"/>
+	<pin index="754" name ="pcie_tx10_n"    loc="AL6"/>
+	<pin index="755" name ="pcie_tx10_p"    loc="AL7"/>
+	<pin index="756" name ="pcie_tx11_n"    loc="AM8"/>
+	<pin index="757" name ="pcie_tx11_p"    loc="AM9"/>
+	<pin index="758" name ="pcie_tx12_n"    loc="AN6"/>
+	<pin index="759" name ="pcie_tx12_p"    loc="AN7"/>
+	<pin index="760" name ="pcie_tx13_n"    loc="AP8"/>
+	<pin index="761" name ="pcie_tx13_p"    loc="AP9"/>
+	<pin index="762" name ="pcie_tx14_n"    loc="AR6"/>
+	<pin index="763" name ="pcie_tx14_p"    loc="AR7"/>
+	<pin index="764" name ="pcie_tx15_n"    loc="AT8"/>
+	<pin index="765" name ="pcie_tx15_p"    loc="AT9"/>
+
+    <pin index="800" name ="qsfp0_TX_P0" loc="D42"/>
+    <pin index="801" name ="qsfp0_TX_N0" loc="D43"/>
+    <pin index="802" name ="qsfp0_RX_P0" loc="J45"/>
+    <pin index="803" name ="qsfp0_RX_N0" loc="J46"/>
+    <pin index="804" name ="qsfp0_TX_P1" loc="C40"/>
+    <pin index="805" name ="qsfp0_TX_N1" loc="C41"/>
+    <pin index="806" name ="qsfp0_RX_P1" loc="G45"/>
+    <pin index="807" name ="qsfp0_RX_N1" loc="G46"/>
+    <pin index="808" name ="qsfp0_TX_P2" loc="B42"/>
+    <pin index="809" name ="qsfp0_TX_N2" loc="B43"/>
+    <pin index="810" name ="qsfp0_RX_P2" loc="F43"/>
+    <pin index="811" name ="qsfp0_RX_N2" loc="F44"/>
+    <pin index="812" name ="qsfp0_TX_P3" loc="A40"/>
+    <pin index="813" name ="qsfp0_TX_N3" loc="A41"/>
+    <pin index="814" name ="qsfp0_RX_P3" loc="E45"/>
+    <pin index="815" name ="qsfp0_RX_N3" loc="E46"/>
+
+  </pins>
+
+</part_info>

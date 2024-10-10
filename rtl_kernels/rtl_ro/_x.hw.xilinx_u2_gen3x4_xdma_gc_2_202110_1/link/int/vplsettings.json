@@ -1,0 +1,18 @@
+{
+    "kernelContainerValues": [
+        "krnl_ro_rtl:xo"
+    ],
+    "compile": "false",
+    "debug": "false",
+    "exportScript": "false",
+    "gccHostCompile": "false",
+    "generateEstimateRpt": "false",
+    "keepSolution": "false",
+    "link": "false",
+    "logDir": "\/home\/aee38\/Documents\/vitis_accel_examples\/rtl_kernels\/rtl_ro\/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1\/logs\/link",
+    "package": "false",
+    "reportDir": "\/home\/aee38\/Documents\/vitis_accel_examples\/rtl_kernels\/rtl_ro\/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1\/reports\/link",
+    "saveTemps": "false",
+    "verbose": "false",
+    "vplNoIpCache": "false"
+}

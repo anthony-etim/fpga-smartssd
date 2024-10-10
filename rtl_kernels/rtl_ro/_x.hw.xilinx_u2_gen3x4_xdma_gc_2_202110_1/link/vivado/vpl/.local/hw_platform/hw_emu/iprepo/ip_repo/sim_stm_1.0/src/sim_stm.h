@@ -1,0 +1,191 @@
+// 67d7842dbbe25473c3c32b93c0da8047785f30d78e8a024de1b57352245f9689
+#ifndef SIM_STM_H_
+#define SIM_STM_H_
+
+#include "xtlm.h"
+#include "sim_stm_imp.h"
+class sim_stm: public sc_core::sc_module {
+public:
+	sim_stm(sc_module_name name,xsc::common_cpp::properties& properties);
+	virtual ~sim_stm();
+	xtlm::xtlm_axis_initiator_socket* mstm_axi_s_socket;
+	xtlm::xtlm_axis_target_socket*    sstm_axi_s_socket;
+
+	xtlm::xtlm_axis_initiator_socket* h2c00_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c01_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c02_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c03_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c04_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c05_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c06_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c07_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c08_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c09_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c10_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c11_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c12_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c13_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c14_axis_socket;
+	xtlm::xtlm_axis_initiator_socket* h2c15_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h00_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h01_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h02_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h03_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h04_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h05_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h06_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h07_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h08_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h09_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h10_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h11_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h12_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h13_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h14_axis_socket;
+	xtlm::xtlm_axis_target_socket*    c2h15_axis_socket;
+	sc_in<bool> mstm_axi_s_aclk;
+	sc_in<bool> mstm_axi_s_aresetn;
+	sc_in<bool> sstm_axi_s_aclk;
+	sc_in<bool> sstm_axi_s_aresetn;
+
+	sc_in<bool> h2c00_axis_aclk;
+	sc_in<bool> h2c01_axis_aclk;
+	sc_in<bool> h2c02_axis_aclk;
+	sc_in<bool> h2c03_axis_aclk;
+	sc_in<bool> h2c04_axis_aclk;
+	sc_in<bool> h2c05_axis_aclk;
+	sc_in<bool> h2c06_axis_aclk;
+	sc_in<bool> h2c07_axis_aclk;
+	sc_in<bool> h2c08_axis_aclk;
+	sc_in<bool> h2c09_axis_aclk;
+	sc_in<bool> h2c10_axis_aclk;
+	sc_in<bool> h2c11_axis_aclk;
+	sc_in<bool> h2c12_axis_aclk;
+	sc_in<bool> h2c13_axis_aclk;
+	sc_in<bool> h2c14_axis_aclk;
+	sc_in<bool> h2c15_axis_aclk;
+	sc_in<bool> h2c00_axis_aresetn;
+	sc_in<bool> h2c01_axis_aresetn;
+	sc_in<bool> h2c02_axis_aresetn;
+	sc_in<bool> h2c03_axis_aresetn;
+	sc_in<bool> h2c04_axis_aresetn;
+	sc_in<bool> h2c05_axis_aresetn;
+	sc_in<bool> h2c06_axis_aresetn;
+	sc_in<bool> h2c07_axis_aresetn;
+	sc_in<bool> h2c08_axis_aresetn;
+	sc_in<bool> h2c09_axis_aresetn;
+	sc_in<bool> h2c10_axis_aresetn;
+	sc_in<bool> h2c11_axis_aresetn;
+	sc_in<bool> h2c12_axis_aresetn;
+	sc_in<bool> h2c13_axis_aresetn;
+	sc_in<bool> h2c14_axis_aresetn;
+	sc_in<bool> h2c15_axis_aresetn;
+
+	sc_in<bool> c2h00_axis_aclk;
+	sc_in<bool> c2h01_axis_aclk;
+	sc_in<bool> c2h02_axis_aclk;
+	sc_in<bool> c2h03_axis_aclk;
+	sc_in<bool> c2h04_axis_aclk;
+	sc_in<bool> c2h05_axis_aclk;
+	sc_in<bool> c2h06_axis_aclk;
+	sc_in<bool> c2h07_axis_aclk;
+	sc_in<bool> c2h08_axis_aclk;
+	sc_in<bool> c2h09_axis_aclk;
+	sc_in<bool> c2h10_axis_aclk;
+	sc_in<bool> c2h11_axis_aclk;
+	sc_in<bool> c2h12_axis_aclk;
+	sc_in<bool> c2h13_axis_aclk;
+	sc_in<bool> c2h14_axis_aclk;
+	sc_in<bool> c2h15_axis_aclk;
+	sc_in<bool> c2h00_axis_aresetn;
+	sc_in<bool> c2h01_axis_aresetn;
+	sc_in<bool> c2h02_axis_aresetn;
+	sc_in<bool> c2h03_axis_aresetn;
+	sc_in<bool> c2h04_axis_aresetn;
+	sc_in<bool> c2h05_axis_aresetn;
+	sc_in<bool> c2h06_axis_aresetn;
+	sc_in<bool> c2h07_axis_aresetn;
+	sc_in<bool> c2h08_axis_aresetn;
+	sc_in<bool> c2h09_axis_aresetn;
+	sc_in<bool> c2h10_axis_aresetn;
+	sc_in<bool> c2h11_axis_aresetn;
+	sc_in<bool> c2h12_axis_aresetn;
+	sc_in<bool> c2h13_axis_aresetn;
+	sc_in<bool> c2h14_axis_aresetn;
+	sc_in<bool> c2h15_axis_aresetn;
+
+private :
+
+	sc_signal<bool> h2c00_axis_aclk_sig;
+	sc_signal<bool> h2c01_axis_aclk_sig;
+	sc_signal<bool> h2c02_axis_aclk_sig;
+	sc_signal<bool> h2c03_axis_aclk_sig;
+	sc_signal<bool> h2c04_axis_aclk_sig;
+	sc_signal<bool> h2c05_axis_aclk_sig;
+	sc_signal<bool> h2c06_axis_aclk_sig;
+	sc_signal<bool> h2c07_axis_aclk_sig;
+	sc_signal<bool> h2c08_axis_aclk_sig;
+	sc_signal<bool> h2c09_axis_aclk_sig;
+	sc_signal<bool> h2c10_axis_aclk_sig;
+	sc_signal<bool> h2c11_axis_aclk_sig;
+	sc_signal<bool> h2c12_axis_aclk_sig;
+	sc_signal<bool> h2c13_axis_aclk_sig;
+	sc_signal<bool> h2c14_axis_aclk_sig;
+	sc_signal<bool> h2c15_axis_aclk_sig;
+	sc_signal<bool> h2c00_axis_aresetn_sig;
+	sc_signal<bool> h2c01_axis_aresetn_sig;
+	sc_signal<bool> h2c02_axis_aresetn_sig;
+	sc_signal<bool> h2c03_axis_aresetn_sig;
+	sc_signal<bool> h2c04_axis_aresetn_sig;
+	sc_signal<bool> h2c05_axis_aresetn_sig;
+	sc_signal<bool> h2c06_axis_aresetn_sig;
+	sc_signal<bool> h2c07_axis_aresetn_sig;
+	sc_signal<bool> h2c08_axis_aresetn_sig;
+	sc_signal<bool> h2c09_axis_aresetn_sig;
+	sc_signal<bool> h2c10_axis_aresetn_sig;
+	sc_signal<bool> h2c11_axis_aresetn_sig;
+	sc_signal<bool> h2c12_axis_aresetn_sig;
+	sc_signal<bool> h2c13_axis_aresetn_sig;
+	sc_signal<bool> h2c14_axis_aresetn_sig;
+	sc_signal<bool> h2c15_axis_aresetn_sig;
+
+	sc_signal<bool> c2h00_axis_aclk_sig;
+	sc_signal<bool> c2h01_axis_aclk_sig;
+	sc_signal<bool> c2h02_axis_aclk_sig;
+	sc_signal<bool> c2h03_axis_aclk_sig;
+	sc_signal<bool> c2h04_axis_aclk_sig;
+	sc_signal<bool> c2h05_axis_aclk_sig;
+	sc_signal<bool> c2h06_axis_aclk_sig;
+	sc_signal<bool> c2h07_axis_aclk_sig;
+	sc_signal<bool> c2h08_axis_aclk_sig;
+	sc_signal<bool> c2h09_axis_aclk_sig;
+	sc_signal<bool> c2h10_axis_aclk_sig;
+	sc_signal<bool> c2h11_axis_aclk_sig;
+	sc_signal<bool> c2h12_axis_aclk_sig;
+	sc_signal<bool> c2h13_axis_aclk_sig;
+	sc_signal<bool> c2h14_axis_aclk_sig;
+	sc_signal<bool> c2h15_axis_aclk_sig;
+	sc_signal<bool> c2h00_axis_aresetn_sig;
+	sc_signal<bool> c2h01_axis_aresetn_sig;
+	sc_signal<bool> c2h02_axis_aresetn_sig;
+	sc_signal<bool> c2h03_axis_aresetn_sig;
+	sc_signal<bool> c2h04_axis_aresetn_sig;
+	sc_signal<bool> c2h05_axis_aresetn_sig;
+	sc_signal<bool> c2h06_axis_aresetn_sig;
+	sc_signal<bool> c2h07_axis_aresetn_sig;
+	sc_signal<bool> c2h08_axis_aresetn_sig;
+	sc_signal<bool> c2h09_axis_aresetn_sig;
+	sc_signal<bool> c2h10_axis_aresetn_sig;
+	sc_signal<bool> c2h11_axis_aresetn_sig;
+	sc_signal<bool> c2h12_axis_aresetn_sig;
+	sc_signal<bool> c2h13_axis_aresetn_sig;
+	sc_signal<bool> c2h14_axis_aresetn_sig;
+	sc_signal<bool> c2h15_axis_aresetn_sig;
+	xsc::stm::sim_stm_imp* m_model;
+
+};
+
+#endif /* SIM_STM_H_ */
+
+
+

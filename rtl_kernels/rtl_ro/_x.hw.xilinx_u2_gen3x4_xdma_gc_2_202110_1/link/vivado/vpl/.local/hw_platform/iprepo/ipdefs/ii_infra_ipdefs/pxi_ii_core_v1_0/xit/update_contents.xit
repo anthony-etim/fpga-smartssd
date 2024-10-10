@@ -1,0 +1,317 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+source_ipfile xit/debug_util.xit
+
+dbg_brk
+dbg_puts "BEGIN: UPDATE_CONTENTS"
+
+set ip [::ipxit::current_inst]  
+# ------------------------------------------------------------------------------
+set CONFIG {}
+if {[get_property CONFIG.DICT $ip] != 0} {
+    set CONFIG [string tolower [get_property CONFIG.DICT $ip]]
+}
+set config_mode [get_property CONFIG.MODE $ip]
+# ------------------------------------------------------------------------------
+
+set map_aclk_src_to_aclk_port {}
+set map_aclk_src_to_aresetn_port {}
+
+foreach aclk_port [get_bd_ports -filter {type==clk}] {
+  set aclk_port_name [get_property NAME $aclk_port]
+  regexp {(\w+)_([s|m])_(.+)} $aclk_port_name {} partition role name
+  dict set map_aclk_src_to_aclk_port $name $partition $aclk_port
+  set associated_reset [get_property CONFIG.ASSOCIATED_RESET $aclk_port]
+  set associated_reset_ports [split $associated_reset :]
+
+  foreach port_name $associated_reset_ports {
+    set aresetn_port [get_bd_port $port_name]
+    if {[llength $aresetn_port] == 1} {
+      dict set map_aclk_src_to_aresetn_port $name $partition $aresetn_port
+    } else {
+      puts "ERROR: associated_reset of $aclk_port is $associated_reset but could not get_bd_port."
+    }
+  } 
+}
+
+dbg_brk
+dict for {k v} $map_aclk_src_to_aclk_port {
+  dbg_puts "$k $v"
+}
+
+dbg_brk
+dict for {k v} $map_aclk_src_to_aresetn_port {
+  dbg_puts "$k $v"
+}
+
+proc get_bd_boundary_obj { name } {
+  set obj [get_bd_intf_port -quiet $name]
+  if {[llength $obj] == 0} {
+    set obj [get_bd_port -quiet $name]
+  }
+  return $obj
+}
+
+
+dict for {type instances} $CONFIG {
+  dbg_puts "-------------------------------------"
+  dbg_puts "-- type: $type"
+
+  dict for {inst_root_name spec} $instances {
+    dbg_puts "-- inst_root_name: $inst_root_name"
+
+    # Initialize parameters...
+    set aclk_port {}
+    set aresetn_port {}
+    set aclk_src {}
+    set ip_params {}
+
+    set ip_name [string tolower ip_${type}_$inst_root_name]
+    dbg_puts "-- ip_name : $ip_name"
+
+    foreach role {s m} {
+      set ${role}_partition [dict get $spec gen_params ${role}_partition]    
+      set ${role}_port  [get_bd_boundary_obj [set ${role}_partition]_${role}_${type}_$inst_root_name]
+      if {[llength [set ${role}_port]] != 1} {
+        send_msg CRITICAL_WARNING 1 "Could not get boundary obj for $name"
+      }
+
+      if {$type != "aclk"} {
+        if {[dict exists $spec gen_params aclk_src]} {
+          set aclk_src [dict get $spec gen_params aclk_src]
+          foreach aclk_src_name [split $aclk_src :] {
+            set ${role}_aclk_port [dict get $map_aclk_src_to_aclk_port $aclk_src_name [set ${role}_partition]]
+          }
+        } else {
+          send_msg CRITICAL_WARNING 1 "Could not identify associated clock for $name."        
+        }
+      }
+
+      if {$type != "aclk" && $type != "aresetn"} {
+        if {[dict exists $map_aclk_src_to_aresetn_port $aclk_src]} {
+          set ${role}_aresetn_port [dict get $map_aclk_src_to_aresetn_port $aclk_src [set ${role}_partition]]
+        } else {
+          send_msg CRITICAL_WARNING 1 "Could not identify reset for $ip_name ($aclk_src has no associated reset)"        
+        }
+      }
+    }
+
+    # Generate contents
+    if {[regexp {axi|axis} $type]} {
+      
+      # IPI Produces critical warnings because m_port has different clock association from s_port.
+      # A secondary bypass mode register slice is instantiated here to work around these critical warnings 
+      # but still allow separate s/m_port clock associations.
+
+      set s_ip [create_bd_cell -vlnv xilinx.com:ip:[string tolower ${type}]_register_slice:* s_$ip_name]
+      set ip $s_ip
+      set m_ip [create_bd_cell -vlnv xilinx.com:ip:[string tolower ${type}]_register_slice:* m_$ip_name]
+
+      # if the intf_ports were configured properly, this should not have been necessary - why is it here?
+      if {[dict exists $spec bif_params]} {
+        dict for {p v} [dict get $spec bif_params] {
+          if {[string match -nocase "*.slr_assignment" $p]} { continue }
+          dict set spec ip_params $p $v
+        }
+      }
+
+      if {[string match -nocase wirethrough $config_mode]} {        
+        foreach p [list_property $s_ip CONFIG.REG_*] {
+          dict set spec ip_params $p 0
+        }                    
+      }
+
+      set_property -dict [dict get $spec ip_params] $m_ip
+
+      # The secondary register slice must be forced into bypass mode..
+      foreach p [list_property $m_ip CONFIG.REG_*] {
+        set_property -quiet $p 0 $m_ip
+      }
+
+      # Pre-connection DRC:
+      if {[llength $s_aclk_port] == 0 || [llength $m_aclk_port] == 0} {
+        send_msg ERROR 1 "No clock association defined for $name"
+        return
+      }
+      if {[llength $s_aresetn_port] == 0 || [llength $m_aresetn_port] == 0} {
+        send_msg ERROR 1 "No reset association defined for $s_aclk_port, required by $name"
+        return
+      }
+
+      connect_bd_intf_net [get_bd_intf_pins -of $s_ip -filter {Mode==Slave}] $s_port
+      connect_bd_intf_net [get_bd_intf_pins -of $s_ip -filter {Mode==Master}] [get_bd_intf_pins -of $m_ip -filter {Mode==Slave}]
+      connect_bd_intf_net [get_bd_intf_pins -of $m_ip -filter {Mode==Master}] $m_port
+      connect_bd_net [get_bd_pins -of $s_ip -filter {type==clk}] $s_aclk_port
+      connect_bd_net [get_bd_pins -of $s_ip -filter {type==rst}] $s_aresetn_port
+      connect_bd_net [get_bd_pins -of $m_ip -filter {type==clk}] $m_aclk_port
+      connect_bd_net [get_bd_pins -of $m_ip -filter {type==rst}] $m_aresetn_port
+    }
+        
+    if {[string match -nocase bscan $type]} {        
+      if {[string match -nocase wirethrough $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:bscan_wirethrough:1.0 -set_params {CONFIG.C_HAS_BSCANID 0} $ip_name]
+      }
+
+      if {[string match -nocase pipeline $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:debug_bridge:3.0 -set_params {CONFIG.C_NUM_BS_MASTER 1} $ip_name]
+      }
+
+      connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Slave}] $s_port
+      connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Master}] $m_port
+      
+      set ip_clk_port [get_bd_pins -of $ip -filter {type==clk}]
+      if {[llength $ip_clk_port] == 1} {
+        connect_bd_net $ip_clk_port $s_aclk_port
+      }
+    }
+
+    if {[string match -nocase aclk $type]} {       
+      # This doesn't work if the s and m clock ports are expected to have separate associations for axi/axis.
+      #      connect_bd_net $s_port $m_port
+      set ip [create_bd_cel -vlnv xilinx.com:ip:clk_metadata_adapter $ip_name]
+
+      # TODO: clean this up:
+      # TODO: file CR to IPI - the case of the dir value is case sensitive...
+      connect_bd_net [get_bd_pins -of $ip -filter {type==clk && dir==I}] [dict get $map_aclk_src_to_aclk_port aclk_$inst_root_name $s_partition]
+      connect_bd_net [get_bd_pins -of $ip -filter {type==clk && dir==O}] [dict get $map_aclk_src_to_aclk_port aclk_$inst_root_name $m_partition]
+    }
+
+    if {[string match -nocase aresetn $type]} {            
+      if {[string match -nocase wirethrough $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pipeline_reg:1.0 $ip_name -set_params {CONFIG.DEPTH 0}]
+      } else {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pipeline_reg:1.0 $ip_name]
+      }
+      # TODO: update pipe_reg to disable reset input...
+
+      connect_bd_net [get_bd_pins $ip/d] $s_port
+      connect_bd_net [get_bd_pins $ip/q] $m_port
+      connect_bd_net [get_bd_pins $ip/clk] $s_aclk_port
+    }
+        
+    if {[string match -nocase irq $type] || [string match -nocase data $type]} {            
+      if {[string match -nocase wirethrough $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pipeline_reg:1.0 $ip_name -set_params {CONFIG.DEPTH 0}]
+      } else {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pipeline_reg:1.0 $ip_name]
+      }
+
+      # TODO - rename pipe reg width parameter to match data and interrupt width property name?
+      if {[dict exists $spec bif_params config.portwidth]} {
+        dict set spec ip_params CONFIG.WIDTH [dict get $spec bif_params config.portwidth]
+      }        
+
+      connect_bd_net [get_bd_pins $ip/d] $s_port
+      connect_bd_net [get_bd_pins $ip/q] $m_port
+      connect_bd_net [get_bd_pins $ip/clk] $s_aclk_port
+      connect_bd_net [get_bd_pins $ip/resetn] $s_aresetn_port
+    }
+
+    if {[string match pcie $type]} {  
+        if {[string match -nocase wirethrough $config_mode]} {
+        connect_bd_intf_net $s_port $m_port               
+      } elseif {[string match -nocase pipeline $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pr_decoupler:1.0 $ip_name]
+
+        set init_ip_params {}
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name ID 0
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name MODE slave
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name VLNV [dict get $spec gen_params vlnv]
+        dict set init_ip_params CONFIG.ALL_PARAMS HAS_SIGNAL_STATUS 0
+        set_property -dict $init_ip_params  $ip
+
+        connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Slave}] $s_port
+        connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Master}] $m_port
+        set inv [create_bd_cell -vlnv xilinx.com:ip:util_vector_logic ${ip_name}_aresetn_inv]
+        set_property CONFIG.C_OPERATION {not} $inv
+        set_property CONFIG.C_SIZE 1 $inv
+        connect_bd_net [get_bd_pins $s_aresetn_port] [get_bd_pins $inv/Op1]
+        connect_bd_net [get_bd_pins $inv/Res] [get_bd_pins $ip/decouple] 
+      }
+    }
+
+    if {[string match icap $type] || [string match cap $type] || [string match mbdebug $type]} {  
+        if {[string match -nocase wirethrough $config_mode]} {
+        connect_bd_intf_net $s_port $m_port               
+      } elseif {[string match -nocase pipeline $config_mode]} {
+        set ip [create_bd_cell -vlnv xilinx.com:ip:pr_decoupler:1.0 $ip_name]
+
+        set vlnv xilinx.com:interface:${type}_rtl:1.0
+        set type_remap {mbdebug xilinx.com:interface:mbdebug_rtl:3.0}
+        if {[dict exists $type_remap $type]} {
+          set vlnv [dict get $type_remap $type]
+        }
+
+        set init_ip_params {}
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name ID 0
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name MODE slave
+        dict set init_ip_params CONFIG.ALL_PARAMS INTF $inst_root_name VLNV $vlnv
+        dict set init_ip_params CONFIG.ALL_PARAMS HAS_SIGNAL_STATUS 0
+        set_property -dict $init_ip_params  $ip
+
+        connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Slave}] $s_port
+        connect_bd_intf_net [get_bd_intf_pins -of $ip -filter {Mode==Master}] $m_port
+        set inv [create_bd_cell -vlnv xilinx.com:ip:util_vector_logic ${ip_name}_aresetn_inv]
+        set_property CONFIG.C_OPERATION {not} $inv
+        set_property CONFIG.C_SIZE 1 $inv
+        connect_bd_net [get_bd_pins $s_aresetn_port] [get_bd_pins $inv/Op1]
+        connect_bd_net [get_bd_pins $inv/Res] [get_bd_pins $ip/decouple] 
+      }
+    }
+
+    if {[dict exists $spec ip_params]} {
+#      dbg_puts "-- assign [dict get $spec ip_params]"        
+      set_property -dict [dict get $spec ip_params] $ip
+    }                     
+  }
+}
+
+dbg_puts "END: UPDATE_CONTENTS"
+dbg_brk

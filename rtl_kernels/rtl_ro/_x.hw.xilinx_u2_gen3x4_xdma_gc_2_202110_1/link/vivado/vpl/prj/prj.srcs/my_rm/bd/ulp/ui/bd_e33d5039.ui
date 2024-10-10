@@ -1,0 +1,144 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"0.841314",
+   "Default View_TopLeft":"1467,2670",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port BLP_S_AXI_CTRL_USER_00 -pg 1 -lvl 0 -x 0 -y 3520 -defaultsOSRD
+preplace port BLP_S_AXI_CTRL_USER_01 -pg 1 -lvl 0 -x 0 -y 3540 -defaultsOSRD
+preplace port BLP_S_AXI_CTRL_USER_02 -pg 1 -lvl 0 -x 0 -y 3560 -defaultsOSRD
+preplace port BLP_S_AXI_DATA_H2C_00 -pg 1 -lvl 0 -x 0 -y 3580 -defaultsOSRD
+preplace port BLP_S_AXI_DATA_H2C_01 -pg 1 -lvl 0 -x 0 -y 3600 -defaultsOSRD
+preplace port BLP_S_AXI_DATA_H2C_02 -pg 1 -lvl 0 -x 0 -y 3620 -defaultsOSRD
+preplace port BLP_S_AXI_DATA_H2C_03 -pg 1 -lvl 0 -x 0 -y 3640 -defaultsOSRD
+preplace port io_clk_ddr_00 -pg 1 -lvl 0 -x 0 -y 3440 -defaultsOSRD
+preplace port io_ddr_00 -pg 1 -lvl 11 -x 4300 -y 3350 -defaultsOSRD
+preplace port port-id_blp_s_aclk_ctrl_00 -pg 1 -lvl 0 -x 0 -y 3660 -defaultsOSRD
+preplace port port-id_blp_s_aclk_kernel2_ref_clk_00 -pg 1 -lvl 0 -x 0 -y 3680 -defaultsOSRD
+preplace port port-id_blp_s_aclk_kernel_ref_clk_00 -pg 1 -lvl 0 -x 0 -y 3700 -defaultsOSRD
+preplace port port-id_blp_s_aclk_pcie_00 -pg 1 -lvl 0 -x 0 -y 3720 -defaultsOSRD
+preplace portBus blp_m_data_dna_from_ulp_00 -pg 1 -lvl 11 -x 4300 -y 3800 -defaultsOSRD
+preplace portBus blp_m_data_memory_calib_complete_00 -pg 1 -lvl 11 -x 4300 -y 3820 -defaultsOSRD
+preplace portBus blp_m_irq_cu_00 -pg 1 -lvl 11 -x 4300 -y 3840 -defaultsOSRD
+preplace portBus blp_s_aresetn_ctrl_00 -pg 1 -lvl 0 -x 0 -y 3740 -defaultsOSRD
+preplace portBus blp_s_aresetn_kernel_ref_clk_00 -pg 1 -lvl 0 -x 0 -y 3760 -defaultsOSRD
+preplace portBus blp_s_aresetn_pcie_00 -pg 1 -lvl 0 -x 0 -y 3780 -defaultsOSRD
+preplace portBus blp_s_data_clkwiz_kernel_clk_out1_locked_00 -pg 1 -lvl 0 -x 0 -y 3800 -defaultsOSRD
+preplace portBus blp_s_data_dout_dna_00 -pg 1 -lvl 0 -x 0 -y 3820 -defaultsOSRD
+preplace portBus blp_s_data_perstn_out_00 -pg 1 -lvl 0 -x 0 -y 3840 -defaultsOSRD
+preplace portBus blp_s_data_slice_pr_reset_to_ulp_00 -pg 1 -lvl 0 -x 0 -y 3860 -defaultsOSRD
+preplace inst ii_level0_wire -pg 1 -lvl 4 -x 1260 -y 3720 -defaultsOSRD
+preplace inst axi_bram_ctrl_0_bram -pg 1 -lvl 10 -x 4180 -y 3120 -defaultsOSRD
+preplace inst axi_vip_0 -pg 1 -lvl 6 -x 2800 -y 3210 -defaultsOSRD
+preplace inst axi_vip_0_p -pg 1 -lvl 6 -x 2800 -y 3360 -defaultsOSRD
+preplace inst ddrmem_1 -pg 1 -lvl 9 -x 3880 -y 3410 -defaultsOSRD
+preplace inst xlslice_0 -pg 1 -lvl 4 -x 1260 -y 3370 -defaultsOSRD
+preplace inst xlslice_1 -pg 1 -lvl 4 -x 1260 -y 3070 -defaultsOSRD
+preplace inst xlslice_2 -pg 1 -lvl 4 -x 1260 -y 3270 -defaultsOSRD
+preplace inst xlslice_3 -pg 1 -lvl 4 -x 1260 -y 2970 -defaultsOSRD
+preplace inst xlslice_4 -pg 1 -lvl 4 -x 1260 -y 3170 -defaultsOSRD
+preplace inst interrupt_concat -pg 1 -lvl 1 -x 160 -y 3920 -defaultsOSRD
+preplace inst psreset_ddrmem_n_1 -pg 1 -lvl 4 -x 1260 -y 2780 -defaultsOSRD
+preplace inst regslice_periph_null -pg 1 -lvl 5 -x 2190 -y 3530 -defaultsOSRD
+preplace inst user_debug_bridge -pg 1 -lvl 6 -x 2800 -y 3720 -defaultsOSRD
+preplace inst debug_bridge_xsdbm -pg 1 -lvl 7 -x 3160 -y 3730 -defaultsOSRD
+preplace inst fpga_dna_module_0 -pg 1 -lvl 6 -x 2800 -y 3540 -defaultsOSRD
+preplace inst axi_protocol_convert_0 -pg 1 -lvl 5 -x 2190 -y 3700 -defaultsOSRD
+preplace inst slr1 -pg 1 -lvl 5 -x 2190 -y 3210 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 7 -x 3160 -y 2910 -defaultsOSRD
+preplace inst axi_interconnect_0_p -pg 1 -lvl 7 -x 3160 -y 3240 -defaultsOSRD
+preplace inst axi_interconnect_1 -pg 1 -lvl 8 -x 3510 -y 3090 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 9 -x 3880 -y 3120 -defaultsOSRD
+preplace inst ddr1_clk_bufg -pg 1 -lvl 8 -x 3510 -y 3450 -defaultsOSRD
+preplace inst ddr1_clk_ibufds -pg 1 -lvl 7 -x 3160 -y 3450 -defaultsOSRD
+preplace inst krnl_ro_rtl_1 -pg 1 -lvl 6 -x 2800 -y 2920 -defaultsOSRD
+preplace inst ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat -pg 1 -lvl 3 -x 650 -y 1790 -defaultsOSRD
+preplace inst ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_0 -pg 1 -lvl 2 -x 420 -y 1080 -defaultsOSRD
+preplace inst ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_1 -pg 1 -lvl 2 -x 420 -y 360 -defaultsOSRD
+preplace inst ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_2 -pg 1 -lvl 2 -x 420 -y 1800 -defaultsOSRD
+preplace inst ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_3 -pg 1 -lvl 2 -x 420 -y 2520 -defaultsOSRD
+preplace inst irq_const_tieoff -pg 1 -lvl 1 -x 160 -y 520 -defaultsOSRD
+preplace netloc M00_ACLK_1 1 3 7 790 2880 1860 2930 2630J 3000 3000J 3080 3320 3390 3650J 3290 4060
+preplace netloc aux_reset_in_1 1 3 7 780 2910 1840 2960 2610J 3100 NJ 3100 3310J 3350 3690J 3280 4070
+preplace netloc blp_s_aclk_ctrl_00_1 1 0 4 NJ 3660 NJ 3660 NJ 3660 NJ
+preplace netloc blp_s_aclk_kernel2_ref_clk_00_1 1 0 4 NJ 3680 NJ 3680 NJ 3680 NJ
+preplace netloc blp_s_aclk_kernel_ref_clk_00_1 1 0 7 NJ 3700 NJ 3700 NJ 3700 770 3430 1720 2920 2630 2840 2990
+preplace netloc blp_s_aclk_pcie_00_1 1 0 4 NJ 3720 NJ 3720 NJ 3720 NJ
+preplace netloc blp_s_aresetn_ctrl_00_1 1 0 4 NJ 3740 NJ 3740 NJ 3740 NJ
+preplace netloc blp_s_aresetn_kernel_ref_clk_00_1 1 0 4 NJ 3760 NJ 3760 NJ 3760 NJ
+preplace netloc blp_s_aresetn_pcie_00_1 1 0 4 NJ 3780 NJ 3780 NJ 3780 NJ
+preplace netloc blp_s_data_clkwiz_kernel_clk_out1_locked_00_1 1 0 4 NJ 3800 NJ 3800 NJ 3800 NJ
+preplace netloc blp_s_data_dout_dna_00_1 1 0 4 NJ 3820 NJ 3820 NJ 3820 NJ
+preplace netloc blp_s_data_perstn_out_00_1 1 0 4 NJ 3840 NJ 3840 NJ 3840 NJ
+preplace netloc blp_s_data_slice_pr_reset_to_ulp_00_1 1 0 4 NJ 3860 NJ 3860 NJ 3860 NJ
+preplace netloc clkwiz_kernel_clk_out1_1 1 4 5 1830 3440 2510 3140 3010 3060 3360 3320 3660J
+preplace netloc clkwiz_sysclks_clk_out2_1 1 4 3 1840 3620 2600 3800 2980J
+preplace netloc ddr1_clk_bufg_BUFG_O 1 8 1 3660J 3410n
+preplace netloc ddr1_clk_ibufds_IBUF_OUT 1 7 1 NJ 3450
+preplace netloc ddrmem_1_c0_ddr4_ui_clk_sync_rst 1 3 7 800 2900 1850J 2950 2620J 3020 2990J 3090 3350J 3340 3680J 3270 4080
+preplace netloc ii_level0_wire_blp_m_data_dna_from_ulp_00 1 4 7 1760J 3810 NJ 3810 3010J 3800 NJ 3800 NJ 3800 NJ 3800 NJ
+preplace netloc ii_level0_wire_blp_m_data_memory_calib_complete_00 1 4 7 1750J 3820 NJ 3820 NJ 3820 NJ 3820 NJ 3820 NJ 3820 NJ
+preplace netloc ii_level0_wire_blp_m_irq_cu_00 1 4 7 1740J 3840 NJ 3840 NJ 3840 NJ 3840 NJ 3840 NJ 3840 NJ
+preplace netloc ii_level0_wire_ulp_m_aclk_kernel2_ref_clk_00 1 4 1 1820 3190n
+preplace netloc ii_level0_wire_ulp_m_aclk_pcie_00 1 4 1 1870 3310n
+preplace netloc ii_level0_wire_ulp_m_aresetn_ctrl_00 1 4 2 1880 3780 2520J
+preplace netloc ii_level0_wire_ulp_m_data_clkwiz_kernel2_clk_out1_locked_00 1 4 1 1830J 2970n
+preplace netloc ii_level0_wire_ulp_m_data_clkwiz_kernel_clk_out1_locked_00 1 4 1 1860 3250n
+preplace netloc ii_level0_wire_ulp_m_data_clkwiz_sysclks_clk_out2_locked_00 1 4 1 1730J 3070n
+preplace netloc ii_level0_wire_ulp_m_data_pcie_user_link_up_00 1 4 1 1790J 3270n
+preplace netloc ii_level0_wire_ulp_m_data_perstn_out_00 1 3 2 790 3450 1730
+preplace netloc ii_level0_wire_ulp_m_data_slice_pr_reset_to_ulp_00 1 3 2 800 3460 1720
+preplace netloc ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_0_dout 1 2 1 530 1080n
+preplace netloc ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_1_dout 1 2 1 540 360n
+preplace netloc ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_2_dout 1 2 1 NJ 1800
+preplace netloc ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_3_dout 1 2 1 530J 1820n
+preplace netloc ii_level0_wire_ulp_s_irq_cu_00_1_interrupt_concat_dout 1 3 1 760 1790n
+preplace netloc irq_const_tieoff_dout 1 1 1 300 50n
+preplace netloc krnl_ro_rtl_1_interrupt 1 1 6 310 2890 NJ 2890 NJ 2890 1880J 2940 2550J 3010 2970
+preplace netloc psreset_ddrmem_n_1_interconnect_aresetn 1 4 5 1870 2970 2600J 3280 3000J 3360 NJ 3360 3690
+preplace netloc slr1_interconnect_aresetn 1 5 3 2540J 3430 2980J 3380 3300
+preplace netloc slr1_logic_reset_op_Res 1 5 4 2530J 3440 3010J 3390 3310J 3380 3680
+preplace netloc slr1_peripheral_aresetn 1 5 1 2580 2940n
+preplace netloc slr1_psreset_gate_pr_control_interconnect_aresetn 1 5 1 2520 3250n
+preplace netloc slr1_psreset_gate_pr_data_interconnect_aresetn 1 4 2 1880 3610 2500
+preplace netloc slr1_psreset_gate_pr_kernel_interconnect_aresetn 1 5 4 2620 3130 3020 3070 3370 3330 3670J
+preplace netloc xlslice_0_Dout 1 4 1 NJ 3370
+preplace netloc xlslice_4_Dout 1 4 1 1800J 3170n
+preplace netloc BLP_S_AXI_CTRL_USER_00_1 1 0 4 NJ 3520 NJ 3520 NJ 3520 NJ
+preplace netloc BLP_S_AXI_CTRL_USER_01_1 1 0 4 NJ 3540 NJ 3540 NJ 3540 NJ
+preplace netloc BLP_S_AXI_CTRL_USER_02_1 1 0 4 NJ 3560 NJ 3560 NJ 3560 NJ
+preplace netloc BLP_S_AXI_DATA_H2C_00_1 1 0 4 NJ 3580 NJ 3580 NJ 3580 NJ
+preplace netloc BLP_S_AXI_DATA_H2C_01_1 1 0 4 NJ 3600 NJ 3600 NJ 3600 NJ
+preplace netloc BLP_S_AXI_DATA_H2C_02_1 1 0 4 NJ 3620 NJ 3620 NJ 3620 NJ
+preplace netloc BLP_S_AXI_DATA_H2C_03_1 1 0 4 NJ 3640 NJ 3640 NJ 3640 NJ
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 9 1 N 3110
+preplace netloc axi_bram_ctrl_0_BRAM_PORTB 1 9 1 N 3130
+preplace netloc axi_interconnect_0_M00_AXI 1 7 1 3300 2910n
+preplace netloc axi_interconnect_0_M00_AXI_P 1 7 1 3330 2960n
+preplace netloc axi_interconnect_1_M00_AXI 1 8 1 3700 3080n
+preplace netloc axi_interconnect_1_M01_AXI 1 8 1 N 3100
+preplace netloc axi_protocol_convert_0_M_AXI 1 5 1 N 3700
+preplace netloc axi_vip_0_M_AXI 1 6 1 2980 2820n
+preplace netloc axi_vip_0_M_AXI_P 1 6 1 2990 3180n
+preplace netloc ddrmem_1_C0_DDR4 1 9 2 NJ 3350 NJ
+preplace netloc ii_level0_wire_ULP_M_AXI_CTRL_USER_00 1 4 1 1740 3030n
+preplace netloc ii_level0_wire_ULP_M_AXI_CTRL_USER_01 1 4 1 1750 3050n
+preplace netloc ii_level0_wire_ULP_M_AXI_CTRL_USER_02 1 4 1 1760 3070n
+preplace netloc ii_level0_wire_ULP_M_AXI_DATA_H2C_00 1 4 1 1780 3090n
+preplace netloc ii_level0_wire_ULP_M_AXI_DATA_H2C_01 1 4 1 1850 3510n
+preplace netloc ii_level0_wire_ULP_M_AXI_DATA_H2C_02 1 4 1 1780 3620n
+preplace netloc ii_level0_wire_ULP_M_AXI_DATA_H2C_03 1 4 1 1810 3110n
+preplace netloc io_clk_ddr_00_1 1 0 7 NJ 3440 NJ 3440 NJ 3440 NJ 3440 1770J 3450 NJ 3450 NJ
+preplace netloc krnl_ro_rtl_1_m_axi_gmem 1 6 1 3000 2840n
+preplace netloc slr1_M01_AXI 1 5 1 2560 2900n
+preplace netloc slr1_M01_AXI1 1 5 1 2550 3090n
+preplace netloc slr1_axi_cdc_data_static_M_AXI 1 5 3 2570J 3110 NJ 3110 3300
+preplace netloc slr1_axi_cdc_data_static_M_AXI1 1 5 3 2590J 3120 NJ 3120 3340
+preplace netloc slr1_axi_vip_ctrl_mgntpf_M_AXI 1 5 4 2590J 3290 2980J 3370 NJ 3370 N
+preplace netloc user_debug_bridge_m0_bscan 1 6 1 N 3720
+levelinfo -pg 1 0 160 420 650 1260 2190 2800 3160 3510 3880 4180 4300
+pagesize -pg 1 -db -bbox -sgen -400 0 4640 3970
+"
+}
+

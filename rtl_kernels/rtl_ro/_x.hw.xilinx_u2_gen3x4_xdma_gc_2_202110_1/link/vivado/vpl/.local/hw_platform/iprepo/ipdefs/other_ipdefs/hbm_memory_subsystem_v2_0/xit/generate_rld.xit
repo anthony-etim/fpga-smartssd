@@ -1,0 +1,15 @@
+dbg_puts "###########################################################################"
+dbg_puts "BEGIN: GENERATE_RLD"
+
+set fn hbm_memory_subsystem.rld
+add_ipfile -fileType elaboratedData $fn
+
+dbg_puts "HMMS RLD: $fn"
+
+puts_ipfile $fn $HMMS_DICT
+dbg_puts "HMMS Dict: $HMMS_DICT"
+
+close_ipfile $fn
+
+dbg_puts "END: GENERATE_RLD"
+dbg_puts "###########################################################################"

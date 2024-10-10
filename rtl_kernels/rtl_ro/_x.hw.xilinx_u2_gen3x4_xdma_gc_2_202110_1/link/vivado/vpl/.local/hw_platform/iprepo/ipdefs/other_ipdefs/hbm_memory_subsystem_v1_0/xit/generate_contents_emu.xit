@@ -1,0 +1,294 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+send_msg_id {hbm_memory_subsystem 3-1} INFO "Generate contents for emulation"
+
+set numMemories [dict get $CONFIG total_hbm_num_pc]
+set numKernels [expr {[dict get $CONFIG NUM_SI]-1}]
+set numSlaveRst [dict get $CONFIG NUM_SI_ARESETN]
+set numSlaveClk [dict get $CONFIG NUM_SI_CLKS]
+
+# create host/kernel interconnects
+set xtlm_intercon_host [ create_bd_cell -type ip -vlnv xilinx.com:xilinx:xtlm_simple_interconnect:1.0 xtlm_intercon_host ]
+set_property -dict [ list  CONFIG.C_NUM_MI $numMemories CONFIG.C_NUM_SI 1 ] $xtlm_intercon_host
+if ${numKernels}>0 {
+  set xtlm_intercon_kernel [ create_bd_cell -type ip -vlnv xilinx.com:xilinx:xtlm_simple_interconnect:1.0 xtlm_intercon_kernel ]
+  set_property -dict [ list  CONFIG.C_NUM_MI $numMemories CONFIG.C_NUM_SI $numKernels ] $xtlm_intercon_kernel
+}
+
+
+# Create hbm instances and connect to interconnect masters
+set offset 0x0
+set range [dict get $CONFIG hbm_range]
+set hbm_addr_width [dict get $CONFIG hbm_pc_awidth]
+set hbm_data_width 256
+for {set index 0} {${index}<${numMemories}} {incr index} {
+
+  set i [format %.2d $index]
+  set hbm_ram_name hbm_ram${index}
+
+  # create hbm ram
+  set hbm_ram [create_bd_cell -type ip -vlnv xilinx.com:xilinx:xtlm_simple_memory:1.0 $hbm_ram_name]
+  set_property CONFIG.C_MEM_SIZE $range $hbm_ram
+  set_property CONFIG.C_S00_AXI_ADDR_WIDTH $hbm_addr_width $hbm_ram
+  set_property CONFIG.C_S00_AXI_DATA_WIDTH $hbm_data_width $hbm_ram
+  set_property CONFIG.C_S00_AXI_BASEADDR   "0x000000000000" $hbm_ram
+  set_property CONFIG.C_S00_AXI_HIGHADDR   [format 0x%.12x [expr $range -1]] $hbm_ram
+
+  # create hbm interconnect and configure
+  set icn_config_hbm [dict create]
+  lappend icn_config_hbm CONFIG.C_NUM_MI 1
+  lappend icn_config_hbm CONFIG.C_M00_AXI_ADDR_WIDTH $hbm_addr_width
+  lappend icn_config_hbm CONFIG.C_M00_AXI_DATA_WIDTH $hbm_data_width
+  lappend icn_config_hbm CONFIG.C_M00_AXI_ID_WIDTH 16
+  lappend icn_config_hbm CONFIG.C_M00_A00_BASE_ADDRESS $offset
+  lappend icn_config_hbm CONFIG.C_M00_A00_ADDR_RANGE $range
+  lappend icn_config_hbm CONFIG.C_S00_AXI_ADDR_WIDTH $hbm_addr_width
+  lappend icn_config_hbm CONFIG.C_S00_AXI_DATA_WIDTH $hbm_data_width
+  lappend icn_config_hbm CONFIG.C_S00_AXI_ID_WIDTH 16
+  set xtlm_intercon_hbm [create_bd_cell -type ip -vlnv xilinx.com:xilinx:xtlm_simple_interconnect:1.0 xtlm_intercon_hbm${index}]
+  if ${numKernels}>0 {
+    lappend icn_config_hbm CONFIG.C_NUM_SI 2
+    lappend icn_config_hbm CONFIG.C_S01_AXI_ADDR_WIDTH $hbm_addr_width
+    lappend icn_config_hbm CONFIG.C_S01_AXI_DATA_WIDTH $hbm_data_width
+    lappend icn_config_hbm CONFIG.C_S01_AXI_ID_WIDTH 16
+    set_property -dict $icn_config_hbm ${xtlm_intercon_hbm}
+    # hook up kernel interconnect to hbm interconnect
+    lappend hbm_clk_pins [get_bd_pins xtlm_intercon_hbm${index}/s01_axi_aclk]
+    lappend hbm_rst_pins [get_bd_pins xtlm_intercon_hbm${index}/s01_axi_aresetn]
+    lappend hbm_clk_pins [get_bd_pins xtlm_intercon_kernel/m${i}_axi_aclk]
+    lappend hbm_rst_pins [get_bd_pins xtlm_intercon_kernel/m${i}_axi_aresetn]
+    connect_bd_intf_net -intf_net kernel_hbm_s${i} [get_bd_intf_pins xtlm_intercon_hbm${index}/S01_AXI] [get_bd_intf_pins xtlm_intercon_kernel/M${i}_AXI]
+  } else {
+    lappend icn_config_hbm CONFIG.C_NUM_SI 1
+    set_property -dict $icn_config_hbm ${xtlm_intercon_hbm}
+  }
+
+  # hook up host interconnect to hbm interconnect
+  lappend hbm_clk_pins [get_bd_pins xtlm_intercon_hbm${index}/s00_axi_aclk]
+  lappend hbm_rst_pins [get_bd_pins xtlm_intercon_hbm${index}/s00_axi_aresetn]
+  lappend hbm_clk_pins [get_bd_pins xtlm_intercon_host/m${i}_axi_aclk]
+  lappend hbm_rst_pins [get_bd_pins xtlm_intercon_host/m${i}_axi_aresetn]
+  connect_bd_intf_net -intf_net host_hbm_s${i} [get_bd_intf_pins xtlm_intercon_hbm${index}/S00_AXI] [get_bd_intf_pins xtlm_intercon_host/M${i}_AXI]
+
+  # hook up hbm ram to hbm interconnect
+  lappend hbm_clk_pins [get_bd_pins hbm_ram${index}/s00_axi_aclk]
+  lappend hbm_rst_pins [get_bd_pins hbm_ram${index}/s00_axi_aresetn]
+  lappend hbm_clk_pins [get_bd_pins xtlm_intercon_hbm${index}/m00_axi_aclk]
+  lappend hbm_rst_pins [get_bd_pins xtlm_intercon_hbm${index}/m00_axi_aresetn]
+  connect_bd_intf_net -intf_net hbm_s${i} [get_bd_intf_pins hbm_ram${index}/S00_AXI] [get_bd_intf_pins xtlm_intercon_hbm${index}/M00_AXI]
+
+  # configure host and kernel interconnect masters for hbm
+  set icn_config [dict create]
+  lappend icn_config CONFIG.C_M${i}_AXI_ADDR_WIDTH $hbm_addr_width
+  lappend icn_config CONFIG.C_M${i}_AXI_DATA_WIDTH $hbm_data_width
+  lappend icn_config CONFIG.C_M${i}_AXI_ID_WIDTH 16
+  lappend icn_config CONFIG.C_M${i}_A00_BASE_ADDRESS $offset
+  lappend icn_config CONFIG.C_M${i}_A00_ADDR_RANGE $range
+  set_property -dict $icn_config [get_bd_cells xtlm_intercon_host]
+  if ${numKernels}>0 {
+    set_property -dict $icn_config [get_bd_cells xtlm_intercon_kernel]
+  }
+
+  set offset [format 0x%x [expr $offset+$range]]
+}
+
+connect_bd_net [get_bd_pins hbm_aclk] $hbm_clk_pins
+connect_bd_net [get_bd_pins hbm_aresetn] $hbm_rst_pins
+
+# Connect out and configure slave interfaces
+for {set index 0} {${index}<[dict get $CONFIG NUM_SI]} {incr index} {
+
+  set i [format %.2d $index]
+  if {$index==0} {
+    set intercon xtlm_intercon_host
+    set j 00
+  } else {
+    set intercon xtlm_intercon_kernel
+    set j [format %.2d [expr $index-1]]
+  }
+
+  connect_bd_intf_net -intf_net slave_s${i} [get_bd_intf_pins S${i}_AXI] [get_bd_intf_pins ${intercon}/S${j}_AXI]
+
+  set slave_clk [dict get $CONFIG S${i}_ACLK]
+  connect_bd_net [get_bd_pins $slave_clk] [get_bd_pins ${intercon}/S${j}_axi_aclk]
+
+  set slave_rst [dict get $CONFIG S${i}_ARESETN]
+  # Handle no reset...tie reset to host reset for this case (not worried about timing)
+  if {[regexp -- aresetn $slave_rst]} {
+     connect_bd_net [get_bd_pins $slave_rst] [get_bd_pins ${intercon}/S${j}_axi_aresetn]
+  } else {
+     connect_bd_net [get_bd_pins [dict get $CONFIG S00_ARESETN]] [get_bd_pins ${intercon}/S${j}_axi_aresetn]
+  }
+
+  set icn_prop {}
+  foreach prop {ID_WIDTH AWUSER_WIDTH ARUSER_WIDTH WUSER_WIDTH RUSER_WIDTH BUSER_WIDTH DATA_WIDTH ADDR_WIDTH HAS_BRESP HAS_BURST HAS_CACHE HAS_LOCK HAS_PROT HAS_QOS HAS_REGION HAS_RRESP HAS_WSTRB} {
+    lappend icn_prop CONFIG.C_S${j}_AXI_${prop} [dict get $CONFIG intf_metadata S${i}_AXI  CONFIG.${prop}]
+  }
+  #puts $icn_prop
+  if { [llength $icn_prop] } {
+    set_property -dict $icn_prop [get_bd_cells ${intercon}]
+  }
+
+}
+
+
+# Create stub to tie off axilite control interface
+set ctrl_itf [create_bd_cell -type ip -vlnv xilinx.com:xilinx:xtlm_axilite_stub:1.0 ctrl_stub]
+connect_bd_intf_net [get_bd_intf_pins S_AXI_CTRL] [get_bd_intf_pins ctrl_stub/M_AXILITE]
+connect_bd_net [get_bd_pins ctrl_aclk] [get_bd_pins ctrl_stub/m_axilite_aclk]
+connect_bd_net [get_bd_pins ctrl_aresetn] [get_bd_pins ctrl_stub/m_axilite_aresetn]
+
+
+# Connect initilisation status to hbm_aresetn :)
+connect_bd_net [get_bd_pins hbm_mc_init_seq_complete] [get_bd_pins hbm_aresetn]
+
+
+# - Map addresses
+set icn_config_host [dict create]
+set icn_config_kernel [dict create]
+for {set i 0} {$i < [dict get $CONFIG total_hmss_num_mi]} {incr i} {
+  if {[config_get_saxi_en $i $CONFIG]} {
+     if [get_param bd.hooks.addr.debug_scoped_use_ms_name] {
+        # Which interface address space is to be mapped
+        set si [get_bd_intf_ports [format S%.2d_AXI $i]]
+
+        #puts hip_port=${si}
+
+        # Get the desired memory segments specified on command line
+        set des_mem_segment [config_get_memsegs $i $CONFIG]
+        set all_mem_segments [dict get $CALC MEM_USED]
+
+        #puts des_mem_segment=${des_mem_segment}
+        #puts all_mem_segments=${all_mem_segments}
+
+        # Now loop through all available memory segments mapping or excluding
+        foreach mem_segment [dict keys [dict get $HBM_MEM_INFO RANGE_OFFSET]] {
+
+          #puts loop_mem_segment=${mem_segment}
+
+          # Get simple mem instance axi if
+          set hbm_index [string map {HBM_MEM ""} [string map {HBM_MEM0 ""} $mem_segment]]
+          set hbm_inst_name hbm_ram${hbm_index}
+          set si_hbm [get_bd_intf_pins $hbm_inst_name/S00_AXI]
+
+          #puts hbm_ram_name=${hbm_inst_name}
+
+          if ${i}==0 {
+            set slave_ix ${i}
+          } else {
+            set slave_ix [expr ${i}-1]
+          }
+          set xc_connectivity_param [format C_M%.2d_S%.2d_CONNECTIVITY $hbm_index $slave_ix]
+
+          #puts xc_connectivity_param=${xc_connectivity_param}
+
+          # Assign and exclude by default
+          set range  [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 0]
+          set offset [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 1]
+
+          set all_seg_index [lsearch -exact $all_mem_segments $mem_segment]
+          # Does this segment exist on the HBM?
+          if {$all_seg_index > -1} {
+            # Is this segment required for this interface? (0=yes/-1=no)
+            set seg_index [lsearch -exact $des_mem_segment $mem_segment]
+
+            # Only include and assign if desired
+            if {$seg_index > -1} {
+              # Create and exclude the segment in master address space
+              set hbm_mem_seg [create_bd_addr_seg -offset $offset -range $range [get_bd_addr_space -of $si] [get_bd_addr_segs -patterns $si_hbm/S00_AXI_mem] $mem_segment]
+              if ${i}==0 {
+                lappend icn_config_host CONFIG.${xc_connectivity_param} 1
+              } else {
+                lappend icn_config_kernel CONFIG.${xc_connectivity_param} 1
+              }
+
+              # Remove from desired segments
+              set des_mem_segment [lreplace $des_mem_segment $seg_index $seg_index]
+            } else {
+              if ${i}==0 {
+                lappend icn_config_host CONFIG.${xc_connectivity_param} 0
+              } else {
+                lappend icn_config_kernel CONFIG.${xc_connectivity_param} 0
+              }
+            }
+          } else {
+            if ${i}==0 {
+              lappend icn_config_host CONFIG.${xc_connectivity_param} 0
+            } else {
+              lappend icn_config_kernel CONFIG.${xc_connectivity_param} 0
+            }
+          }
+
+        }
+
+        # If the length of the desired mem segments is not zero then we have a problem i.e. a segment has sneaked through that is not of form HBM_MEMnn
+        if {[llength $des_mem_segment] > 0} {
+           send_msg_id {hbm_memory_subsystem 3-1} ERROR "Memory segments - $des_mem_segment - did not find a home on port $si. Are they valid?"
+        }
+
+     } else {
+       send_msg_id {hbm_memory_subsystem 3-1} ERROR "Vivado param bd.hooks.addr.debug_scoped_use_ms_name must be set for this IP to function."
+     }
+  }
+}
+
+#puts host_dict
+#puts $icn_config_host
+if { [llength $icn_config_host] } {
+  set_property -dict $icn_config_host [get_bd_cells xtlm_intercon_host]
+}
+#puts kernel_dict
+#puts $icn_config_kernel
+if { [llength $icn_config_kernel] } {
+  set_property -dict $icn_config_kernel [get_bd_cells xtlm_intercon_kernel]
+}

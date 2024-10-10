@@ -1,0 +1,157 @@
+{
+   "xclbin" : {
+      "append_sections" : {
+         "partition_metadata" : {
+            "addressable_endpoints" : {
+               "ep_ddr_mem_ctrl_00" : {
+                  "pcie_physical_function" : "0x0",
+                  "register_abstraction_name" : "xilinx.com:reg_abs:ddr4_ctrl:1.0",
+                  "range" : "0x0000000000800000",
+                  "offset" : "0x0000000001000000"
+               },
+               "ep_freq_cnt_aclk_kernel_00" : {
+                  "pcie_physical_function" : "0x0",
+                  "register_abstraction_name" : "xilinx.com:reg_abs:frequency_counter:1.0",
+                  "range" : "0x0000000000001000",
+                  "offset" : "0x0000000000052000"
+               }
+            },
+            "interfaces" : [
+               {
+                  "interface_uuid" : "194a2bb6ba20ee1870f9c56330d365fc"
+               }
+            ],
+            "schema_version" : {
+               "minor" : "0x0",
+               "major" : "0x1"
+            }
+         },
+         "ip_layout" : {
+            "m_count" : "1",
+            "m_ip_data" : [
+               {
+                  "m_name" : "AXI-LITE-BANK0",
+                  "m_type" : "IP_DDR4_CONTROLLER",
+                  "properties" : "0",
+                  "m_base_address" : "0x1000000"
+               }
+            ]
+         }
+      }
+   },
+   "raptor2" : {
+      "resources" : {
+         "PLRAM" : {
+            "S_AXI_HP" : {
+               "slr" : "SLR0",
+               "mode" : "slave",
+               "sptag" : "plram",
+               "data_width" : "64",
+               "max_masters" : 15
+            }
+         },
+         "DDR" : {
+            "S_AXI_HP" : {
+               "slr" : "SLR0",
+               "mode" : "slave",
+               "sptag" : "bank0",
+               "data_width" : "64",
+               "max_masters" : 15
+            }
+         }
+      },
+      "placement" : {
+         "PLRAM" : {
+            "0" : "SLR0"
+         },
+         "DDR" : {
+            "0" : "SLR0"
+         }
+      },
+      "feature_support" : {
+         "software_emulation" : "1",
+         "AXI_HP_PLRAM" : "plram",
+         "AXI_HP_DDR" : "bank0",
+         "PLRAM" : 1,
+         "hardware_emulation" : "1",
+         "DDR" : 1
+      },
+      "num_compute_units" : "60",
+      "part" : "xcku15p-ffva1156-2LV-e",
+      "pblocks" : {
+         "pblock_dynamic_region" : {
+            "REG_SLR0" : "684992",
+            "BRAM_SLR0" : "646",
+            "URAM" : "112",
+            "URAM_SLR0" : "112",
+            "DSPs_SLR0" : "1344",
+            "LUT" : "342496",
+            "LUT_SLR0" : "342496",
+            "DSP" : "1344",
+            "BRAM" : "646",
+            "REG" : "684992"
+         }
+      },
+      "slrs" : [
+         "SLR0"
+      ],
+      "schema_version" : "1.0"
+   },
+   "xsabin" : {
+      "Card Management Controller Family" : "CMC-NoSC-Gen1",
+      "Sys Mode" : "XCLBIN_FLAT"
+   },
+   "revision_control" : {
+      "version" : "2",
+      "release" : "3207808"
+   },
+   "profile_debug" : {
+      "trace" : {
+         "SLR0" : {
+            "clk" : "blp_s_aclk_pcie_00",
+            "rst" : "slr1/reset_controllers/psreset_gate_pr_data/interconnect_aresetn",
+            "mi" : "ii_level0_wire/ULP_M_AXI_DATA_H2C_01"
+         }
+      },
+      "slrs" : "SLR0",
+      "axilite" : {
+         "SLR0" : {
+            "ip" : "slr1/interconnect_axilite_user",
+            "mi" : "M00_AXI",
+            "fallback" : "true"
+         }
+      },
+      "monitor" : {
+         "SLR0" : {
+            "clk" : "ulp_m_aclk_kernel_ref_clk_00",
+            "rst" : "slr1/reset_controllers/psreset_gate_pr_kernel/peripheral_aresetn",
+            "fallback" : "true"
+         }
+      },
+      "host" : {
+         "SLR0" : "axi_interconnect_0/S00_AXI"
+      }
+   },
+   "chipscope_debug" : {
+      "debug_networks" : {
+         "user" : {
+            "bar_number" : "0",
+            "supports_jtag_fallback" : "false",
+            "name" : "User Debug Network",
+            "supports_microblaze_debug" : "true",
+            "pcie_pf" : "1",
+            "axi_baseaddr" : "0x000C0000",
+            "is_user_visible" : "true"
+         },
+         "mgmt" : {
+            "bar_number" : "0",
+            "supports_jtag_fallback" : "true",
+            "name" : "Management Debug Network",
+            "supports_microblaze_debug" : "true",
+            "pcie_pf" : "0",
+            "axi_baseaddr" : "0x000C0000",
+            "is_user_visible" : "false"
+         }
+      }
+   }
+}

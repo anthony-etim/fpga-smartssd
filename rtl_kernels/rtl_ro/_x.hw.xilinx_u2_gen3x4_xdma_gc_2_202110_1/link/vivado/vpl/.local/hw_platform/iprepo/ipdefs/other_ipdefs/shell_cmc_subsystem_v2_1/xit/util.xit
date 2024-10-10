@@ -1,0 +1,154 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+proc find_first_unconnected_intf { intf_pins } {
+  foreach i $intf_pins {
+    if {[llength [get_bd_intf_nets -quiet -of $i]] == 0} {
+      return $i
+    }
+  }
+  return ""
+}
+
+proc find_first_unconnected_pin { pins } {
+  foreach i $pins {
+    if {[llength [get_bd_nets -quiet -of $i]] == 0} {
+      return $i
+    }
+  }
+  return ""
+}
+
+proc get_clock_key { o } {
+  set clock_metadata {}
+  foreach p {FREQ_HZ PHASE CLK_DOMAIN} {
+    lappend clock_metadata [get_property CONFIG.$p $o]
+  }
+  set clock_key [join $clock_metadata :]
+  return $clock_key
+}
+
+proc xil_clog2 { i } {
+  set l 1
+  while {[expr 1<<$l] <= $i} { incr l }
+  return $l
+}
+
+proc get_bd_obj { i } {
+  set result [get_bd_pins -quiet $i]
+  if {[llength $result] == 0} {
+    set result [get_bd_ports -quiet $i]
+  }
+  return $result
+}
+
+proc clog_range { range } {
+
+  if {![regexp {(\d+)(K|M|G|T)} $range {} range_value range_type]} {
+    send_msg ERROR 1 "Segment range format incorrect: $range"
+    return {}
+  }
+
+  set clog_range_type_map {K 10 M 20 G 30 T 40}
+  set clog_range_type [dict get $clog_range_type_map $range_type]
+#  set clog_range_value [xil_clog2 $range_value]
+#  set addr_width [expr $clog_range_value + $clog_range_type]
+  set range_high_addr [expr ($range_value*(1<<$clog_range_type))-1]
+  set clog_range [xil_clog2 $range_high_addr]
+  return $clog_range
+}
+
+proc find_existing_clk_connection { clock_source clock_pins } {
+  set source_key [get_clock_key $clock_source]
+  foreach pin $clock_pins {
+    set pin_key [get_clock_key $pin]
+    if {$source_key == $pin_key} {
+      return $pin
+    }
+  }
+  return {}
+}
+
+proc find_fastest_clk { clock_sources } {
+  variable clock_definitions
+  set max_freq_hz 0
+  set clk_key_client_count {}
+  set clk_key_by_freq_hz {}
+  foreach clock_source $clock_sources {
+    set clock_source [get_bd_ports $clock_source ]
+#    set clk_key [get_clock_key $clock_source ]
+    set clk_key [dict get $clock_definitions [get_property name $clock_source]  ]
+    dict set clock_source_by_key $clk_key $clock_source
+
+    lassign [split $clk_key :] freq_hz phase clk_domain
+    if {$freq_hz > $max_freq_hz} {
+      set max_freq_hz $freq_hz
+    }
+    dict incr clk_key_client_count $clk_key
+    dict set clk_key_by_freq_hz $freq_hz $clk_key 1
+  }
+
+  set max_freq_clk_keys [dict keys [dict get $clk_key_by_freq_hz $max_freq_hz]]
+  if {[llength $max_freq_clk_keys] == 1} {
+    set selected_clk_key $max_freq_clk_keys
+  } else {
+    set unsorted_marjoity_key {}
+    foreach clk_key $max_freq_clk_keys {
+      lappend unsorted_majority_key [list [dict get $clk_key_client_count $clk_key] $clk_key]
+    }
+    set sorted_majority_key [lsort -integer -decreasing -index 0 $unsorted_majority_key]
+    set selected_clk_key [lindex $sorted_majority_key 0 1]
+  }
+
+  set selected_clk [dict get $clock_source_by_key $selected_clk_key]
+
+  return $selected_clk
+}

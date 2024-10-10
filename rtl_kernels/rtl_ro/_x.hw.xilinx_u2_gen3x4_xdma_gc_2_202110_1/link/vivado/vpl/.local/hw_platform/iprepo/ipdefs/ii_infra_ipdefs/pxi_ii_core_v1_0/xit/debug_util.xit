@@ -1,0 +1,10 @@
+proc dbg_puts { s } {
+  global env
+  if {[info exists env(XIL_SDX_DEBUG)]} {
+    puts "([clock format [clock seconds] -format {%Y-%m-%d %H:%M:%S}]) DBG(pxi_ii_core): $s"
+  }
+}
+
+proc dbg_brk {} {
+  dbg_puts [string repeat - 40]
+}

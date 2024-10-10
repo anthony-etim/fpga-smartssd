@@ -1,0 +1,10 @@
+
+
+OPTION psf_version = 2.1;
+
+BEGIN DRIVER nifd
+	OPTION supported_peripherals = (nifd);
+	OPTION copyfiles = all;
+	OPTION VERSION = 2.0;
+	OPTION NAME = nifd;
+END DRIVER

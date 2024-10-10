@@ -1,0 +1,111 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+# First calculate the weightings at each subswitch per kernel
+# Note: Based on info calculated from CONFIG parameters and stored
+#       in HBM_MEM_TXNS
+set subswitch_txns [calc_all_ss_wt $HBM_MEM_TXNS]
+
+# ----------------------------------------------------------------------
+# How many ports are not allowed on HBM?
+set total_hbm_prohibit_ports [sum $HBM_PORT_PROHIBIT]
+
+# ----------------------------------------------------------------------
+# Next calculate the weightings per kernel at each
+# node for each potential switch location
+set node_lateral_txns [calc_all_node_wt $subswitch_txns]
+
+# Calculate the optimal connection points
+# Note: KERNEL_CONNECTIONS used to figure out which AXI ports connect to which
+#       port on the HBM
+
+# Need to initialise results for iterative process (very hard-coded here should use a global config variable)
+set num_d 2
+set num_s 8
+set num_n [expr $num_s-1]
+set num_l 2
+set num_sch 2
+set results_intermediate [lrepeat $num_sch [lrepeat $num_l [lrepeat $num_d [ lrepeat $num_n 0]]]]
+
+# Run calculation
+# Note: Calculation is run twice when the number of ports is greater than the number of available ports i.e. overlaying results from first calc onto second set of calcs and
+#      allowing same port to be chosen twice (host sharing with another kernel port)
+if {[llength $node_lateral_txns] > 32 - $total_hbm_prohibit_ports} {
+   # First calculate results for all kernels
+   set result_list [calc_all_opt_position_multi [lrange $HBM_MEM_TXNS 1 end] [lrange $node_lateral_txns 1 end] $results_intermediate [lrange $HBM_PORT_LOCS 1 end] [lrange $HBM_PORT_LOCS_TRAFFIC 1 end] [lrange $KERNEL_MASTER_GROUPS 1 end] $HBM_PORT_PROHIBIT 0]
+   set results_intermediate [lindex $result_list 1]
+   set results_kernels [lindex $result_list 0]
+   # Next calculate host results
+   set result_list [calc_all_opt_position_multi [list [lindex $HBM_MEM_TXNS 0]] [list [lindex $node_lateral_txns 0]] $results_intermediate [list [lindex $HBM_PORT_LOCS 0]] [list [lindex $HBM_PORT_LOCS_TRAFFIC 0]] [list [lindex $KERNEL_MASTER_GROUPS 0]] $HBM_PORT_PROHIBIT 0]
+   set results [lindex $result_list 0]
+   # Results of host should contain correct trafficonly need to combine connections
+   set KERNEL_CONNECTIONS [concat [dict get $results kernel_connections] [dict get $results_kernels kernel_connections]]
+   dict set results hbm_mem_txns [concat [dict get $results hbm_mem_txns] [dict get $results_kernels hbm_mem_txns]]
+   # Update host with all connections
+   dict set results kernel_connections $KERNEL_CONNECTIONS
+} else {
+   set result_list [calc_all_opt_position_multi $HBM_MEM_TXNS $node_lateral_txns $results_intermediate $HBM_PORT_LOCS $HBM_PORT_LOCS_TRAFFIC $KERNEL_MASTER_GROUPS $HBM_PORT_PROHIBIT 1]
+   set results [lindex $result_list 0]
+   set KERNEL_CONNECTIONS [dict get $results kernel_connections]
+}
+
+# ----------------------------------------------------------------------
+# Print acheived weightings if env variable is set
+if {[info exists generate_contents]} {
+   if {[info exists ::env(HMSS_DEBUG_DATA)]} {
+      if {$::env(HMSS_DEBUG_DATA) == 1} {
+         # Print out connection results to screen
+         print_connection_stats $results
+         print_connection_result $results
+      }
+   }
+}
+
+

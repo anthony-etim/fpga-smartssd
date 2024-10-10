@@ -1,0 +1,292 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create interface ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # PCIE IP Configuration Interfaces
+  set m_pcie4_cfg_control [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie4_cfg_control_rtl:1.0 m_pcie4_cfg_control ]
+  set m_pcie4_cfg_external_msix [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie4_cfg_msix_rtl:1.0 m_pcie4_cfg_external_msix ]
+  set m_pcie4_cfg_interrupt [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie3_cfg_interrupt_rtl:1.0 m_pcie4_cfg_interrupt ]
+  set s_pcie4_cfg_fc [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie_cfg_fc_rtl:1.0 s_pcie4_cfg_fc ]
+  set s_pcie4_cfg_mesg_rcvd [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie3_cfg_msg_received_rtl:1.0 s_pcie4_cfg_mesg_rcvd ]
+  set s_pcie4_cfg_mesg_tx [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie3_cfg_mesg_tx_rtl:1.0 s_pcie4_cfg_mesg_tx ]
+  set s_pcie4_cfg_status [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:pcie4_cfg_status_rtl:1.0 s_pcie4_cfg_status ]
+  set m_pcie4_cfg_mgmt [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie4_cfg_mgmt_rtl:1.0 m_pcie4_cfg_mgmt ]
+
+  # Set AXI/AXIS width settings based on link width
+  if {$C_PCIE_LINK_CAP_MAX eq "Gen3x4"} {
+
+      set axi_data_width 128
+      set tdata_num_bytes [expr $axi_data_width / 8]
+      set cq_tuser_width 88
+      set cc_tuser_width 33
+      set rq_tuser_width 62
+      set rc_tuser_width 75
+
+  } elseif {$C_PCIE_LINK_CAP_MAX eq "Gen3x8"} {
+
+      set axi_data_width 256
+      set tdata_num_bytes [expr $axi_data_width / 8]
+      set cq_tuser_width 88
+      set cc_tuser_width 33
+      set rq_tuser_width 62
+      set rc_tuser_width 75
+
+  } else {
+
+      set axi_data_width 512
+      set tdata_num_bytes [expr $axi_data_width / 8]
+      set cq_tuser_width 183
+      set cc_tuser_width 81
+      set rq_tuser_width 137
+      set rc_tuser_width 161
+
+  }
+
+  # PCIE IP AXI-Stream Interfaces
+
+  set m_pcie_axis_cc [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_pcie_axis_cc ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES [expr $axi_data_width / 8] \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH {183} \
+  ] $m_pcie_axis_cc
+
+  set m_pcie_axis_rq [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_pcie_axis_rq ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES [expr $axi_data_width / 8] \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH {183} \
+  ] $m_pcie_axis_rq
+
+  set s_pcie_axis_cq [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_pcie_axis_cq ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES [expr $axi_data_width / 8] \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH {183} \
+  ] $s_pcie_axis_cq
+
+  set s_pcie_axis_rc [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_pcie_axis_rc ]
+  set_property -dict [ list \
+      CONFIG.HAS_TKEEP {1} \
+      CONFIG.HAS_TLAST {1} \
+      CONFIG.HAS_TREADY {1} \
+      CONFIG.HAS_TSTRB {0} \
+      CONFIG.TDATA_NUM_BYTES [expr $axi_data_width / 8] \
+      CONFIG.TDEST_WIDTH {0} \
+      CONFIG.TID_WIDTH {0} \
+      CONFIG.TUSER_WIDTH {161} \
+  ] $s_pcie_axis_rc
+
+  # User DMA AXI4 Interface
+  set m_axi_data [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap m_axi_data ]
+  set_property -dict [ list \
+      CONFIG.PROTOCOL                     {AXI4}                                                                                            \
+      CONFIG.ADDR_WIDTH                   {64}                                                                                              \
+      CONFIG.DATA_WIDTH                   $axi_data_width                                                                                   \
+      CONFIG.MAX_BURST_LENGTH             {256}                                                                                             \
+      CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                               \
+      CONFIG.NUM_READ_OUTSTANDING         {16}                                                                                              \
+      CONFIG.NUM_WRITE_OUTSTANDING        {16}                                                                                              \
+      CONFIG.NUM_READ_THREADS             {2}                                                                                               \
+      CONFIG.NUM_WRITE_THREADS            {2}                                                                                               \
+      CONFIG.INSERT_VIP                   {0}                                                                                               \
+  ] $m_axi_data
+
+  # User DMA Bypass (P2P) AXI4 Interface
+  if {$C_SUPPORTS_P2P} {
+
+      set m_axi_data_p2p [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap m_axi_data_p2p ]
+      set_property -dict [ list \
+      CONFIG.PROTOCOL                     {AXI4}                                                                                            \
+      CONFIG.ADDR_WIDTH                   {64}                                                                                              \
+      CONFIG.DATA_WIDTH                   $axi_data_width                                                                                   \
+      CONFIG.MAX_BURST_LENGTH             {256}                                                                                             \
+      CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                               \
+      CONFIG.NUM_READ_OUTSTANDING         {16}                                                                                              \
+      CONFIG.NUM_WRITE_OUTSTANDING        {16}                                                                                              \
+      CONFIG.NUM_READ_THREADS             {2}                                                                                               \
+      CONFIG.NUM_WRITE_THREADS            {2}                                                                                               \
+      CONFIG.INSERT_VIP                   {0}                                                                                               \
+      ] $m_axi_data_p2p
+
+  }
+
+  # Management PF AXI-Lite Control Interface
+  set s_axi_ctrl_mgmt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt ]
+  set_property -dict [ list \
+      CONFIG.PROTOCOL                     {AXI4LITE}                                                                                        \
+      CONFIG.ADDR_WIDTH                   {32}                                                                                              \
+      CONFIG.DATA_WIDTH                   {32}                                                                                              \
+      CONFIG.MAX_BURST_LENGTH             {1}                                                                                               \
+      CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                               \
+      CONFIG.INSERT_VIP                   {0}                                                                                               \
+  ] $s_axi_ctrl_mgmt
+
+  # DMA Debug AXI-Lite Interface
+  set s_axi_dma_debug [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_dma_debug ]
+  set_property -dict [ list \
+      CONFIG.PROTOCOL                     {AXI4LITE}                                                                                        \
+      CONFIG.ADDR_WIDTH                   {32}                                                                                              \
+      CONFIG.DATA_WIDTH                   {32}                                                                                              \
+      CONFIG.MAX_BURST_LENGTH             {1}                                                                                               \
+      CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                               \
+      CONFIG.INSERT_VIP                   {0}                                                                                               \
+  ] $s_axi_dma_debug
+
+  # Create QDMA specific interface ports
+  if {$C_DMA_TYPE eq "QDMA"} {
+
+      set s_axis_c2h [ create_bd_intf_port -mode Slave -vlnv xilinx.com:display_qdma:s_axis_c2h_rtl:1.0 s_axis_c2h ]
+      set s_axis_c2h_cmpt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:display_qdma:s_axis_c2h_cmpt_rtl:1.0 s_axis_c2h_cmpt ]
+      set s_qdma_dsc_crdt_in [ create_bd_intf_port -mode Slave -vlnv xilinx.com:display_qdma:dsc_crdt_in_rtl:1.0 s_qdma_dsc_crdt_in ]
+      set s_qdma_h2c_byp_in_st [ create_bd_intf_port -mode Slave -vlnv xilinx.com:display_qdma:h2c_byp_in_st_rtl:1.0 s_qdma_h2c_byp_in_st ]
+
+      set m_axis_h2c [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_qdma:m_axis_h2c_rtl:1.0 m_axis_h2c ]
+      set m_qdma_tm_dsc_sts [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_qdma:tm_dsc_sts_rtl:1.0 m_qdma_tm_dsc_sts ]
+      set m_qdma_h2c_byp_out [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_qdma:h2c_byp_out_rtl:1.0 m_qdma_h2c_byp_out ]
+      set m_qdma_c2h_byp_out [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_qdma:c2h_byp_out_rtl:1.0 m_qdma_c2h_byp_out ]
+
+  }
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Managememt Interrupts
+  set mgmt_offset 0
+  for {set i 0} {$i < $C_NUM_MGMT_IRQS} {incr i} {
+  
+      set interrupt_mgmt_$i [ create_bd_port -dir I -from [expr ([lindex $C_MGMT_IRQ_WIDTHS $i] - 1) + $mgmt_offset] -to $mgmt_offset interrupt_mgmt_$i ]
+      set mgmt_offset [expr $mgmt_offset + [lindex $C_MGMT_IRQ_WIDTHS $i]]
+      
+  }
+
+  # User Interrupts
+  
+  # Set the user interrupt port offset, this is 0 for QDMA and 8 for XDMA
+  if {$C_DMA_TYPE eq "XDMA"} {
+      
+      set user_offset $C_MAX_NUM_USER_IRQS
+      
+  } else {
+  
+      set user_offset 0
+      
+  }
+  
+  # Create the User interrupt ports
+  for {set i 0} {$i < $C_NUM_USER_IRQS} {incr i} {
+  
+      set interrupt_user_$i [ create_bd_port -dir I -from [expr ([lindex $C_USER_IRQ_WIDTHS $i] - 1) + $user_offset] -to $user_offset interrupt_user_$i ]
+      set user_offset [expr $user_offset + [lindex $C_USER_IRQ_WIDTHS $i]]
+      
+  }
+
+  # PCIe Status
+  set pcie_phy_rdy [ create_bd_port -dir I pcie_phy_rdy ]
+  set pcie_user_lnk_up [ create_bd_port -dir I pcie_user_lnk_up ]
+
+  # set aclk_pcie bus associations based on p2p support
+  if {$C_SUPPORTS_P2P} {
+
+      set aclk_pcie_busif "m_pcie_axis_cc:m_pcie_axis_rq:s_pcie_axis_cq:s_pcie_axis_rc:s_axi_dma_debug:m_axi_data:m_axi_data_p2p"
+
+  } else {
+
+      set aclk_pcie_busif "m_pcie_axis_cc:m_pcie_axis_rq:s_pcie_axis_cq:s_pcie_axis_rc:s_axi_dma_debug:m_axi_data"
+
+  }
+
+  # Create PCIe Clock inputs
+  set aclk_pcie [ create_bd_port -dir I -type clk aclk_pcie ]
+  set_property -dict [ list \
+      CONFIG.ASSOCIATED_BUSIF $aclk_pcie_busif \
+      CONFIG.ASSOCIATED_RESET {aresetn_pcie} \
+  ] $aclk_pcie
+
+  # Include the PCIe Core Clock when TDM SLR Crossings are enabled
+  if {$C_HAS_TDM_SLR_CROSSING} {
+
+      set aclk_pcie_2x [ create_bd_port -dir I -type clk aclk_pcie_2x ]
+
+  }
+
+  # Create PCIe reset
+  set aresetn_pcie [ create_bd_port -dir I -type rst aresetn_pcie ]
+
+  # Create Ctrl Clock
+  set aclk_ctrl [ create_bd_port -dir I -type clk aclk_ctrl ]
+  set_property -dict [ list \
+      CONFIG.ASSOCIATED_BUSIF {s_axi_ctrl_mgmt} \
+      CONFIG.ASSOCIATED_RESET {aresetn_ctrl} \
+  ] $aclk_ctrl
+
+  # Create Ctrl Reset
+  set aresetn_ctrl [ create_bd_port -dir I -type rst aresetn_ctrl ]
+

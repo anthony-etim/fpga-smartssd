@@ -1,0 +1,208 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+set shell_subsystem                             [::ipxit::current_inst]
+
+#==========================================================================================================================================#
+# Get Project settings
+#==========================================================================================================================================#
+
+set Cur_Proj_ARCHITECTURE                       [string tolower [xit::get_project_property ARCHITECTURE ]]
+set Cur_Proj_FAMILY                             [string tolower [xit::get_project_property FAMILY       ]]
+set Cur_Proj_SPEEDGRADE                         [string tolower [xit::get_project_property SPEEDGRADE   ]]
+set Cur_Proj_PART                               [string tolower [xit::get_project_property PART         ]]
+set Cur_Proj_BOARD                              [string tolower [xit::get_project_property BOARD        ]]
+set Cur_Proj_PREFHDL                            [string tolower [xit::get_project_property PREFHDL      ]]
+set Cur_Proj_DEVICE                             [string tolower [xit::get_project_property DEVICE       ]]
+set Cur_Proj_PACKAGE                            [string tolower [xit::get_project_property PACKAGE      ]]
+
+dbg_brk
+dbg_puts "ARCHITECTURE: $Cur_Proj_ARCHITECTURE"
+dbg_puts "FAMILY: $Cur_Proj_FAMILY"
+dbg_puts "SPEEDGRADE: $Cur_Proj_SPEEDGRADE"
+dbg_puts "PART: $Cur_Proj_PART"
+dbg_puts "BOARD: $Cur_Proj_BOARD"
+dbg_puts "PREFHDL: $Cur_Proj_PREFHDL"
+dbg_puts "DEVICE: $Cur_Proj_DEVICE"
+dbg_puts "PACKAGE: $Cur_Proj_PACKAGE"
+dbg_brk
+
+#==========================================================================================================================================#
+# Get user parameters
+#==========================================================================================================================================#
+
+set C_HAS_AXI_IIC                               [get_property CONFIG.HAS_AXI_IIC                            $shell_subsystem]
+set C_HAS_QSFP_GPIO                             [get_property CONFIG.HAS_QSFP_GPIO                          $shell_subsystem]
+set C_HAS_USB_UART                              [get_property CONFIG.HAS_USB_UART                           $shell_subsystem]
+set C_HAS_EXTERNAL_M_AXILITE                    [get_property CONFIG.HAS_EXTERNAL_M_AXILITE                 $shell_subsystem]
+set C_ENABLE_AXI_IC_PIPELINING                  [get_property CONFIG.ENABLE_AXI_IC_PIPELINING               $shell_subsystem]
+
+if {$C_ENABLE_AXI_IC_PIPELINING == true} {
+
+    set axi_ic_has_regslice 4
+
+} else {
+
+    set axi_ic_has_regslice 0
+
+}
+
+set C_CMC_INTC_KIND_OF_INTR                     [get_property CONFIG.CMC_INTC_KIND_OF_INTR                  $shell_subsystem]
+set C_CMC_INTC_KIND_OF_EDGE                     [get_property CONFIG.CMC_INTC_KIND_OF_EDGE                  $shell_subsystem]
+set C_CMC_INTC_KIND_OF_LVL                      [get_property CONFIG.CMC_INTC_KIND_OF_LVL                   $shell_subsystem]
+set C_CMC_INTC_ASYNC_INTR                       [get_property CONFIG.CMC_INTC_ASYNC_INTR                    $shell_subsystem]
+
+set C_NUM_HOST_INTERRUPTS                       [get_property CONFIG.NUM_HOST_INTERRUPTS                    $shell_subsystem]
+set C_HOST_INTC_KIND_OF_INTR                    [get_property CONFIG.HOST_INTC_KIND_OF_INTR                 $shell_subsystem]
+set C_HOST_INTC_KIND_OF_EDGE                    [get_property CONFIG.HOST_INTC_KIND_OF_EDGE                 $shell_subsystem]
+set C_HOST_INTC_KIND_OF_LVL                     [get_property CONFIG.HOST_INTC_KIND_OF_LVL                  $shell_subsystem]
+set C_HOST_INTC_ASYNC_INTR                      [get_property CONFIG.HOST_INTC_ASYNC_INTR                   $shell_subsystem]
+
+# Subsystem Version Properties
+set C_SUBSYSTEM_ID                              [get_property CONFIG.VERSION.SUBSYSTEM_ID                   $shell_subsystem]
+set C_VIV_VERSION                               [get_property CONFIG.VERSION.VIV_VERSION                    $shell_subsystem]
+set C_MAJOR_VERSION                             [get_property CONFIG.VERSION.MAJOR_VERSION                  $shell_subsystem]
+set C_MINOR_VERSION                             [get_property CONFIG.VERSION.MINOR_VERSION                  $shell_subsystem]
+set C_CORE_REVISION                             [get_property CONFIG.VERSION.CORE_REVISION                  $shell_subsystem]
+set C_PATCH_REVISION                            [get_property CONFIG.VERSION.PATCH_REVISION                 $shell_subsystem]
+set C_PERFORCE_CL                               [get_property CONFIG.VERSION.PERFORCE_CL                    $shell_subsystem]
+set C_RESERVED_TAG                              [get_property CONFIG.VERSION.RESERVED_TAG                   $shell_subsystem]
+
+# Generate 4 Satellite GPIO for U200/U250/U280, 2 for U50/U30/U25
+
+set C_NUM_SATELLITE_GPIO 4
+
+if {$Cur_Proj_DEVICE == "xcu50"} {
+
+    set C_NUM_SATELLITE_GPIO 2
+
+}
+
+if {$Cur_Proj_DEVICE == "xcu25"} {
+
+    set C_NUM_SATELLITE_GPIO 2
+
+}
+
+if {$Cur_Proj_DEVICE == "xcu30"} {
+
+    set C_NUM_SATELLITE_GPIO 2
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# OFFSET and RANGE
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_MB_BASE_VECTORS                           [get_property CONFIG.MB_BASE_VECTORS                        $shell_subsystem]
+
+# CMC Peripherals
+
+set C_OFFSET_BUILD_INFO_CMC_SEG                 [get_property CONFIG.OFFSET_BUILD_INFO_CMC_SEG              $shell_subsystem]
+set C_RANGE_BUILD_INFO_CMC_SEG                  [get_property CONFIG.RANGE_BUILD_INFO_CMC_SEG               $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_QSFP_SEG                  [get_property CONFIG.OFFSET_AXI_GPIO_QSFP_SEG               $shell_subsystem]
+set C_RANGE_AXI_GPIO_QSFP_SEG                   [get_property CONFIG.RANGE_AXI_GPIO_QSFP_SEG                $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_HBM_SEG                   [get_property CONFIG.OFFSET_AXI_GPIO_HBM_SEG                $shell_subsystem]
+set C_RANGE_AXI_GPIO_HBM_SEG                    [get_property CONFIG.RANGE_AXI_GPIO_HBM_SEG                 $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_MB_INT_SEG                [get_property CONFIG.OFFSET_AXI_GPIO_MB_INT_SEG             $shell_subsystem]
+set C_RANGE_AXI_GPIO_MB_INT_SEG                 [get_property CONFIG.RANGE_AXI_GPIO_MB_INT_SEG              $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_WDT_SEG                   [get_property CONFIG.OFFSET_AXI_GPIO_WDT_SEG                $shell_subsystem]
+set C_RANGE_AXI_GPIO_WDT_SEG                    [get_property CONFIG.RANGE_AXI_GPIO_WDT_SEG                 $shell_subsystem]
+
+set C_OFFSET_AXI_INTC_CMC_SEG                   [get_property CONFIG.OFFSET_AXI_INTC_CMC_SEG                $shell_subsystem]
+set C_RANGE_AXI_INTC_CMC_SEG                    [get_property CONFIG.RANGE_AXI_INTC_CMC_SEG                 $shell_subsystem]
+
+set C_OFFSET_AXI_TIMEBASE_WDT_SEG               [get_property CONFIG.OFFSET_AXI_TIMEBASE_WDT_SEG            $shell_subsystem]
+set C_RANGE_AXI_TIMEBASE_WDT_SEG                [get_property CONFIG.RANGE_AXI_TIMEBASE_WDT_SEG             $shell_subsystem]
+
+set C_OFFSET_AXI_UART_SATELLITE_SEG             [get_property CONFIG.OFFSET_AXI_UART_SATELLITE_SEG          $shell_subsystem]
+set C_RANGE_AXI_UART_SATELLITE_SEG              [get_property CONFIG.RANGE_AXI_UART_SATELLITE_SEG           $shell_subsystem]
+
+set C_OFFSET_AXI_UART_USB_SEG                   [get_property CONFIG.OFFSET_AXI_UART_USB_SEG                $shell_subsystem]
+set C_RANGE_AXI_UART_USB_SEG                    [get_property CONFIG.RANGE_AXI_UART_USB_SEG                 $shell_subsystem]
+
+set C_OFFSET_TIMEBASE_COUNTER_SEG               [get_property CONFIG.OFFSET_TIMEBASE_COUNTER_SEG            $shell_subsystem]
+set C_RANGE_TIMEBASE_COUNTER_SEG                [get_property CONFIG.RANGE_TIMEBASE_COUNTER_SEG             $shell_subsystem]
+
+set C_OFFSET_AXI_BRAM_CTRL_REGMAP_CMC_SEG       [get_property CONFIG.OFFSET_AXI_BRAM_CTRL_REGMAP_CMC_SEG    $shell_subsystem]
+set C_RANGE_AXI_BRAM_CTRL_REGMAP_CMC_SEG        [get_property CONFIG.RANGE_AXI_BRAM_CTRL_REGMAP_CMC_SEG     $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_MUTEX_CMC_SEG             [get_property CONFIG.OFFSET_AXI_GPIO_MUTEX_CMC_SEG          $shell_subsystem]
+set C_RANGE_AXI_GPIO_MUTEX_CMC_SEG              [get_property CONFIG.RANGE_AXI_GPIO_MUTEX_CMC_SEG           $shell_subsystem]
+
+set C_OFFSET_AXI_IIC_SEG                        [get_property CONFIG.OFFSET_AXI_IIC_SEG                     $shell_subsystem]
+set C_RANGE_AXI_IIC_SEG                         [get_property CONFIG.RANGE_AXI_IIC_SEG                      $shell_subsystem]
+
+# Host Peripherals
+
+set C_OFFSET_AXI_BRAM_CTRL_FW_SEG               [get_property CONFIG.OFFSET_AXI_BRAM_CTRL_FW_SEG            $shell_subsystem]
+set C_RANGE_AXI_BRAM_CTRL_FW_SEG                [get_property CONFIG.RANGE_AXI_BRAM_CTRL_FW_SEG             $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_MB_RESET_SEG              [get_property CONFIG.OFFSET_AXI_GPIO_MB_RESET_SEG           $shell_subsystem]
+set C_RANGE_AXI_GPIO_MB_RESET_SEG               [get_property CONFIG.RANGE_AXI_GPIO_MB_RESET_SEG            $shell_subsystem]
+
+set C_OFFSET_AXI_GPIO_MUTEX_HOST_SEG            [get_property CONFIG.OFFSET_AXI_GPIO_MUTEX_HOST_SEG         $shell_subsystem]
+set C_RANGE_AXI_GPIO_MUTEX_HOST_SEG             [get_property CONFIG.RANGE_AXI_GPIO_MUTEX_HOST_SEG          $shell_subsystem]
+
+set C_OFFSET_AXI_INTC_HOST_SEG                  [get_property CONFIG.OFFSET_AXI_INTC_HOST_SEG               $shell_subsystem]
+set C_RANGE_AXI_INTC_HOST_SEG                   [get_property CONFIG.RANGE_AXI_INTC_HOST_SEG                $shell_subsystem]
+
+set C_OFFSET_BUILD_INFO_HOST_SEG                [get_property CONFIG.OFFSET_BUILD_INFO_HOST_SEG             $shell_subsystem]
+set C_RANGE_BUILD_INFO_HOST_SEG                 [get_property CONFIG.RANGE_BUILD_INFO_HOST_SEG              $shell_subsystem]
+
+set C_OFFSET_AXI_BRAM_CTRL_REGMAP_HOST_SEG      [get_property CONFIG.OFFSET_AXI_BRAM_CTRL_REGMAP_HOST_SEG   $shell_subsystem]
+set C_RANGE_AXI_BRAM_CTRL_REGMAP_HOST_SEG       [get_property CONFIG.RANGE_AXI_BRAM_CTRL_REGMAP_HOST_SEG    $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#

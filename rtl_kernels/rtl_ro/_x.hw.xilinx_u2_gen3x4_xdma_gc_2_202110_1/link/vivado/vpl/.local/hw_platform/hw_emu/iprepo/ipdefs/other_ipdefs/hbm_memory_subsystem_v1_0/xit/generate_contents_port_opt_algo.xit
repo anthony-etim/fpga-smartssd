@@ -1,0 +1,682 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ######################################################################
+#  convert_slp_to_port
+##
+#
+# @brief  Convert switch, link, position info to an actual 0-31 port on the HBM
+#
+# @param  s     Switch Index
+# @param  l     Link Index
+# @param  p     Position Index
+# @return port  HBM Port
+#
+
+proc convert_slp_to_port {s l p} {
+
+    return [expr ($s*4)+($l*2)+$p]
+
+}
+
+# ######################################################################
+#  convert_port_to_slp
+##
+#
+# @brief  Convert actual 0-31 port on the HBM to switch, link, position info
+#
+# @param  port  HBM Port
+# @return s     Switch Index (part of list)
+# @return l     Link Index
+# @return p     Position Index
+#
+
+
+proc convert_port_to_slp {port} {
+
+   set s [expr int($port/4)]
+   set l [expr int(($port % 4)/2)]
+   set p [expr int(($port % 4)) % 2]
+
+   return [list $s $l $p]
+}
+
+# ######################################################################
+# lsort_indices
+##
+#
+# @brief  Sort an array and return indices
+#
+# @param  itemL      List to be sorted
+# @param  increasing -increasing/-decreasing
+# @return indexL     Indices to be used
+#
+
+ proc lsort_indices {itemL  increase} {
+
+    set pairL [list]
+    foreach item $itemL {
+       lappend pairL [list $item [llength $pairL]]
+    }
+
+    set indexL [list]
+    foreach pair [lsort -index 0 -real $increase $pairL] {
+       lappend indexL [lindex $pair 1]
+    }
+    return $indexL
+}
+
+# ######################################################################
+# add_node_results
+##
+#
+# @brief  Add two arrays of node results
+#
+# @param  result1 Result to be added
+# @param  result2 Result to be added
+# @return result  Output
+#
+#
+
+proc add_node_results {result1 result2} {
+
+   # Initialise - need to make globals to be passed around...
+   set num_d 2
+   set num_n 7
+   set result [lrepeat $num_d [lrepeat $num_n 0]]
+
+   for {set d 0} {$d < $num_d} {incr d} {
+      for {set n 0} {$n < $num_n} {incr n} {
+          lset result $d $n \
+             [expr [lindex $result1 $d $n] + [lindex $result2 $d $n]]
+      }
+   }
+
+   return $result
+}
+
+
+# ######################################################################
+# print_connection_stats
+##
+#
+# @brief  Print final results acheived (coarse)
+#
+# @param  results Dictionary of Results
+#
+#
+proc print_connection_stats {results} {
+
+   set final_stats [dict get $results final_stats]
+
+   puts ""
+   puts "----------------------------------------------------------------------------------"
+   puts "Final Results (traffic weighting metrics)"
+   puts "----------------------------------------------------------------------------------"
+
+   puts "Max Wt.               |    [format %.2f [lindex $final_stats 0]]   |"
+   puts "Max Lateral Variation |    [format %.2f [lindex $final_stats 1]]   |"
+   puts "Mean Weight           |    [format %.2f [lindex $final_stats 2]]   |"
+   puts "----------------------------------------------------------------------------------"
+
+}
+
+# ######################################################################
+# print_connection_results
+##
+#
+# @brief  Print connection points vs memory regions for all kernels
+#
+# @param  results Dictionary of Results
+#
+#
+proc print_connection_result {results} {
+
+   # Initialise
+   set hbm_mem_txns [dict get $results hbm_mem_txns]
+   set kernel_connections [dict get $results kernel_connections]
+
+   # Print header info
+   puts ""
+   puts "-----------------------------------------------------------------------------------------------------------------------------------------"
+   puts "Kernel Connections vs Memory Regions per kernel"
+   puts "-----------------------------------------------------------------------------------------------------------------------------------------"
+   puts "MEM  :|M00 M01 M02 M03|M04 M05 M06 M07|M08 M09 M10 M11|M12 M13 M14 M15|M16 M17 M18 M19|M20 M21 M22 M23|M24 M25 M26 M27|M28 M29 M30 M31 |"
+   puts "AXI  :|S00 S01 S02 S03|S04 S05 S06 S07|S08 S09 S10 S11|S12 S13 S14 S15|S16 S17 S18 S19|S20 S21 S22 S23|S24 S25 S26 S27|S28 S29 S30 S31 |"
+
+   # Loop through each kernel printing out connection results
+   for {set k_idx 0} {$k_idx < [llength $kernel_connections]} {incr k_idx} {
+
+      puts -nonewline "MST[format %.2d $k_idx]:|"
+
+      # Where is this kernel connected
+      set k_connect [lindex $kernel_connections $k_idx]
+
+      # Loop through each of the connection points 
+      for {set c 0} {$c < 32} {incr c} {
+         
+         # Which memory
+         set m_idx $c
+         set m_used [lindex $hbm_mem_txns $k_idx $m_idx]
+
+         # If kernel is connected there then print -|-
+         if {($m_used == 1) && ($c == $k_connect)} {
+            puts -nonewline "#|# "
+         } elseif {$c == $k_connect} {
+            puts -nonewline "-|- "
+         } elseif {$m_used == 1} {
+            puts -nonewline "### "
+         } else {
+            puts -nonewline "    "
+         }
+      }
+      puts "|"
+   }
+   puts "-----------------------------------------------------------------------------------------------------------------------------------------"
+
+}
+
+# ######################################################################
+# groupage
+##
+#
+# @brief  Group elements with each element being tagged with numeric label 0-->N
+#
+# @param  list List of elements
+#
+# @return groups List with a group for each input element (at same index in list)
+#
+#
+proc groupage {list} {
+
+    # Get the number of elements to group
+    set len [llength $list]
+    
+    # What is the group number that each group corresponds to
+    set val_per_group [lrepeat $len 0]
+
+    # Initialise return value
+    set groups        [lrepeat $len 0]
+
+    # Loop through and assign the values
+    set g_idx 0
+    for {set i 0} {$i < $len} {incr i} {
+        set current_elem [lindex $list $i]
+        # Search for this value in current values
+        set idx [lsearch $val_per_group $current_elem]
+        # Already exists...assign group number to this element
+        if {$idx > -1} {
+            lset groups $i $idx
+        # Create new group number and move on
+        } else {
+           lset groups $i $g_idx
+           lset val_per_group $g_idx $current_elem
+           incr g_idx
+        }
+    }
+
+    return $groups
+}
+
+# ######################################################################
+# print_connection_stats
+##
+#
+# @brief  Group masters by their associated kernels
+# @brief  ...can only usurp the spot of another kernel if it has the same traffic contribution
+#
+# @param port_connections      Port connection per input port
+# @param hbm_mem_txns          Memory usage per input port
+# @param kernel_master_groups  Kernel Master Groupings (unique ID for each kernel)
+# @param hbm_port_locs         Port Loc'ing constraints (-1 if not LOC'd)
+#
+#
+proc group_by_kernel {port_connections hbm_mem_txns kernel_master_groups hbm_port_locs calc_port_zero_last} {
+
+    set num_k [llength $hbm_mem_txns]
+    set num_m 32
+    
+    # Give each kernel a "figure of merit" for it's connections
+    # Figure of merit is based on 2^N for each position i.e. unique number
+    # for each combination of memories
+    set fom [lrepeat $num_k 0]
+    for {set k 0} {$k < $num_k} {incr k} {
+       for {set m 0} {$m < $num_m} {incr m} {
+           if [lindex $hbm_mem_txns $k $m] {
+               lset fom $k [expr [lindex $fom $k] + pow(2,$m)]
+           }
+       }
+    }
+    
+    # Make host unique
+    if {$calc_port_zero_last == 1} {
+       lset fom 0 -1
+    }
+
+    # Use the fom to group
+    set fom_groups [groupage $fom]
+
+    # Ports for algorithm
+    set port_connections_adj $port_connections
+
+    # Loop through kernels with the same memories...
+    # if there are some that belong to the same kernel group them together
+    # Number of groups can be at max 33 but for safety let's say 64 here
+    for {set groupid 0} {$groupid < 64} {incr groupid} {
+
+        # Get IDs of the kernels related to this memory grouping
+        set ids_pre [lsearch -all $fom_groups $groupid]
+        set ids $ids_pre
+
+        # Remove any kernels (by id) in this group that are LOC'd...we cannot swap them
+        for {set id_idx 0} {$id_idx < [llength $ids_pre]} {incr id_idx} {
+            if {[lindex $hbm_port_locs [lindex $ids_pre $id_idx]] > -1} {
+               set remove_idx [lsearch $ids [lindex $ids_pre $id_idx]]
+               set ids [lreplace $ids $remove_idx $remove_idx]
+            }
+        }
+        # Start Reordering
+        # Need more than one to reorder
+        set num_ids [llength $ids]
+        if {$num_ids > 1} {
+
+            set ids_swapped [lrepeat $num_ids 0]
+
+            # Find out which kernel each port belongs to
+            # want to group by kernel
+            set kernels {}
+            for {set id_idx 0} {$id_idx < $num_ids} {incr id_idx} {
+              lappend kernels [lindex $kernel_master_groups [lindex $ids $id_idx]]
+            }
+            
+            # Now sort groups together (returning the indices)
+            set grouped_ids [lsort -integer -indices $kernels]
+
+            # Each index from group sorting is used to get an index for kernel
+            for {set swpid 0} {$swpid < $num_ids} {incr swpid} {
+                lset ids_swapped $swpid [lindex $ids [lindex $grouped_ids $swpid]]
+            }
+
+            # Now get all of the ports available to this group and sort them lowest to highest
+            set grouped_kernel_ports {}
+            for {set id_idx 0} {$id_idx < $num_ids} {incr id_idx} {
+               lappend grouped_kernel_ports [lindex $port_connections_adj [lindex $ids_swapped $id_idx]]
+            }
+            set sorted_grouped_kernel_ports [lsort -integer $grouped_kernel_ports]
+
+            # Now swap the ports based on ID order  recommendation
+            for {set swpid 0} {$swpid < $num_ids} {incr swpid} {
+                lset port_connections_adj [lindex $ids_swapped $swpid] [lindex $sorted_grouped_kernel_ports $swpid]
+            }
+        }
+    }
+
+    return $port_connections_adj
+
+}
+
+# ######################################################################
+# calc_all_opt_position
+##
+#
+# @brief  Calculate the optimum switch location for K kernels
+# @brief  - Iterative algorithm
+# @brief  - The optimum position for each kernel is assessed based on results
+# @brief    thus far
+# @brief  - Order is kernels accessing least memory regions first
+#
+#
+# @param  hbm_mem_txns              Memory regions accessed for K kernels (KxW)
+# @param  node_lateral_txns         Potential weighting for each kernel for each switch position
+#                                   in each direction at each node (KxSxDxN)
+# @param  k_order                   Order in which kernels are to be processed
+# @param  results_int               Used in iterative flow - setup switch condition
+# @param  hbm_port_locs             Are ports loc'd by user (-1 if not otherwise port index 0 to 31)
+# @param  hbm_port_locs_traffic     Should LOC'd port be included in traffic calc (1=yes)
+# @param  kernel_master_groups      Group that master is in (integer number)
+# @return results                   Results
+#                                   - Connections for each kernel
+#                                   - Results at each node link
+#                                   - Memory Regions for each kernel
+#                                   - Stats for each kernel
+#
+proc calc_all_opt_position {hbm_mem_txns node_lateral_txns k_order results_int hbm_port_locs hbm_port_locs_traffic kernel_master_group hbm_port_prohibit calc_port_zero_last} {
+
+   # Initialise
+   set num_k [llength $hbm_mem_txns]
+   # Should these be global or passed in in some way...
+   set num_d 2
+   set num_s 8
+   set num_n [expr $num_s-1]
+   set num_l 2
+   set num_p 2
+   set num_ports 32
+   # Peak, Mean, Balance
+   set num_stats 3
+   
+   # Initialise switch occupancy to zero and then mark all prohibited ports
+   # as occupied
+   set switch_occ [lrepeat $num_s [lrepeat $num_l [lrepeat $num_p 0]]]
+   # Blank out positions that are prohibited
+   for {set port 0} {$port < $num_ports} {incr port} {
+      if {[lindex $hbm_port_prohibit $port] > 0} {
+         set slp [convert_port_to_slp $port]
+         set fswitch [lindex $slp 0]
+         set flink   [lindex $slp 1]
+         set fpos    [lindex $slp 2]
+         lset switch_occ $fswitch $flink $fpos [expr [lindex $switch_occ $fswitch $flink $fpos] + 1]
+      }
+   }
+
+   # Initialise return switch locations to nonsense to capture errors
+   set port_connections [lrepeat $num_k 1000]
+   set connections [lrepeat $num_k [lrepeat 2 1000]]
+
+   # Initialise final result
+   set final_result $results_int
+
+   # Loop through each kernel master
+   for {set k_idx 0} {$k_idx < $num_k} {incr k_idx} {
+   
+      # Figure out which kernel to be calculated
+      set k [lindex $k_order $k_idx]
+      
+      # Figure out whether prt is loc'd and whether it should be included in 
+      # traffic calc
+      set port_loc         [lindex $hbm_port_locs $k]
+      set port_loc_traffic [lindex $hbm_port_locs_traffic $k]
+
+      # Initialise potential result
+      set potential_result [lrepeat $num_s [lrepeat $num_l [lrepeat $num_l [lrepeat $num_d [lrepeat $num_n 0]]]]]
+
+      # Initialise stats to really high value
+      # if a switch location is already occupied then this value will rule
+      # that location out
+      set stats [lrepeat $num_s [lrepeat $num_l [lrepeat $num_stats 1000]]]
+
+      # For this kernel iterate through the switch locations and check the result
+      # for each potential switch location
+      for {set s 0} {$s < $num_s} {incr s} {
+
+         # Iterate through links
+         # Note that up until now links have not come into it...creating link info at this point
+         for {set l 0} {$l < $num_l} {incr l} {
+
+            # First check that the potential switch is not already occupied
+            if {[sum [lindex $switch_occ $s $l]] < 2} {
+
+               # Potential result for this switch location should
+               # be initialised with final_result so far
+               lset potential_result $s $l $final_result
+
+               # Now update the potential result with the kernel results for this switch position
+               set updated_potential_result [add_node_results [lindex $potential_result $s $l $l] [lindex $node_lateral_txns $k $s]]
+               lset potential_result $s $l $l $updated_potential_result
+
+               # Calc stats for this result
+               lset stats $s $l [calc_stats [lindex $potential_result $s $l]]
+
+            }
+         }
+      }
+
+      # Make a decision on the best position for this kernel master (at this point in algorithm - iterative)
+      lset connections $k [calc_opt_position_stats $stats]
+      set fpos -32
+      if {$port_loc == -1} {
+         set fswitch [lindex $connections $k 0]
+         set flink   [lindex $connections $k 1]
+         for {set p 0} {$p < $num_p} {incr p} {
+            if {[lindex $switch_occ $fswitch $flink $p] == 0} {
+               set fpos $p
+               break
+            }
+         }
+      } else {
+         set slp     [convert_port_to_slp $port_loc]
+         set fswitch [lindex $slp 0]
+         set flink   [lindex $slp 1]
+         set fpos    [lindex $slp 2]
+      }
+
+      # Update final result (only if this port is to be included)
+      if {$port_loc_traffic} {
+         set final_result [lindex $potential_result $fswitch $flink]
+      }
+
+      # Update switch occupancy
+      lset switch_occ $fswitch $flink $fpos [expr [lindex $switch_occ $fswitch $flink $fpos] + 1]
+
+      # Update actual switch position for each kernel i.e. number 0-31
+      lset port_connections $k [convert_slp_to_port $fswitch $flink $fpos]
+
+   }
+
+   # Final sweep
+   # Group masters by kernel if they have the same memory (need more than one kernel of course)
+   if {$num_k > 1} {
+      set port_connections [group_by_kernel $port_connections $hbm_mem_txns $kernel_master_group $hbm_port_locs $calc_port_zero_last]
+   }
+
+   # Calculate final stats
+   set final_stats [calc_stats $final_result]
+
+   # Package results into a dict
+   set results [dict create]
+   dict set results kernel_connections $port_connections
+   dict set results hbm_mem_txns $hbm_mem_txns
+   dict set results final_result $final_result
+   dict set results final_stats $final_stats
+   return $results
+}
+
+# ######################################################################
+# get_best_scheme
+##
+#
+# @brief  Compare multiple schemes and return the best scheme
+#
+#
+# @param  results           Multi-D array of schemes
+# @return results_sch       Results for chosen scheme
+#                           - Connections for each kernel
+#                           - Results at each node link
+#                           - Memory Regions for each kernel
+#                           - Stats for each kernel
+#
+#
+proc get_best_scheme {results} {
+
+     # Initialise
+     set num_sch [llength $results]
+
+     # For each stat looping through each potential switch/link and
+     # calculating the best - may be "joint best"
+
+     # First look at peak
+     set min 1000
+     for {set s 0} {$s < $num_sch} {incr s} {
+        set cresult [lindex $results $s]
+        set current [lindex [dict get $cresult final_stats] 0]
+        # New minimum - clear list
+        if {$current < $min} {
+           set sch_mins_peak $s
+           set min $current
+        # Joint minimum - add to list
+        } elseif {$current == $min} {
+           lappend sch_mins_peak $s
+        }
+     }
+
+     # Next look at balance
+     # - Note looking through only the peak results from previous stage
+     set min 1000
+     for {set idx 0} {$idx < [llength $sch_mins_peak]} {incr idx} {
+        set s [lindex $sch_mins_peak $idx]
+        set cresult [lindex $results $s]
+        set current [lindex [dict get $cresult final_stats] 1]
+        # New minimum - clear list
+        if {$current < $min} {
+           set sch_mins_bal $s
+           set min $current
+        # Joint minimum - add to list
+        } elseif {$current == $min} {
+           lappend sch_mins_bal $s
+        }
+     }
+
+     # Next look at mean
+     # - Note looking through only the peak/balance results from previous stages
+     set min 1000
+     for {set idx 0} {$idx < [llength $sch_mins_bal]} {incr idx} {
+        set s [lindex $sch_mins_bal $idx]
+        set cresult [lindex $results $s]
+        set current [lindex [dict get $cresult final_stats] 2]
+        # New minimum - clear list
+        if {$current < $min} {
+           set sch_mins_mean $s
+           set min $current
+        # Joint minimum - add to list
+        } elseif {$current == $min} {
+           lappend sch_mins_mean $s
+        }
+     }
+
+     # Take the first if more than one the same
+     set index_sch [lindex $sch_mins_mean 0]
+     set result_sch [lindex $results $index_sch]
+
+     return $result_sch
+}
+
+# ######################################################################
+# calc_all_opt_position_multi
+##
+#
+# @brief  Calculate the optimum switch location for K kernels (multi-scheme)
+# @brief  - Two schemes
+# @brief    - Small memory region kernels to big memory region kernels
+# @brief    - Small to big reversed on even numbers of memory  regions
+#
+#
+# @param  hbm_mem_txns              Memory regions accessed for K kernels (KxW)
+# @param  node_lateral_txns         Potential weighting for each kernel for each switch position
+#                                   in each direction at each node (KxSxDxN)
+# @param  results_intermedite       Intermediate results - output from this proc
+#                                   passed back in for iterative flow
+# @param  hbm_port_locs             Are ports loc'd by user (-1 if not otherwise port index 0 to 31)
+# @param  hbm_port_locs_traffic     Should LOC'd port be included in traffic calc (1=yes)
+# @param  kernel_master_groups      Group that master is in (integer number)
+# @return result_list               List of results:
+#                                   Composed of:
+#                                   Results
+#                                   - Connections for each kernel
+#                                   - Results at each node link
+#                                   - Memory Regions for each kernel
+#                                   - Stats for each kernel
+#                                   Intermediate results for iterative scheme:
+#                                   - Per scheme
+#                                   - Connections for each kernel
+#                                   - Results at each node link
+#                                   - Memory Regions for each kernel
+#                                   - Stats for each kernel
+#
+#
+proc calc_all_opt_position_multi {hbm_mem_txns node_lateral_txns results_intermediate hbm_port_locs hbm_port_locs_traffic kernel_master_group hbm_port_prohibit calc_port_zero_last} {
+
+   # For each kernel sums its memory regions
+   set hbm_mem_txns_summed []
+   for {set k 0} {$k < [llength $hbm_mem_txns]} {incr k} {
+      set csum 0
+      # Only update sum if not LOC'd port...want LOC'd ports to be prioritised i.e. 0 weight
+      if {[lindex $hbm_port_locs $k] == -1} {
+         set csum [sum [lindex $hbm_mem_txns $k]]
+      }
+      lappend hbm_mem_txns_summed $csum
+   }
+
+   set results {}
+   # Loop through schemes
+   for {set sch 0} {$sch < 2} {incr sch} {
+      
+      # Small --> Big
+      if {$sch == 0} {
+
+         set k_order [lsort_indices $hbm_mem_txns_summed -increasing]
+
+      } elseif {$sch == 1} {
+      
+         set k_order [lsort_indices $hbm_mem_txns_summed -decreasing]
+         set k_order [lreverse $k_order]
+      }
+      
+      # Need to put host port last if it is not locked to a port
+      if {$calc_port_zero_last == 1} {
+         if {[lindex $hbm_port_locs 0] > -1} {
+         } else {
+            set idx [lsearch $k_order 0]
+            set k_order [lreplace $k_order $idx $idx]
+            # Put host at the end
+            lappend k_order 0
+         }
+      }
+
+      lappend results [calc_all_opt_position $hbm_mem_txns $node_lateral_txns $k_order [lindex $results_intermediate $sch] $hbm_port_locs $hbm_port_locs_traffic $kernel_master_group $hbm_port_prohibit $calc_port_zero_last]
+
+   }
+
+   set result_sch [get_best_scheme $results]
+   # Need to return results for both schemes for iterative approach
+   set results_iter [lrepeat 2 0]
+   lset results_iter 0 [dict get [lindex $results 0] final_result]
+   lset results_iter 1 [dict get [lindex $results 1] final_result]
+   lappend result_list $result_sch
+   lappend result_list $results_iter
+   return $result_list
+}

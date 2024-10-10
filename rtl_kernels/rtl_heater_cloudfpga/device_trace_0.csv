@@ -1,0 +1,57 @@
+HEADER
+VTF File Version,1.1
+VTF File Type,1
+PID,17833
+Generated on,2023-03-16 16:32:00
+Resolution,ms
+Min Resolution,ns
+Trace Version,1.1
+TraceID,17834
+XRT  Version,2.13.466
+Tool Version,2022.1
+Platform,xilinx_u2_gen3x4_xdma_gc_base_2
+Target,System Run
+
+STRUCTURE
+Group_Start,xilinx_u2_gen3x4_xdma_gc_base_2
+Group_Start,ro.link.xclbin
+Group_Start,Compute Unit krnl_ro_rtl_1 - No Trace,Activity in accelerator krnl_ro_rtl:krnl_ro_rtl_1
+Group_End,krnl_ro_rtl_1
+Group_End,ro.link.xclbin
+Group_End,xilinx_u2_gen3x4_xdma_gc_base_2
+
+MAPPING
+25,0:0:0
+24,1:1:1
+18,bank0
+13,clCreateBuffer
+7,clCreateCommandQueue
+6,clCreateContext
+11,clCreateKernel
+9,clCreateProgramWithBinary
+16,clEnqueueMigrateMemObjects
+19,clEnqueueTask
+20,clFinish
+4,clGetDeviceIDs
+8,clGetDeviceInfo
+1,clGetExtensionFunctionAddress
+2,clGetExtensionFunctionAddressForPlatform
+3,clGetPlatformInfo
+28,clReleaseCommandQueue
+27,clReleaseContext
+10,clReleaseDevice
+26,clReleaseKernel
+17,clReleaseMemObject
+12,clReleaseProgram
+5,clRetainDevice
+15,clRetainMemObject
+14,clSetKernelArg
+23,krnl_ro_rtl
+29,krnl_ro_rtl_1
+22,ro.link
+21,xilinx_u2_gen3x4_xdma_gc_base_2
+
+EVENTS
+
+DEPENDENCIES
+

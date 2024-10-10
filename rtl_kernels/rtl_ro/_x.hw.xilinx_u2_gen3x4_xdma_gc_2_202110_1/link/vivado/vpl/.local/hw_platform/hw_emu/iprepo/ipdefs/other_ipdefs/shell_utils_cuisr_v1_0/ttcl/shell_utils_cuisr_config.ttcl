@@ -1,0 +1,5 @@
+<: :>
+<: setOutputDirectory "./src" :>
+<: setFileExtension   ".h" :>
+<: setFileUsedIn      "c_source" :>
+<: :>

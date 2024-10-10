@@ -1,0 +1,15 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+<: set bufgctrls {X0Y0 X0Y1} :>
+<: if {[getProjectDevice] == {xcu30}} { set bufgctrls {X1Y0 X1Y1} }:>
+
+create_clock -period 4.000 [get_ports aclk_pcie]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 0 :> [get_ports aclk_pcie]
+
+create_clock -period 20.000 [get_ports aclk_ctrl]
+set_property HD.CLK_SRC BUFGCTRL_<=: lindex $bufgctrls 1 :> [get_ports aclk_ctrl]

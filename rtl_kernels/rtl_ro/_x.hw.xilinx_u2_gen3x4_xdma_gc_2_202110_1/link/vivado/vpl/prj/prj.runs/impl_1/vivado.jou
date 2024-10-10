@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+# IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+# Start of session at: Fri Dec 31 12:15:16 2021
+# Process ID: 18813
+# Current directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1
+# Command line: vivado -log level0_wrapper.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source level0_wrapper.tcl -notrace
+# Log file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1/level0_wrapper.vdi
+# Journal file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/impl_1/vivado.jou
+#-----------------------------------------------------------
+source level0_wrapper.tcl -notrace

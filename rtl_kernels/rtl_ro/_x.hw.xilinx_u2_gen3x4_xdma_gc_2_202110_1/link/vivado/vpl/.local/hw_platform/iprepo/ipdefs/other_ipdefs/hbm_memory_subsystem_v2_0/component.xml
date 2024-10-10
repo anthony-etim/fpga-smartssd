@@ -1,0 +1,1141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>xilinx.com</spirit:vendor>
+  <spirit:library>ip</spirit:library>
+  <spirit:name>hbm_memory_subsystem</spirit:name>
+  <spirit:version>2.0</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>aximm_slave_decl</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="BUSIF_ENABLEMENT.aximm_slave_decl">false</xilinx:isEnabled>
+          </xilinx:enablement>
+          <xilinx:isDeclaration>true</xilinx:isDeclaration>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>aximm_master_decl</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="BUSIF_ENABLEMENT.aximm_master_decl">false</xilinx:isEnabled>
+          </xilinx:enablement>
+          <xilinx:isDeclaration>true</xilinx:isDeclaration>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_blockdiagram</spirit:name>
+        <spirit:displayName>Block Diagram</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:block.diagram</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_blockdiagram_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>d3768d7c</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_elaboratebd</spirit:name>
+        <spirit:displayName>Elaborate BD</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:elaborate.bd</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_smartconnect_1_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_axi_register_slice_2_1__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_hbm_1_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_axi_apb_bridge_3_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_xlconcat_2_1__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_util_reduced_logic_2_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_util_vector_logic_2_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_rama_1_1__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_axi_vip_1_1__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>c043048d</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_elaborateports</spirit:name>
+        <spirit:displayName>Elaborate Ports</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:elaborate.ports</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaborateports_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>d9a339bb</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>ebfcb146</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_utilityxitfiles</spirit:name>
+        <spirit:displayName>Utility XIT/TTCL</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xit.util</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_utilityxitfiles_xilinx_com_ip_sc_util_1_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_utilityxitfiles_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>6b703adc</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogbehavioralsimulation</spirit:name>
+        <spirit:displayName>Verilog Simulation</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>hbm_memory_subsystem_v2_0_0</spirit:modelName>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>sim_type</spirit:name>
+            <spirit:value>rtl</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>use_subcore_outputs</spirit:name>
+            <spirit:value>true</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogsynthesis</spirit:name>
+        <spirit:displayName>Verilog Synthesis</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>hbm_memory_subsystem_v2_0_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogsynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>c877e77a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+  </spirit:model>
+  <spirit:choices>
+    <spirit:choice>
+      <spirit:name>choice_list_90ee0cc7</spirit:name>
+      <spirit:enumeration>32</spirit:enumeration>
+      <spirit:enumeration>64</spirit:enumeration>
+      <spirit:enumeration>128</spirit:enumeration>
+      <spirit:enumeration>256</spirit:enumeration>
+      <spirit:enumeration>512</spirit:enumeration>
+      <spirit:enumeration>1024</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_list_b2430443</spirit:name>
+      <spirit:enumeration>SLR0</spirit:enumeration>
+      <spirit:enumeration>SLR1</spirit:enumeration>
+      <spirit:enumeration>SLR2</spirit:enumeration>
+    </spirit:choice>
+  </spirit:choices>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_blockdiagram_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>bd/bd.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>bd/resource_util.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>bd/config_part.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/update_contents.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_smartconnect_1_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xsi:type="xilinx:componentRefType" xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="smartconnect" xilinx:version="1.0" xilinx:coreRevision="13">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_axi_register_slice_2_1__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_register_slice" xilinx:version="2.1" xilinx:coreRevision="21">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_hbm_1_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="hbm" xilinx:version="1.0" xilinx:coreRevision="7">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_axi_apb_bridge_3_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_apb_bridge" xilinx:version="3.0" xilinx:coreRevision="16">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_xlconcat_2_1__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="xlconcat" xilinx:version="2.1" xilinx:coreRevision="3">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_util_reduced_logic_2_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="util_reduced_logic" xilinx:version="2.0" xilinx:coreRevision="4">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_util_vector_logic_2_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="util_vector_logic" xilinx:version="2.0" xilinx:coreRevision="1">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_rama_1_1__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="rama" xilinx:version="1.1" xilinx:coreRevision="5">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_axi_vip_1_1__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_vip" xilinx:version="1.1" xilinx:coreRevision="7">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaborateports_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/update_ports.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/hbm_memory_subsystem_v2_0.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_utilityxitfiles_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/debug_util.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>bd/config_part.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/config_part.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/config.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_boundary.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/config_port_opt_pre.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_port_opt_prep.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_port_opt_stats.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_port_opt_algo.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_port_opt.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/config_port_opt_post.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_connections.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_hbm.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents_pipeline.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_rld.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_utilityxitfiles_xilinx_com_ip_sc_util_1_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="sc_util" xilinx:version="1.0" xilinx:coreRevision="4">
+            <xilinx:mode xilinx:name="read_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/debug_util.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/gen_constraints.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+        <spirit:userFileType>USED_IN_implementation</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>HBM Memory Subsystem</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>ADVANCED_PROPERTIES</spirit:name>
+      <spirit:displayName>Advanced Properties</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.ADVANCED_PROPERTIES" spirit:order="2">NULL NULL</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ECC_EN</spirit:name>
+      <spirit:displayName>Enable ECC</spirit:displayName>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.ECC_EN" spirit:order="3">true</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ECC_SCRUB_EN</spirit:name>
+      <spirit:displayName>Enable ECC Scrubbing</spirit:displayName>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.ECC_SCRUB_EN" spirit:order="4">true</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>NUM_SI</spirit:name>
+      <spirit:displayName>NUM_SI</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_SI" spirit:order="5" spirit:minimum="1" spirit:maximum="33" spirit:rangeType="long">1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>NUM_SI_CLKS</spirit:name>
+      <spirit:displayName>NUM_SI_CLKS</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_SI_CLKS" spirit:order="6" spirit:minimum="1" spirit:maximum="33" spirit:rangeType="long">1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>NUM_SI_ARESETN</spirit:name>
+      <spirit:displayName>NUM_SI_ARESETN</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_SI_ARESETN" spirit:order="7" spirit:minimum="1" spirit:maximum="33" spirit:rangeType="long">1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>DISABLE_HBM_REF_CLK_BUFG</spirit:name>
+      <spirit:displayName>Disable hbm_ref_clk internal clock buffers</spirit:displayName>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.DISABLE_HBM_REF_CLK_BUFG" spirit:order="8">false</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S00_DATA_WIDTH</spirit:name>
+      <spirit:displayName>Host data width</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S00_DATA_WIDTH" spirit:choiceRef="choice_list_90ee0cc7" spirit:order="9">512</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S00_SLR</spirit:name>
+      <spirit:displayName>S00_AXI</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S00_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="10">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S01_SLR</spirit:name>
+      <spirit:displayName>SAXI01</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S01_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="11">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S02_SLR</spirit:name>
+      <spirit:displayName>SAXI02</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S02_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="12">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S03_SLR</spirit:name>
+      <spirit:displayName>SAXI03</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S03_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="13">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S04_SLR</spirit:name>
+      <spirit:displayName>SAXI04</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S04_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="14">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S05_SLR</spirit:name>
+      <spirit:displayName>SAXI05</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S05_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="15">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S06_SLR</spirit:name>
+      <spirit:displayName>SAXI06</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S06_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="16">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S07_SLR</spirit:name>
+      <spirit:displayName>SAXI07</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S07_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="17">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S08_SLR</spirit:name>
+      <spirit:displayName>SAXI08</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S08_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="18">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S09_SLR</spirit:name>
+      <spirit:displayName>SAXI09</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S09_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="19">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S10_SLR</spirit:name>
+      <spirit:displayName>SAXI10</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S10_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="20">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S11_SLR</spirit:name>
+      <spirit:displayName>SAXI11</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S11_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="21">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S12_SLR</spirit:name>
+      <spirit:displayName>SAXI12</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S12_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="22">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S13_SLR</spirit:name>
+      <spirit:displayName>SAXI13</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S13_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="23">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S14_SLR</spirit:name>
+      <spirit:displayName>SAXI14</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S14_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="24">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S15_SLR</spirit:name>
+      <spirit:displayName>SAXI15</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S15_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="25">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S16_SLR</spirit:name>
+      <spirit:displayName>SAXI16</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S16_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="26">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S17_SLR</spirit:name>
+      <spirit:displayName>SAXI17</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S17_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="27">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S18_SLR</spirit:name>
+      <spirit:displayName>SAXI18</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S18_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="28">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S19_SLR</spirit:name>
+      <spirit:displayName>SAXI19</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S19_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="29">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S20_SLR</spirit:name>
+      <spirit:displayName>SAXI20</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S20_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="30">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S21_SLR</spirit:name>
+      <spirit:displayName>SAXI21</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S21_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="31">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S22_SLR</spirit:name>
+      <spirit:displayName>SAXI22</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S22_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="32">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S23_SLR</spirit:name>
+      <spirit:displayName>SAXI23</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S23_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="33">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S24_SLR</spirit:name>
+      <spirit:displayName>SAXI24</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S24_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="34">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S25_SLR</spirit:name>
+      <spirit:displayName>SAXI25</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S25_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="35">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S26_SLR</spirit:name>
+      <spirit:displayName>SAXI26</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S26_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="36">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S27_SLR</spirit:name>
+      <spirit:displayName>SAXI27</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S27_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="37">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S28_SLR</spirit:name>
+      <spirit:displayName>SAXI28</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S28_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="38">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S29_SLR</spirit:name>
+      <spirit:displayName>SAXI29</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S29_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="39">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S30_SLR</spirit:name>
+      <spirit:displayName>SAXI30</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S30_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="40">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S31_SLR</spirit:name>
+      <spirit:displayName>SAXI31</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S31_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="41">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S32_SLR</spirit:name>
+      <spirit:displayName>SAXI32</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S32_SLR" spirit:choiceRef="choice_list_b2430443" spirit:order="42">SLR0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S00_MEM</spirit:name>
+      <spirit:displayName>SAXI00</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S00_MEM" spirit:order="43">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S01_MEM</spirit:name>
+      <spirit:displayName>SAXI01</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S01_MEM" spirit:order="44">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S02_MEM</spirit:name>
+      <spirit:displayName>SAXI02</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S02_MEM" spirit:order="45">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S03_MEM</spirit:name>
+      <spirit:displayName>SAXI03</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S03_MEM" spirit:order="46">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S04_MEM</spirit:name>
+      <spirit:displayName>SAXI04</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S04_MEM" spirit:order="47">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S05_MEM</spirit:name>
+      <spirit:displayName>SAXI05</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S05_MEM" spirit:order="48">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S06_MEM</spirit:name>
+      <spirit:displayName>SAXI06</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S06_MEM" spirit:order="49">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S07_MEM</spirit:name>
+      <spirit:displayName>SAXI07</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S07_MEM" spirit:order="50">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S08_MEM</spirit:name>
+      <spirit:displayName>SAXI08</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S08_MEM" spirit:order="51">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S09_MEM</spirit:name>
+      <spirit:displayName>SAXI09</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S09_MEM" spirit:order="52">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S10_MEM</spirit:name>
+      <spirit:displayName>SAXI10</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S10_MEM" spirit:order="53">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S11_MEM</spirit:name>
+      <spirit:displayName>SAXI11</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S11_MEM" spirit:order="54">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S12_MEM</spirit:name>
+      <spirit:displayName>SAXI12</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S12_MEM" spirit:order="55">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S13_MEM</spirit:name>
+      <spirit:displayName>SAXI13</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S13_MEM" spirit:order="56">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S14_MEM</spirit:name>
+      <spirit:displayName>SAXI14</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S14_MEM" spirit:order="57">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S15_MEM</spirit:name>
+      <spirit:displayName>SAXI15</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S15_MEM" spirit:order="58">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S16_MEM</spirit:name>
+      <spirit:displayName>SAXI16</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S16_MEM" spirit:order="59">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S17_MEM</spirit:name>
+      <spirit:displayName>SAXI17</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S17_MEM" spirit:order="60">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S18_MEM</spirit:name>
+      <spirit:displayName>SAXI18</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S18_MEM" spirit:order="61">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S19_MEM</spirit:name>
+      <spirit:displayName>SAXI19</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S19_MEM" spirit:order="62">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S20_MEM</spirit:name>
+      <spirit:displayName>SAXI20</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S20_MEM" spirit:order="63">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S21_MEM</spirit:name>
+      <spirit:displayName>SAXI21</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S21_MEM" spirit:order="64">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S22_MEM</spirit:name>
+      <spirit:displayName>SAXI22</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S22_MEM" spirit:order="65">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S23_MEM</spirit:name>
+      <spirit:displayName>SAXI23</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S23_MEM" spirit:order="66">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S24_MEM</spirit:name>
+      <spirit:displayName>SAXI24</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S24_MEM" spirit:order="67">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S25_MEM</spirit:name>
+      <spirit:displayName>SAXI25</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S25_MEM" spirit:order="68">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S26_MEM</spirit:name>
+      <spirit:displayName>SAXI26</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S26_MEM" spirit:order="69">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S27_MEM</spirit:name>
+      <spirit:displayName>SAXI27</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S27_MEM" spirit:order="70">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S28_MEM</spirit:name>
+      <spirit:displayName>SAXI28</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S28_MEM" spirit:order="71">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S29_MEM</spirit:name>
+      <spirit:displayName>SAXI29</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S29_MEM" spirit:order="72">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S30_MEM</spirit:name>
+      <spirit:displayName>SAXI30</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S30_MEM" spirit:order="73">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S31_MEM</spirit:name>
+      <spirit:displayName>SAXI31</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S31_MEM" spirit:order="74">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S32_MEM</spirit:name>
+      <spirit:displayName>SAXI32</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S32_MEM" spirit:order="75">HBM_MEM00 HBM_MEM01 HBM_MEM02 HBM_MEM03 HBM_MEM04 HBM_MEM05 HBM_MEM06 HBM_MEM07 HBM_MEM08 HBM_MEM09 HBM_MEM10 HBM_MEM11 HBM_MEM12 HBM_MEM13 HBM_MEM14 HBM_MEM15 HBM_MEM16 HBM_MEM17 HBM_MEM18 HBM_MEM19 HBM_MEM20 HBM_MEM21 HBM_MEM22 HBM_MEM23 HBM_MEM24 HBM_MEM25 HBM_MEM26 HBM_MEM27 HBM_MEM28 HBM_MEM29 HBM_MEM30 HBM_MEM31</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S00_WT</spirit:name>
+      <spirit:displayName>SAXI00</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S00_WT" spirit:order="76">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S01_WT</spirit:name>
+      <spirit:displayName>SAXI01</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S01_WT" spirit:order="77">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S02_WT</spirit:name>
+      <spirit:displayName>SAXI02</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S02_WT" spirit:order="78">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S03_WT</spirit:name>
+      <spirit:displayName>SAXI03</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S03_WT" spirit:order="79">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S04_WT</spirit:name>
+      <spirit:displayName>SAXI04</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S04_WT" spirit:order="80">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S05_WT</spirit:name>
+      <spirit:displayName>SAXI05</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S05_WT" spirit:order="81">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S06_WT</spirit:name>
+      <spirit:displayName>SAXI06</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S06_WT" spirit:order="82">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S07_WT</spirit:name>
+      <spirit:displayName>SAXI07</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S07_WT" spirit:order="83">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S08_WT</spirit:name>
+      <spirit:displayName>SAXI08</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S08_WT" spirit:order="84">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S09_WT</spirit:name>
+      <spirit:displayName>SAXI09</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S09_WT" spirit:order="85">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S10_WT</spirit:name>
+      <spirit:displayName>SAXI10</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S10_WT" spirit:order="86">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S11_WT</spirit:name>
+      <spirit:displayName>SAXI11</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S11_WT" spirit:order="87">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S12_WT</spirit:name>
+      <spirit:displayName>SAXI12</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S12_WT" spirit:order="88">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S13_WT</spirit:name>
+      <spirit:displayName>SAXI13</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S13_WT" spirit:order="89">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S14_WT</spirit:name>
+      <spirit:displayName>SAXI14</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S14_WT" spirit:order="90">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S15_WT</spirit:name>
+      <spirit:displayName>SAXI15</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S15_WT" spirit:order="91">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S16_WT</spirit:name>
+      <spirit:displayName>SAXI16</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S16_WT" spirit:order="92">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S17_WT</spirit:name>
+      <spirit:displayName>SAXI17</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S17_WT" spirit:order="93">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S18_WT</spirit:name>
+      <spirit:displayName>SAXI18</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S18_WT" spirit:order="94">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S19_WT</spirit:name>
+      <spirit:displayName>SAXI19</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S19_WT" spirit:order="95">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S20_WT</spirit:name>
+      <spirit:displayName>SAXI20</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S20_WT" spirit:order="96">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S21_WT</spirit:name>
+      <spirit:displayName>SAXI21</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S21_WT" spirit:order="97">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S22_WT</spirit:name>
+      <spirit:displayName>SAXI22</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S22_WT" spirit:order="98">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S23_WT</spirit:name>
+      <spirit:displayName>SAXI23</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S23_WT" spirit:order="99">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S24_WT</spirit:name>
+      <spirit:displayName>SAXI24</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S24_WT" spirit:order="100">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S25_WT</spirit:name>
+      <spirit:displayName>SAXI25</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S25_WT" spirit:order="101">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S26_WT</spirit:name>
+      <spirit:displayName>SAXI26</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S26_WT" spirit:order="102">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S27_WT</spirit:name>
+      <spirit:displayName>SAXI27</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S27_WT" spirit:order="103">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S28_WT</spirit:name>
+      <spirit:displayName>SAXI28</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S28_WT" spirit:order="104">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S29_WT</spirit:name>
+      <spirit:displayName>SAXI29</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S29_WT" spirit:order="105">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S30_WT</spirit:name>
+      <spirit:displayName>SAXI30</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S30_WT" spirit:order="106">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S31_WT</spirit:name>
+      <spirit:displayName>SAXI31</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S31_WT" spirit:order="107">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S32_WT</spirit:name>
+      <spirit:displayName>SAXI32</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.S32_WT" spirit:order="108">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S00_RA</spirit:name>
+      <spirit:displayName>SAXI00</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S00_RA" spirit:order="109" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S01_RA</spirit:name>
+      <spirit:displayName>SAXI01</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S01_RA" spirit:order="110" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S02_RA</spirit:name>
+      <spirit:displayName>SAXI02</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S02_RA" spirit:order="111" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S03_RA</spirit:name>
+      <spirit:displayName>SAXI03</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S03_RA" spirit:order="112" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S04_RA</spirit:name>
+      <spirit:displayName>SAXI04</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S04_RA" spirit:order="113" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S05_RA</spirit:name>
+      <spirit:displayName>SAXI05</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S05_RA" spirit:order="114" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S06_RA</spirit:name>
+      <spirit:displayName>SAXI06</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S06_RA" spirit:order="115" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S07_RA</spirit:name>
+      <spirit:displayName>SAXI07</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S07_RA" spirit:order="116" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S08_RA</spirit:name>
+      <spirit:displayName>SAXI08</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S08_RA" spirit:order="117" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S09_RA</spirit:name>
+      <spirit:displayName>SAXI09</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S09_RA" spirit:order="118" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S10_RA</spirit:name>
+      <spirit:displayName>SAXI10</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S10_RA" spirit:order="119" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S11_RA</spirit:name>
+      <spirit:displayName>SAXI11</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S11_RA" spirit:order="120" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S12_RA</spirit:name>
+      <spirit:displayName>SAXI12</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S12_RA" spirit:order="121" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S13_RA</spirit:name>
+      <spirit:displayName>SAXI13</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S13_RA" spirit:order="122" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S14_RA</spirit:name>
+      <spirit:displayName>SAXI14</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S14_RA" spirit:order="123" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S15_RA</spirit:name>
+      <spirit:displayName>SAXI15</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S15_RA" spirit:order="124" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S16_RA</spirit:name>
+      <spirit:displayName>SAXI16</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S16_RA" spirit:order="125" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S17_RA</spirit:name>
+      <spirit:displayName>SAXI17</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S17_RA" spirit:order="126" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S18_RA</spirit:name>
+      <spirit:displayName>SAXI18</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S18_RA" spirit:order="127" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S19_RA</spirit:name>
+      <spirit:displayName>SAXI19</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S19_RA" spirit:order="128" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S20_RA</spirit:name>
+      <spirit:displayName>SAXI20</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S20_RA" spirit:order="129" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S21_RA</spirit:name>
+      <spirit:displayName>SAXI21</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S21_RA" spirit:order="130" spirit:minimum="0" spirit:maximum="2" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S22_RA</spirit:name>
+      <spirit:displayName>SAXI22</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S22_RA" spirit:order="131" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S23_RA</spirit:name>
+      <spirit:displayName>SAXI23</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S23_RA" spirit:order="132" spirit:minimum="0" spirit:maximum="2" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S24_RA</spirit:name>
+      <spirit:displayName>SAXI24</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S24_RA" spirit:order="133" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S25_RA</spirit:name>
+      <spirit:displayName>SAXI25</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S25_RA" spirit:order="134" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S26_RA</spirit:name>
+      <spirit:displayName>SAXI26</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S26_RA" spirit:order="135" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S27_RA</spirit:name>
+      <spirit:displayName>SAXI27</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S27_RA" spirit:order="136" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S28_RA</spirit:name>
+      <spirit:displayName>SAXI28</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S28_RA" spirit:order="137" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S29_RA</spirit:name>
+      <spirit:displayName>SAXI29</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S29_RA" spirit:order="138" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S30_RA</spirit:name>
+      <spirit:displayName>SAXI30</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S30_RA" spirit:order="139" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S31_RA</spirit:name>
+      <spirit:displayName>SAXI31</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S31_RA" spirit:order="140" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>S32_RA</spirit:name>
+      <spirit:displayName>SAXI32</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.S32_RA" spirit:order="141" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">hbm_memory_subsystem_v2_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Pre-Production">virtexuplusHBM</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/AXI_Infrastructure</xilinx:taxonomy>
+        <xilinx:taxonomy>/Embedded_Processing/AXI_Infrastructure</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>HBM Memory Subsystem (HMSS)</xilinx:displayName>
+      <xilinx:supportsDeferredElaboration>true</xilinx:supportsDeferredElaboration>
+      <xilinx:supportsAutoSLRs>false</xilinx:supportsAutoSLRs>
+      <xilinx:designToolContexts>
+        <xilinx:designToolContext>IPI</xilinx:designToolContext>
+      </xilinx:designToolContexts>
+      <xilinx:coreRevision>0</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2020-04-29T19:17:54Z</xilinx:coreCreationDateTime>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="5b3c3a9f"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="646c0d65"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="604dc5c2"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>

@@ -1,0 +1,2132 @@
+Measure Initial temperature
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475411
+data_units_written                  : 36333867
+host_read_commands                  : 2522810
+host_write_commands                 : 306588364
+controller_busy_time                : 24
+power_cycles                        : 82
+power_on_hours                      : 5267
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 69 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 69 C
+Temperature Sensor 2                : 64 C
+Temperature Sensor 3                : 68 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Measure final temperature that we reached
+Iteration number: 1
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 68 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 66 C
+Temperature Sensor 2                : 62 C
+Temperature Sensor 3                : 68 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 2
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 68 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 64 C
+Temperature Sensor 2                : 62 C
+Temperature Sensor 3                : 68 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 3
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 67 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 63 C
+Temperature Sensor 2                : 61 C
+Temperature Sensor 3                : 67 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 4
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 67 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 62 C
+Temperature Sensor 2                : 60 C
+Temperature Sensor 3                : 67 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 5
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 67 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 62 C
+Temperature Sensor 2                : 60 C
+Temperature Sensor 3                : 67 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 6
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 66 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 61 C
+Temperature Sensor 2                : 60 C
+Temperature Sensor 3                : 66 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 7
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 66 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 61 C
+Temperature Sensor 2                : 59 C
+Temperature Sensor 3                : 66 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 8
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 66 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 60 C
+Temperature Sensor 2                : 59 C
+Temperature Sensor 3                : 66 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 9
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 65 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 60 C
+Temperature Sensor 2                : 58 C
+Temperature Sensor 3                : 65 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 10
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 65 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 59 C
+Temperature Sensor 2                : 58 C
+Temperature Sensor 3                : 65 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 11
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 65 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 59 C
+Temperature Sensor 2                : 58 C
+Temperature Sensor 3                : 65 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 12
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 64 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 59 C
+Temperature Sensor 2                : 57 C
+Temperature Sensor 3                : 64 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 13
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 64 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 58 C
+Temperature Sensor 2                : 57 C
+Temperature Sensor 3                : 64 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 14
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 64 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 58 C
+Temperature Sensor 2                : 57 C
+Temperature Sensor 3                : 64 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 15
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 63 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 58 C
+Temperature Sensor 2                : 57 C
+Temperature Sensor 3                : 63 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 16
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 63 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 58 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 63 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 17
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 63 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 57 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 63 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 18
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 63 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 57 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 63 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 19
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 62 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 57 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 62 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 20
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 62 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 57 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 62 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 21
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 62 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 56 C
+Temperature Sensor 3                : 62 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 22
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 62 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 62 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 23
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 62 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 62 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 24
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 25
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 26
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 27
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 56 C
+Temperature Sensor 2                : 55 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 28
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 29
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 30
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 61 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 61 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 31
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 32
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 33
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 34
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 35
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 36
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 37
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 55 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 38
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 54 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 39
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 40
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 41
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 60 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 60 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 42
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 43
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 44
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 45
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 46
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 47
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 48
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 49
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 50
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 51
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 52
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 53
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 54
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 55
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 56
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 57
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 54 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 58
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 59
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 60
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 61
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 62
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 63
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 64
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 53 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 65
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 66
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 67
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 68
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 69
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 70
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 71
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 59 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 59 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 72
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 73
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 74
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 75
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 76
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 77
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 78
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 79
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0
+Iteration number: 80
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 58 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 475443
+data_units_written                  : 39148749
+host_read_commands                  : 2523467
+host_write_commands                 : 320412068
+controller_busy_time                : 25
+power_cycles                        : 82
+power_on_hours                      : 5268
+unsafe_shutdowns                    : 28
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 53 C
+Temperature Sensor 2                : 52 C
+Temperature Sensor 3                : 58 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0

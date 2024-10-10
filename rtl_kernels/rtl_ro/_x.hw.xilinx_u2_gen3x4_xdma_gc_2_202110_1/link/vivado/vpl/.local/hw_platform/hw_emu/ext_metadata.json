@@ -1,0 +1,70 @@
+{
+   "platformData" : {
+      "plp" : {
+         "slaveBridge" : "disabled",
+         "cdmaBaseAddress1" : "0x0",
+         "ertCmdqBaseAddr" : "0x008000000000",
+         "m2m_address" : "0x0",
+         "cdmaBaseAddress2" : "0x0",
+         "ertVersion" : "30",
+         "dma" : "xdma",
+         "ertBaseAddr" : "0x0",
+         "ert" : "enabled",
+         "peerToPeer" : "enabled",
+         "cdmaBaseAddress0" : "0x0",
+         "m2m" : "disabled",
+         "cdmaBaseAddress3" : "0x0",
+         "numCdma" : "0"
+      },
+      "ulp" : {}
+   },
+   "raptor2" : {
+      "resources" : {
+         "PLRAM" : {
+            "PLRAM_MEM00" : {
+               "slr" : "SLR0",
+               "index" : "0",
+               "mode" : "slave",
+               "sptag" : "PLRAM",
+               "data_width" : "512",
+               "max_masters" : "15"
+            }
+         },
+         "DDR" : {
+            "DDR4_MEM00" : {
+               "slr" : "SLR0",
+               "index" : "0",
+               "mode" : "slave",
+               "sptag" : "DDR",
+               "data_width" : "512",
+               "max_masters" : "15"
+            }
+         }
+      },
+      "placement" : {
+         "PLRAM" : {
+            "0" : "SLR0"
+         },
+         "DDR" : {
+            "0" : "SLR0"
+         }
+      },
+      "feature_support" : {
+         "software_emulation" : "1",
+         "HOST" : "0",
+         "PLRAM" : "1",
+         "hardware_emulation" : "1",
+         "DDR" : "1"
+      },
+      "num_compute_units" : "60",
+      "part" : "xcku15p-ffva1156-2LV-e",
+      "slrs" : [
+         "SLR0"
+      ],
+      "schema_version" : "1.0"
+   },
+   "revision_control" : {
+      "version" : "2",
+      "release" : "3207808"
+   }
+}

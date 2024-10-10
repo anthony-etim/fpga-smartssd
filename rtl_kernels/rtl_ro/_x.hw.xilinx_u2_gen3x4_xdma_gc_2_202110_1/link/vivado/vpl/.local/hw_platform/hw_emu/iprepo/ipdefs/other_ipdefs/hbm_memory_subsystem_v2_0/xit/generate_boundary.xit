@@ -1,0 +1,189 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+# Create HBM clock/reset - used after clock conversion from kernel clock
+#
+# Create data clock/reset
+set clk [create_bd_port -type clk -dir I -name hbm_aclk]
+set rst [create_bd_port -type rst -dir I -name hbm_aresetn]
+set_property CONFIG.POLARITY ACTIVE_LOW $rst
+
+# Create HBM REF clock
+set clk [create_bd_port -type clk -dir I -name hbm_ref_clk]
+
+# Create Init complete pin
+set init [create_bd_port -dir o -name hbm_mc_init_seq_complete]
+
+# Create temp out pins
+set DRAM_0_STAT_TEMP [create_bd_port -dir o -name DRAM_0_STAT_TEMP]
+set DRAM_1_STAT_TEMP [create_bd_port -dir o -name DRAM_1_STAT_TEMP]
+set DRAM_STAT_CATTRIP [create_bd_port -dir o -type intr -name DRAM_STAT_CATTRIP]
+
+# ----------------------------------------------------------------------
+# Generate S_AXI_CTRL interfaces
+#
+# - Generate AXI bus interface
+# - Generate clock/reset
+# - Associate clock with bus
+# - Create relevant memory segments for each bus
+
+# Create the interface
+set intf [create_bd_intf_port -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap -mode slave S_AXI_CTRL]
+set_property CONFIG.PROTOCOL AXI4LITE $intf
+
+# Create clock/resets
+set clk [create_bd_port -type clk -dir I -name ctrl_aclk]
+set rst [create_bd_port -type rst -dir I -name ctrl_aresetn]
+set_property CONFIG.POLARITY ACTIVE_LOW $rst
+
+# Associate bus with clock
+set_property CONFIG.ASSOCIATED_BUSIF [get_property NAME $intf] $clk
+set_property CONFIG.ASSOCIATED_RESET [get_property NAME $rst] $clk
+
+# Create memory segments available to be mapped on this IP
+# Get the list of segments from the CONFIG dict
+foreach ctrl_segment [calc_get_ctrlsegs $CALC] {
+  # Get the range/offset information for this segment
+  if [dict exists $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] {
+     set range  [lindex [dict get $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] 0]
+     set offset [lindex [dict get $HBM_MEM_INFO CTRL_RANGE_OFFSET $ctrl_segment] 1]
+     set hbm_ctrl_seg [::bd::addr_func create_boundary_addrblk $offset $range $intf $ctrl_segment register]
+  # Invalid memory segment
+  } else {
+     send_msg_id {hbm_memory_subsystem 2-1} ERROR "GEN_BOUNDARY::Invalid memory segment :: $ctrl_segment :: for S_AXI_CTRL"
+  }
+}
+
+# ----------------------------------------------------------------------
+# Generate required clocks
+for {set i 0} {$i < [dict get $CONFIG NUM_SI_CLKS]} {incr i} {
+
+  if {$i==0} {
+    set name aclk
+  } else {
+    set name aclk$i
+  }
+
+  set aclk [create_bd_port -type clk -dir I -name $name]
+}
+
+# ----------------------------------------------------------------------
+# Generate required resets - presume all active low
+for {set i 0} {$i < [dict get $CONFIG NUM_SI_ARESETN]} {incr i} {
+
+  if {$i==0} {
+    set name aresetn
+  } else {
+    set name aresetn$i
+  }
+
+  set aresetn [create_bd_port -type reset -dir I -name $name]
+  set_property CONFIG.POLARITY ACTIVE_LOW $aresetn
+}
+
+# ----------------------------------------------------------------------
+# Generate SXX_AXI interfaces
+#
+# - Generate AXI bus interface
+# - Create relevant memory segments for each bus
+for {set i 0} {$i < [dict get $CONFIG total_hmss_num_mi]} {incr i} {
+  if {[config_get_saxi_en $i $CONFIG]} {
+
+     # Create the interface
+     set intf [create_bd_intf_port -vlnv xilinx.com:interface:aximm_rtl:1.0 -default_portmap -mode slave [format S%.2d_AXI $i]]
+
+     if {$i == 0} {
+
+       # Data width for S00_AXI set by user - not for emulation
+       set data_width [dict get $CONFIG S00_DATA_WIDTH]
+       set_property CONFIG.DATA_WIDTH $data_width $intf
+              
+       # For S00_AXI want to create all potential segments on boundary - these are used in certain scenarios (e.g. P2P)
+       foreach mem_segment [dict keys [dict get $HBM_MEM_INFO RANGE_OFFSET]] {
+          set range  [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 0]
+          set offset [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 1]
+          set hbm_mem_seg [::bd::addr_func create_boundary_addrblk $offset $range $intf $mem_segment memory]
+       }
+       
+
+     # All other ports only map relevant segments
+     } else {
+
+       # Create memory segments available to be mapped on this IP
+       # Get the list of segments from the CONFIG dict
+       foreach mem_segment [config_get_memsegs $i $CONFIG] {
+          # Get the range/offset information for this segment
+          if [dict exists $HBM_MEM_INFO RANGE_OFFSET $mem_segment] {
+             set range  [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 0]
+             set offset [lindex [dict get $HBM_MEM_INFO RANGE_OFFSET $mem_segment] 1]
+             set hbm_mem_seg [::bd::addr_func create_boundary_addrblk $offset $range $intf $mem_segment memory]
+          # Invalid memory segment
+          } else {
+             send_msg_id {hbm_memory_subsystem 2-1} ERROR "GEN_BOUNDARY::Invalid memory segment :: $mem_segment :: for [format S%.2d_AXI $i]"
+          }
+       }
+     }
+   }
+}
+
+
+# ----------------------------------------------------------------------
+# Default clock associations for S*_AXI
+set busif_names {}
+set saxi_list [get_bd_intf_ports S*_AXI]
+foreach i $saxi_list {
+  lappend busif_names [get_property NAME $i]
+}
+   
+# Set default to get around CRIT warning. Will be corrected later.
+if {[llength $saxi_list] > 0} {
+   set_property CONFIG.ASSOCIATED_BUSIF [join $busif_names :] [get_bd_ports /aclk]
+}
+

@@ -1,0 +1,223 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+# Set up HBM memory info
+set HBM_DEVICE [get_project_property DEVICE]
+source_ipfile xit/config_part.xit
+set HBM_MEM_INFO [::util_config_part::get_hbm_mem_info $HBM_DEVICE]
+
+# ----------------------------------------------------------------------
+# CONFIG properties
+
+# Copy HBM_MEM_INFO to CONFIG - easier to have single source
+# Note that this is free to change based on configuration (blocking out etc)
+set CONFIG [dict create]
+foreach key [dict keys $HBM_MEM_INFO] {
+   dict set CONFIG $key [dict get $HBM_MEM_INFO $key]
+}
+# HMSS always always allowed one more (apart from blockages)
+dict set CONFIG total_hmss_num_mi [expr [dict get $CONFIG total_hbm_num_mi]+1]
+
+# Grab all config properties and put in a dictionary for easy-ish access
+foreach prop [list_property $ip CONFIG*] {
+
+   # Get a clean key
+   set prop_key {}
+   regsub "CONFIG\." $prop "" prop_key
+
+   # Add property value to dictionary
+   dict set CONFIG $prop_key [get_property $prop $ip]
+}
+
+# ----------------------------------------------------------------------
+# Helper procs to access CONFIG properties
+proc config_get_saxi_en { i CONFIG } {
+   set result 0
+   if {[dict get $CONFIG NUM_SI] > $i} {
+      set result 1
+   }
+   return $result
+}
+
+proc config_get_slr { i CONFIG } {
+   set str [format S%.2d_SLR $i]
+   return [dict get $CONFIG $str]
+}
+
+proc config_get_memsegs { i CONFIG } {
+   set str [format S%.2d_MEM $i]
+   return [dict get $CONFIG $str]
+}
+
+proc config_get_rama_en { i CONFIG } {
+   set str [format S%.2d_RA $i]
+   return [dict get $CONFIG $str]
+}
+
+# ----------------------------------------------------------------------
+# Create set of CALC properties based on CONFIG
+set CALC [dict create]
+# Add HBM_MEM00 by default - want to have a base address of zero for segment combine (IPI problem)
+set memlist [list HBM_MEM00]
+# Add every memory range used to a list
+for {set i 0} {$i < [dict get $CONFIG total_hmss_num_mi]} {incr i} {
+   if {[config_get_saxi_en $i $CONFIG]} {
+      lappend memlist {*}[config_get_memsegs $i $CONFIG]
+   }
+}
+
+set memunique [lsort -unique $memlist]
+
+# Now get list of control areas used
+# Always enable stack 0/control 0...HBM IP doesn't like
+# it otherwise
+set ctrllist []
+foreach mem $memunique {
+   lappend ctrllist {*}[dict get $HBM_MEM_INFO MEM_CTRL_MAP $mem]
+}
+set ctrlunique [lsort -unique $ctrllist]
+
+# Next get list of MCs enabled
+set mclist []
+foreach mem $memunique {
+   lappend mclist {*}[dict get $HBM_MEM_INFO MC_CTRL_MAP $mem]
+}
+set mcunique [lsort -unique $mclist]
+
+# Add list of used memory areas/control areas to CALC
+dict set CALC MEM_USED  $memunique
+dict set CALC CTRL_USED $ctrlunique
+dict set CALC MC_USED   $mcunique
+
+# ----------------------------------------------------------------------
+# Helper procs to access CALC properties
+
+proc calc_get_ctrlsegs { CALC } {
+   return [dict get $CALC CTRL_USED]
+}
+
+# ----------------------------------------------------------------------
+# Override CONFIG properties based on "harvested" properties
+
+# Specific advanced user portlocs
+if [info exists env(HMSS_PORTLOC_INFO)] {
+   if {[llength [dict keys $env(HMSS_PORTLOC_INFO)]] > 0} {
+      send_msg_id {hbm_memory_subsystem 1-1} INFO "Discovered advanced user portloc automation properties for hbm_memory_subsystem...applying"
+      foreach pl_key [dict keys $env(HMSS_PORTLOC_INFO)] {
+         set value [dict get $env(HMSS_PORTLOC_INFO) $pl_key]
+         dbg_puts "Internal CONFIG $pl_key update to - $value - prior to contents elaboration"
+         dict set CONFIG ADVANCED_PROPERTIES PORTLOC [list $pl_key $value]
+      }
+   }
+}
+
+# SLR
+if [info exists env(HMSS_SLR_INFO)] {
+   if {[llength [dict keys $env(HMSS_SLR_INFO)]] > 0} {
+      send_msg_id {hbm_memory_subsystem 1-1} INFO "Discovered SLR automation properties for hbm_memory_subsystem...applying"
+      foreach slr_key [dict keys $env(HMSS_SLR_INFO)] {
+         set value [dict get $env(HMSS_SLR_INFO) $slr_key]
+         dbg_puts "Internal CONFIG $slr_key update to $value prior to contents elaboration"
+         dict set CONFIG $slr_key $value
+      }
+   }
+}
+
+# Random access
+if [info exists env(HMSS_RA_INFO)] {
+   if {[llength [dict keys $env(HMSS_RA_INFO)]] > 0} {
+      send_msg_id {hbm_memory_subsystem 1-1} INFO "Discovered random access automation properties for hbm_memory_subsystem...applying"
+      foreach ra_key [dict keys $env(HMSS_RA_INFO)] {
+         set value [dict get $env(HMSS_RA_INFO) $ra_key]
+         dbg_puts "Internal CONFIG $ra_key update to $value prior to contents elaboration"
+         dict set CONFIG $ra_key $value
+      }
+   }
+}
+
+# Clock/Reset/Kernel
+if [info exists env(HMSS_CLK_RST_KRNL_INFO)] {
+   if {[llength [dict keys $env(HMSS_CLK_RST_KRNL_INFO)]] > 0} {
+      dbg_puts "Discovered clock/reset/kernel properties for hbm_memory_subsystem...applying"
+      foreach axi_key [dict keys $env(HMSS_CLK_RST_KRNL_INFO)] {
+         set sub_keys [dict get $env(HMSS_CLK_RST_KRNL_INFO) $axi_key]
+         foreach sub_key [dict keys $sub_keys] {
+            set cfg_key {}
+            # Create a new CONFIG entry for each sub-key
+            regsub AXI $axi_key $sub_key cfg_key
+            set value [dict get $sub_keys $sub_key]
+            dbg_puts "Internal CONFIG $cfg_key update to $value prior to contents elaboration"
+            dict set CONFIG $cfg_key $value
+         }
+      }
+   }
+}
+
+# Harvest AXI master data
+if {![info exists env(HMSS_DISABLE_AXI_METADATA_EXTRACTION)]} {
+  dbg_puts "Harvest AXI Interface metadata for hbm_memory_subsystem"
+
+  set property_names {}
+  foreach intf [get_bd_intf_ports -quiet *_AXI] {
+    set intf_name [get_property NAME $intf]
+    set ext_intf [find_bd_objs -thru_hier -boundary_type extern -relation CONNECTED_TO $intf]
+    if {[llength $ext_intf] == 0} {
+      dbg_puts "$intf_name <- DISCONNECTED"
+      continue
+    }
+    dbg_puts "$intf_name <- $ext_intf"
+
+    foreach p [list_property $ext_intf CONFIG.*] {
+      dict set CONFIG intf_metadata $intf_name $p [get_property $p $ext_intf]
+      dict incr property_names $p
+    }
+  }
+  #puts [dict get $CONFIG intf_metadata]
+}

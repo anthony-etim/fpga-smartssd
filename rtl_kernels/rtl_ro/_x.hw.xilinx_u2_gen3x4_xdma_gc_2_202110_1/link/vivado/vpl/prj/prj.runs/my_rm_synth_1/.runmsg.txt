@@ -1,0 +1,2 @@
+Compiling (reconfig module level synthesis checkpoint) dynamic region
+Log file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/prj/prj.runs/my_rm_synth_1/runme.log

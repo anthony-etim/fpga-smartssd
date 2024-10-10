@@ -1,0 +1,818 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (1) Create instance(s)
+#==========================================================================================================================================#
+
+set num_ctrl_mgmt_masters_0 6
+set num_ctrl_mgmt_masters_1 3
+
+if {$C_HAS_HBM_CLK == true} {
+
+    set num_ctrl_mgmt_masters_0 7
+    set num_ctrl_mgmt_masters_1 4
+
+}
+
+# Create instance: vip_ctrl_mgmt, and set properties
+set vip_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_ctrl_mgmt ]
+
+# Create instance: axi_ic_ctrl_mgmt_0, and set properties
+set axi_ic_ctrl_mgmt_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                  \
+[ list                                                                                                                                 \
+    CONFIG.NUM_MI $num_ctrl_mgmt_masters_0                                                                                             \
+] axi_ic_ctrl_mgmt_0 ]
+
+# Create instance: axi_ic_ctrl_mgmt_1, and set properties
+set axi_ic_ctrl_mgmt_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                  \
+[ list                                                                                                                                 \
+    CONFIG.NUM_MI $num_ctrl_mgmt_masters_1                                                                                             \
+] axi_ic_ctrl_mgmt_1 ]
+
+# Create instance: build_info, and set properties
+set build_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params                                    \
+[ list                                                                                                                                 \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID                                                                                            \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION                                                                                              \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION                                                                                          \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION                                                                                          \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION                                                                                          \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION                                                                                        \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL                                                                                              \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG                                                                                            \
+] build_info ]
+
+# Create instance: gpio_gapping_demand, and set properties
+set gpio_gapping_demand [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                         \
+[ list                                                                                                                                 \
+    CONFIG.C_ALL_OUTPUTS {1}                                                                                                           \
+    CONFIG.C_DOUT_DEFAULT {0xFFFFFFFF}                                                                                                 \
+    CONFIG.C_GPIO_WIDTH {8}                                                                                                            \
+] gpio_gapping_demand ]
+
+# Create instance: clock_throttling_avg, and set properties
+set clock_throttling_avg [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_clock_throttling_avg:1.* clock_throttling_avg ]
+
+# Create instance: gpio_ucs_status_concat, and set properties
+set gpio_ucs_status_concat [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params                                      \
+[ list                                                                                                                                 \
+    CONFIG.NUM_PORTS {4}                                                                                                               \
+    CONFIG.IN0_WIDTH.VALUE_SRC {USER}                                                                                                  \
+    CONFIG.IN1_WIDTH.VALUE_SRC {USER}                                                                                                  \
+    CONFIG.IN2_WIDTH.VALUE_SRC {USER}                                                                                                  \
+    CONFIG.IN3_WIDTH.VALUE_SRC {USER}                                                                                                  \
+    CONFIG.IN0_WIDTH {1}                                                                                                               \
+    CONFIG.IN1_WIDTH {15}                                                                                                              \
+    CONFIG.IN2_WIDTH {14}                                                                                                              \
+    CONFIG.IN3_WIDTH {2}                                                                                                               \
+] gpio_ucs_status_concat ]
+
+# Create instance: gapping_demand_update, and set properties
+set gapping_demand_update [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params                              \
+[ list                                                                                                                                 \
+    CONFIG.C_SIZE {1}                                                                                                                  \
+] gapping_demand_update ]
+
+# Create instance: gapping_demand_toggle, and set properties
+set gapping_demand_toggle [ create_bd_cell -type ip -vlnv xilinx.com:ip:c_counter_binary:12.* -set_params                              \
+[ list                                                                                                                                 \
+    CONFIG.Output_Width {1}                                                                                                            \
+    CONFIG.CE {true}                                                                                                                   \
+] gapping_demand_toggle ]
+
+# Create instance: clock_throttling_kernel, and set properties
+set clock_throttling_kernel [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_clock_throttling:1.* -set_params                 \
+[ list                                                                                                                                 \
+    CONFIG.CLK_SLOW_DIV ${C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE}                                                            \
+] clock_throttling_kernel ]
+
+# Create instance: clock_throttling_kernel2, and set properties
+set clock_throttling_kernel2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_clock_throttling:1.* -set_params                \
+[ list                                                                                                                                 \
+    CONFIG.CLK_SLOW_DIV ${C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE}                                                           \
+] clock_throttling_kernel2 ]
+
+# Create instance: clkwiz_kernel, and set properties
+set clkwiz_kernel [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.* -set_params                                                \
+[ list                                                                                                                                 \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ $clk_kernel_frequency                                                                            \
+    CONFIG.PRIM_SOURCE {No_buffer}                                                                                                     \
+    CONFIG.CLKOUT1_DRIVES {No_buffer}                                                                                                  \
+    CONFIG.USE_DYN_RECONFIG {true}                                                                                                     \
+    CONFIG.USE_POWER_DOWN {true}                                                                                                       \
+] clkwiz_kernel ]
+
+# Create instance: clk_kernel_adapt, and set properties
+set clk_kernel_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                                \
+[ list                                                                                                                                 \
+    CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL                                                                                         \
+] clk_kernel_adapt ]
+
+# Create instance: clk_kernel_cont_adapt, and set properties
+set clk_kernel_cont_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                           \
+[ list                                                                                                                                 \
+    CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL                                                                                         \
+] clk_kernel_cont_adapt ]
+
+# Create instance: psreset_kernel, and set properties
+set psreset_kernel [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params                                        \
+[list                                                                                                                                  \
+    CONFIG.C_AUX_RST_WIDTH {1}                                                                                                         \
+    CONFIG.C_EXT_RST_WIDTH {1}                                                                                                         \
+] psreset_kernel ]
+
+# Create instance: clkwiz_kernel2, and set properties
+set clkwiz_kernel2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.* -set_params                                               \
+[ list                                                                                                                                 \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ $clk_kernel2_frequency                                                                           \
+    CONFIG.PRIM_SOURCE {No_buffer}                                                                                                     \
+    CONFIG.CLKOUT1_DRIVES {No_buffer}                                                                                                  \
+    CONFIG.USE_DYN_RECONFIG {true}                                                                                                     \
+    CONFIG.USE_POWER_DOWN {true}                                                                                                       \
+] clkwiz_kernel2 ]
+
+# Create instance: clk_kernel2_adapt, and set properties
+set clk_kernel2_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                               \
+[ list                                                                                                                                 \
+    CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL_2                                                                                       \
+] clk_kernel2_adapt ]
+
+# Create instance: clk_kernel2_cont_adapt, and set properties
+set clk_kernel2_cont_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                          \
+[ list                                                                                                                                 \
+    CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL_2                                                                                       \
+] clk_kernel2_cont_adapt ]
+
+# Create instance: psreset_kernel2, and set properties
+set psreset_kernel2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params                                       \
+[list                                                                                                                                  \
+    CONFIG.C_AUX_RST_WIDTH {1}                                                                                                         \
+    CONFIG.C_EXT_RST_WIDTH {1}                                                                                                         \
+] psreset_kernel2 ]
+
+# Create instance: shutdown_clocks_latch, and set properties
+set shutdown_clocks_latch [ create_bd_cell -type ip -vlnv xilinx.com:ip:c_shift_ram:12.* -set_params                                   \
+[ list                                                                                                                                 \
+    CONFIG.Width.VALUE_SRC USER                                                                                                        \
+    CONFIG.Width {1}                                                                                                                   \
+    CONFIG.Depth {1}                                                                                                                   \
+    CONFIG.DefaultData {0}                                                                                                             \
+    CONFIG.AsyncInitVal {0}                                                                                                            \
+    CONFIG.SyncInitVal {0}                                                                                                             \
+    CONFIG.CE {true}                                                                                                                   \
+] shutdown_clocks_latch ]
+
+# Create instance: gpio_ucs_control_status, and set properties
+set gpio_ucs_control_status [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                     \
+[ list                                                                                                                                 \
+    CONFIG.C_ALL_INPUTS {1}                                                                                                            \
+    CONFIG.C_IS_DUAL {1}                                                                                                               \
+    CONFIG.C_ALL_OUTPUTS_2 {1}                                                                                                         \
+] gpio_ucs_control_status ]
+
+# Create instance: slice_startup_done_gpio, and set properties
+set slice_startup_done_gpio [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.* -set_params                                      \
+[list                                                                                                                                  \
+    CONFIG.DIN_TO {0}                                                                                                                  \
+    CONFIG.DIN_FROM {0}                                                                                                                \
+    CONFIG.DOUT_WIDTH {1}                                                                                                              \
+] slice_startup_done_gpio ]
+
+# Create instance: slice_check_gpio, and set properties
+set slice_check_gpio [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.* -set_params                                             \
+[list                                                                                                                                  \
+    CONFIG.DIN_TO {5}                                                                                                                  \
+    CONFIG.DIN_FROM {20}                                                                                                               \
+    CONFIG.DOUT_WIDTH {16}                                                                                                             \
+] slice_check_gpio ]
+
+# Create instance: adder_check_gpio, and set properties
+set adder_check_gpio [ create_bd_cell -type ip -vlnv xilinx.com:ip:c_addsub:12.* -set_params                                           \
+[list                                                                                                                                  \
+    CONFIG.A_Type.VALUE_SRC USER                                                                                                       \
+    CONFIG.B_Type.VALUE_SRC USER                                                                                                       \
+    CONFIG.A_Width.VALUE_SRC USER                                                                                                      \
+    CONFIG.B_Width.VALUE_SRC USER                                                                                                      \
+    CONFIG.A_Type {Unsigned}                                                                                                           \
+    CONFIG.B_Type {Unsigned}                                                                                                           \
+    CONFIG.A_Width {16}                                                                                                                \
+    CONFIG.B_Width {16}                                                                                                                \
+    CONFIG.Latency {0}                                                                                                                 \
+    CONFIG.B_Constant {true}                                                                                                           \
+    CONFIG.B_Value {0010010011100110}                                                                                                  \
+    CONFIG.CE {false}                                                                                                                  \
+    CONFIG.Out_Width {16}                                                                                                              \
+] adder_check_gpio ]
+
+# Create instance: reduce_check_gpio, and set properties
+set reduce_check_gpio [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_reduced_logic:2.* -set_params                                 \
+[list                                                                                                                                  \
+    CONFIG.C_SIZE {16}                                                                                                                 \
+] reduce_check_gpio]
+
+# Create instance: or_shutdown_clocks, and set properties
+set or_shutdown_clocks [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params                                 \
+[list                                                                                                                                  \
+    CONFIG.C_SIZE {1}                                                                                                                  \
+    CONFIG.C_OPERATION {or}                                                                                                            \
+] or_shutdown_clocks ]
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE > 1} {
+    set kernel_div_clock_type {3}
+} else {
+    set kernel_div_clock_type {0}
+}
+
+# Create instance: frequency_counter_kernel, and set properties
+set frequency_counter_kernel [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_frequency_counter:1.* -set_params               \
+[list                                                                                                                                  \
+    CONFIG.REF_CLK_FREQ_HZ ${C_FREQ_CNT_REF_CLK_HZ}                                                                                    \
+    CONFIG.TEST_CLK_0_TYPE {1}                                                                                                         \
+    CONFIG.TEST_CLK_1_TYPE {2}                                                                                                         \
+    CONFIG.TEST_CLK_2_TYPE ${kernel_div_clock_type}                                                                                    \
+    CONFIG.TEST_CLK_3_TYPE {0}                                                                                                         \
+] frequency_counter_kernel ]
+
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE > 1} {
+    set kernel2_div_clock_type {3}
+} else {
+    set kernel2_div_clock_type {0}
+}
+
+# Create instance: frequency_counter_kernel2, and set properties
+set frequency_counter_kernel2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_frequency_counter:1.* -set_params              \
+[list                                                                                                                                  \
+    CONFIG.REF_CLK_FREQ_HZ ${C_FREQ_CNT_REF_CLK_HZ}                                                                                    \
+    CONFIG.TEST_CLK_0_TYPE {1}                                                                                                         \
+    CONFIG.TEST_CLK_1_TYPE {2}                                                                                                         \
+    CONFIG.TEST_CLK_2_TYPE ${kernel2_div_clock_type}                                                                                   \
+    CONFIG.TEST_CLK_3_TYPE {0}                                                                                                         \
+] frequency_counter_kernel2 ]
+
+# Create instance: psreset_freerun_refclk, and set properties
+set psreset_freerun_refclk [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params                                \
+[list                                                                                                                                  \
+    CONFIG.C_AUX_RST_WIDTH {1}                                                                                                         \
+    CONFIG.C_EXT_RST_WIDTH {1}                                                                                                         \
+] psreset_freerun_refclk ]
+
+# Create instance: frequency_counter_aclk, and set properties
+set frequency_counter_aclk [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_frequency_counter:1.* -set_params                 \
+[list                                                                                                                                  \
+    CONFIG.REF_CLK_FREQ_HZ ${C_FREQ_CNT_REF_CLK_HZ}                                                                                    \
+    CONFIG.TEST_CLK_0_TYPE {5}                                                                                                         \
+    CONFIG.TEST_CLK_1_TYPE {6}                                                                                                         \
+    CONFIG.TEST_CLK_2_TYPE {0}                                                                                                         \
+    CONFIG.TEST_CLK_3_TYPE {0}                                                                                                         \
+] frequency_counter_aclk ]
+
+# Create instance: vcc, and set properties
+set vcc [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params                                                       \
+[list                                                                                                                                  \
+    CONFIG.CONST_VAL {1}                                                                                                               \
+] vcc ]
+
+# Create instance: gnd15, and set properties
+set gnd15 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params                                                     \
+[list                                                                                                                                  \
+    CONFIG.CONST_VAL {0}                                                                                                               \
+    CONFIG.CONST_WIDTH {15}                                                                                                            \
+] gnd15 ]
+
+# Create instance: gnd2, and set properties
+set gnd2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params                                                      \
+[list                                                                                                                                  \
+    CONFIG.CONST_VAL {0}                                                                                                               \
+    CONFIG.CONST_WIDTH {2}                                                                                                             \
+] gnd2 ]
+
+
+#---------------#
+# C_HAS_HBM_CLK #
+#---------------#
+
+if {$C_HAS_HBM_CLK == true} {
+
+    # Create instance: clkwiz_hbm, and set properties
+    set clkwiz_hbm [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.* -set_params                                               \
+    [ list                                                                                                                             \
+        CONFIG.CLKOUT1_REQUESTED_OUT_FREQ $hbm_clock_frequency                                                                         \
+        CONFIG.CLKOUT1_DRIVES {BUFGCE}                                                                                                 \
+        CONFIG.PRIM_SOURCE {No_buffer}                                                                                                 \
+        CONFIG.USE_DYN_RECONFIG {true}                                                                                                 \
+        CONFIG.USE_POWER_DOWN {true}                                                                                                   \
+    ] clkwiz_hbm ]
+
+    # Create instance: clk_hbm_adapt, and set properties
+    set clk_hbm_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                               \
+    [ list                                                                                                                             \
+        CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_HBM                                                                                        \
+    ] clk_hbm_adapt ]
+
+    # Create instance: psreset_hbm, and set properties
+    set psreset_hbm [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params                                       \
+    [list                                                                                                                              \
+        CONFIG.C_AUX_RST_WIDTH {1}                                                                                                     \
+        CONFIG.C_EXT_RST_WIDTH {1}                                                                                                     \
+    ] psreset_hbm ]
+
+    # Create instance: frequency_counter_hbm, and set properties
+    set frequency_counter_hbm [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_frequency_counter:1.* -set_params              \
+    [list                                                                                                                              \
+        CONFIG.REF_CLK_FREQ_HZ ${C_FREQ_CNT_REF_CLK_HZ}                                                                                \
+        CONFIG.TEST_CLK_0_TYPE {1}                                                                                                     \
+        CONFIG.TEST_CLK_1_TYPE {0}                                                                                                     \
+        CONFIG.TEST_CLK_2_TYPE {0}                                                                                                     \
+        CONFIG.TEST_CLK_3_TYPE {4}                                                                                                     \
+    ] frequency_counter_hbm ]
+
+    # Create instance: fanout_aresetn_hbm, and set properties
+    set fanout_aresetn_hbm [ create_bd_cell -type ip -vlnv xilinx.com:ip:pipeline_reg:1.* fanout_aresetn_hbm ]
+
+}
+
+#---------------------------------------------------#
+# C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE  #
+#---------------------------------------------------#
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE > 1} {
+
+    # Create instance: clk_kernel_div_adapt, and set properties
+    set clk_kernel_div_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                        \
+    [ list                                                                                                                             \
+        CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL                                                                                     \
+    ] clk_kernel_div_adapt ]
+
+}
+
+#---------------------------------------------------#
+# C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE #
+#---------------------------------------------------#
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE > 1} {
+
+    # Create instance: clk_kernel2_div_adapt, and set properties
+    set clk_kernel2_div_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_metadata_adapter:1.* -set_params                       \
+    [ list                                                                                                                             \
+        CONFIG.CLK_DOMAIN $C_CLK_DOMAIN_CLK_KERNEL_2                                                                                   \
+    ] clk_kernel2_div_adapt ]
+
+}
+
+#-----------#
+# C_NUM_SLR #
+#-----------#
+
+set num_slr_index 0
+
+while {$num_slr_index < $C_NUM_SLR} {
+
+    # Create instance: fanout_aresetn_ctrl, and set properties
+    set fanout_aresetn_ctrl_slr${num_slr_index} [ create_bd_cell -type ip -vlnv xilinx.com:ip:pipeline_reg:1.* fanout_aresetn_ctrl_slr${num_slr_index} ]
+
+    # Create instance: fanout_aresetn_pcie, and set properties
+    set fanout_aresetn_pcie_slr${num_slr_index} [ create_bd_cell -type ip -vlnv xilinx.com:ip:pipeline_reg:1.* fanout_aresetn_pcie_slr${num_slr_index} ]
+
+    # Create instance: fanout_aresetn_kernel, and set properties
+    set fanout_aresetn_kernel_slr${num_slr_index} [ create_bd_cell -type ip -vlnv xilinx.com:ip:pipeline_reg:1.* fanout_aresetn_kernel_slr${num_slr_index} ]
+
+    # Create instance: fanout_aresetn_kernel2, and set properties
+    set fanout_aresetn_kernel2_slr${num_slr_index} [ create_bd_cell -type ip -vlnv xilinx.com:ip:pipeline_reg:1.* fanout_aresetn_kernel2_slr${num_slr_index} ]
+
+    incr num_slr_index
+
+}
+
+#==========================================================================================================================================#
+# (2) Create interface connections
+#==========================================================================================================================================#
+
+connect_bd_intf_net -intf_net s_axi_ctrl_mgmt [get_bd_intf_ports s_axi_ctrl_mgmt] [get_bd_intf_pins vip_ctrl_mgmt/S_AXI]
+connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_vip [get_bd_intf_pins vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt_0/S00_AXI]
+
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M00_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M00_AXI] [get_bd_intf_pins build_info/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M01_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M01_AXI] [get_bd_intf_pins gpio_gapping_demand/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M02_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M02_AXI] [get_bd_intf_pins gpio_ucs_control_status/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M03_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M03_AXI] [get_bd_intf_pins clkwiz_kernel/s_axi_lite]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M04_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M04_AXI] [get_bd_intf_pins clkwiz_kernel2/s_axi_lite]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M05_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M05_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt_1/S00_AXI]
+
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_1_M00_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_1/M00_AXI] [get_bd_intf_pins frequency_counter_kernel/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_1_M01_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_1/M01_AXI] [get_bd_intf_pins frequency_counter_kernel2/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_1_M02_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_1/M02_AXI] [get_bd_intf_pins frequency_counter_aclk/S_AXI]
+
+if {$C_HAS_HBM_CLK == true} {
+
+    connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_0_M06_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_0/M06_AXI] [get_bd_intf_pins clkwiz_hbm/s_axi_lite]
+    connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_1_M03_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt_1/M03_AXI] [get_bd_intf_pins frequency_counter_hbm/S_AXI]
+
+}
+
+#==========================================================================================================================================#
+# (3) Create port connections
+#==========================================================================================================================================#
+
+# Clocks
+
+connect_bd_net -net aclk_ctrl                               [get_bd_ports aclk_ctrl]                                        \
+                                                            [get_bd_pins clkwiz_kernel/s_axi_aclk]                          \
+                                                            [get_bd_pins clkwiz_kernel2/s_axi_aclk]                         \
+                                                            [get_bd_pins build_info/S_AXI_ACLK]                             \
+                                                            [get_bd_pins gpio_gapping_demand/s_axi_aclk]                    \
+                                                            [get_bd_pins gpio_ucs_control_status/s_axi_aclk]                \
+                                                            [get_bd_pins clock_throttling_avg/Clk]                          \
+                                                            [get_bd_pins shutdown_clocks_latch/CLK]                         \
+                                                            [get_bd_pins gapping_demand_toggle/CLK]                         \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/ACLK]                           \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/S00_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M00_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M01_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M02_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M03_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M04_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M05_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/S00_ACLK]                       \
+                                                            [get_bd_pins vip_ctrl_mgmt/aclk]                                \
+                                                            [get_bd_pins frequency_counter_aclk/test_clk0]
+
+connect_bd_net -net aclk_pcie                               [get_bd_ports aclk_pcie]                                        \
+                                                            [get_bd_pins frequency_counter_aclk/test_clk1]
+
+connect_bd_net -net freerun_refclk                          [get_bd_ports freerun_refclk]                                   \
+                                                            [get_bd_pins psreset_freerun_refclk/slowest_sync_clk]           \
+                                                            [get_bd_pins clkwiz_kernel/clk_in1]                             \
+                                                            [get_bd_pins clkwiz_kernel2/clk_in1]                            \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/ACLK]                           \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M00_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M01_ACLK]                       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M02_ACLK]                       \
+                                                            [get_bd_pins frequency_counter_kernel/s_axi_aclk]               \
+                                                            [get_bd_pins frequency_counter_kernel2/s_axi_aclk]              \
+                                                            [get_bd_pins frequency_counter_aclk/s_axi_aclk]
+
+connect_bd_net -net clk_kernel_unbuffered                   [get_bd_pins clkwiz_kernel/clk_out1]                [get_bd_pins clock_throttling_kernel/Clk_In]
+connect_bd_net -net clk_kernel2_unbuffered                  [get_bd_pins clkwiz_kernel2/clk_out1]               [get_bd_pins clock_throttling_kernel2/Clk_In]
+
+connect_bd_net -net clock_throttling_kernel_clk_out         [get_bd_pins clock_throttling_kernel/Clk_Out]       [get_bd_pins clk_kernel_adapt/clk_in]
+connect_bd_net -net clock_throttling_kernel2_clk_out        [get_bd_pins clock_throttling_kernel2/Clk_Out]      [get_bd_pins clk_kernel2_adapt/clk_in]
+
+connect_bd_net -net clock_throttling_kernel_clk_out_cont    [get_bd_pins clock_throttling_kernel/Clk_Out_Cont]  [get_bd_pins clk_kernel_cont_adapt/clk_in]
+connect_bd_net -net clock_throttling_kernel2_clk_out_cont   [get_bd_pins clock_throttling_kernel2/Clk_Out_Cont] [get_bd_pins clk_kernel2_cont_adapt/clk_in]
+
+connect_bd_net -net clk_kernel                              [get_bd_pins clk_kernel_adapt/clk_out]                          \
+                                                            [get_bd_pins frequency_counter_kernel/test_clk1]                \
+                                                            [get_bd_ports clk_kernel]
+
+connect_bd_net -net clk_kernel2                             [get_bd_pins clk_kernel2_adapt/clk_out]                         \
+                                                            [get_bd_pins frequency_counter_kernel2/test_clk1]               \
+                                                            [get_bd_ports clk_kernel2]
+
+connect_bd_net -net clk_kernel_cont                         [get_bd_pins clk_kernel_cont_adapt/clk_out]                     \
+                                                            [get_bd_pins frequency_counter_kernel/test_clk0]                \
+                                                            [get_bd_pins psreset_kernel/slowest_sync_clk]
+
+
+connect_bd_net -net clk_kernel2_cont                        [get_bd_pins clk_kernel2_cont_adapt/clk_out]                    \
+                                                            [get_bd_pins frequency_counter_kernel2/test_clk0]               \
+                                                            [get_bd_pins psreset_kernel2/slowest_sync_clk]
+
+connect_bd_net -net gpio_gapping_demand                     [get_bd_pins gpio_gapping_demand/gpio_io_o]                     \
+                                                            [get_bd_pins clock_throttling_kernel/Rate_In]                   \
+                                                            [get_bd_pins clock_throttling_kernel2/Rate_In]                  \
+                                                            [get_bd_pins clock_throttling_avg/Rate]
+
+connect_bd_net -net gapping_demand_bvalid                   [get_bd_pins axi_ic_ctrl_mgmt_0/M01_AXI_bvalid]                 \
+                                                            [get_bd_pins gpio_gapping_demand/s_axi_bvalid]                  \
+                                                            [get_bd_pins gapping_demand_update/Op1]
+
+connect_bd_net -net gapping_demand_bready                   [get_bd_pins axi_ic_ctrl_mgmt_0/M01_AXI_bready]                 \
+                                                            [get_bd_pins gpio_gapping_demand/s_axi_bready]                  \
+                                                            [get_bd_pins gapping_demand_update/Op2]
+
+connect_bd_net -net gapping_demand_update                   [get_bd_pins gapping_demand_update/Res] [get_bd_pins gapping_demand_toggle/CE]
+
+connect_bd_net -net gapping_demand_toggle                   [get_bd_pins gapping_demand_toggle/Q]                           \
+                                                            [get_bd_pins clock_throttling_kernel/Rate_Upd_Tog]              \
+                                                            [get_bd_pins clock_throttling_kernel2/Rate_Upd_Tog]             \
+                                                            [get_bd_pins clock_throttling_avg/Rate_Upd_Tog]
+
+#-----------------------------#
+# C_ENABLE_KERNEL_CONT_CLOCK  #
+#-----------------------------#
+
+if {$C_ENABLE_KERNEL_CONT_CLOCK == true} {
+
+    connect_bd_net -net [get_bd_nets clk_kernel_cont]       [get_bd_ports clk_kernel_cont]
+
+}
+
+#-----------------------------#
+# C_ENABLE_KERNEL2_CONT_CLOCK #
+#-----------------------------#
+
+if {$C_ENABLE_KERNEL2_CONT_CLOCK == true} {
+
+    connect_bd_net -net [get_bd_nets clk_kernel2_cont]      [get_bd_ports clk_kernel2_cont]
+
+}
+
+#-------------#
+# HAS_HBM_CLK #
+#-------------#
+
+if {$C_HAS_HBM_CLK == true} {
+
+    connect_bd_net -net [get_bd_nets aclk_ctrl]             [get_bd_pins axi_ic_ctrl_mgmt_0/M06_ACLK]                       \
+                                                            [get_bd_pins clkwiz_hbm/s_axi_aclk]
+
+    connect_bd_net -net [get_bd_nets freerun_refclk]        [get_bd_pins clkwiz_hbm/clk_in1]                                \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M03_ACLK]                       \
+                                                            [get_bd_pins frequency_counter_hbm/s_axi_aclk]
+
+    connect_bd_net -net clk_hbm_adapt_in                    [get_bd_pins clkwiz_hbm/clk_out1] [get_bd_pins clk_hbm_adapt/clk_in]
+
+    connect_bd_net -net hbm_aclk                            [get_bd_pins clk_hbm_adapt/clk_out]                             \
+                                                            [get_bd_pins frequency_counter_hbm/test_clk0]                   \
+                                                            [get_bd_pins psreset_hbm/slowest_sync_clk]                      \
+                                                            [get_bd_pins fanout_aresetn_hbm/clk]                            \
+                                                            [get_bd_ports hbm_aclk]
+
+    connect_bd_net -net hbm_refclk                          [get_bd_ports hbm_refclk] [get_bd_pins frequency_counter_hbm/test_clk3]
+
+}
+
+#---------------------------------------------------#
+# C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE #
+#---------------------------------------------------#
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL_CLOCK_DIVIDE_VALUE > 1} {
+
+    connect_bd_net -net clock_throttling_kernel_clk_out_div [get_bd_pins clock_throttling_kernel/Clk_Out_Div] [get_bd_pins clk_kernel_div_adapt/clk_in]
+
+    connect_bd_net -net clk_kernel_div                      [get_bd_pins clk_kernel_div_adapt/clk_out]                      \
+                                                            [get_bd_pins frequency_counter_kernel/test_clk2]                \
+                                                            [get_bd_ports clk_kernel_div]
+
+}
+
+#---------------------------------------------------#
+# C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE #
+#---------------------------------------------------#
+
+if {$C_EDGE_ALIGNED_DIVIDED_KERNEL2_CLOCK_DIVIDE_VALUE > 1} {
+
+    connect_bd_net -net clock_throttling_kernel2_clk_out_div [get_bd_pins clock_throttling_kernel2/Clk_Out_Div] [get_bd_pins clk_kernel2_div_adapt/clk_in]
+
+    connect_bd_net -net clk_kernel2_div                     [get_bd_pins clk_kernel2_div_adapt/clk_out]                     \
+                                                            [get_bd_pins frequency_counter_kernel2/test_clk2]               \
+                                                            [get_bd_ports clk_kernel2_div]
+
+}
+
+#-----------#
+# C_NUM_SLR #
+#-----------#
+
+set num_slr_index 0
+
+while {$num_slr_index < $C_NUM_SLR} {
+
+    connect_bd_net -net [get_bd_nets aclk_ctrl]             [get_bd_pins fanout_aresetn_ctrl_slr${num_slr_index}/clk]
+    connect_bd_net -net [get_bd_nets aclk_pcie]             [get_bd_pins fanout_aresetn_pcie_slr${num_slr_index}/clk]
+    connect_bd_net -net [get_bd_nets clk_kernel_cont]       [get_bd_pins fanout_aresetn_kernel_slr${num_slr_index}/clk]
+    connect_bd_net -net [get_bd_nets clk_kernel2_cont]      [get_bd_pins fanout_aresetn_kernel2_slr${num_slr_index}/clk]
+
+    incr num_slr_index
+
+}
+
+
+# Resets
+
+connect_bd_net -net aresetn_ctrl                            [get_bd_ports aresetn_ctrl]                                \
+                                                            [get_bd_pins clkwiz_kernel/s_axi_aresetn]                  \
+                                                            [get_bd_pins clkwiz_kernel2/s_axi_aresetn]                 \
+                                                            [get_bd_pins build_info/S_AXI_ARESETN]                     \
+                                                            [get_bd_pins gpio_gapping_demand/s_axi_aresetn]            \
+                                                            [get_bd_pins gpio_ucs_control_status/s_axi_aresetn]        \
+                                                            [get_bd_pins clock_throttling_avg/Rst]                     \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/ARESETN]                   \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/S00_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M00_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M01_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M02_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M03_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M04_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_0/M05_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/S00_ARESETN]               \
+                                                            [get_bd_pins clock_throttling_kernel/Rst_In]               \
+                                                            [get_bd_pins clock_throttling_kernel2/Rst_In]              \
+                                                            [get_bd_pins vip_ctrl_mgmt/aresetn]                        \
+                                                            [get_bd_pins psreset_freerun_refclk/ext_reset_in]
+
+connect_bd_net -net aresetn_pcie                            [get_bd_ports aresetn_pcie]                                \
+                                                            [get_bd_pins psreset_kernel/ext_reset_in]                  \
+                                                            [get_bd_pins psreset_kernel2/ext_reset_in]
+
+connect_bd_net -net aresetn_freerun_refclk                  [get_bd_pins psreset_freerun_refclk/interconnect_aresetn]  \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/ARESETN]                   \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M00_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M01_ARESETN]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt_1/M02_ARESETN]               \
+                                                            [get_bd_pins frequency_counter_kernel/s_axi_aresetn]       \
+                                                            [get_bd_pins frequency_counter_kernel2/s_axi_aresetn]      \
+                                                            [get_bd_pins frequency_counter_aclk/s_axi_aresetn]
+
+connect_bd_net -net clk_kernel_locked                       [get_bd_pins clkwiz_kernel/locked]  [get_bd_pins clock_throttling_kernel/Locked]
+connect_bd_net -net clk_kernel2_locked                      [get_bd_pins clkwiz_kernel2/locked] [get_bd_pins clock_throttling_kernel2/Locked]
+
+connect_bd_net -net aresetn_kernel_async                    [get_bd_pins clock_throttling_kernel/Rst_Async]  [get_bd_pins psreset_kernel/aux_reset_in]
+connect_bd_net -net aresetn_kernel2_async                   [get_bd_pins clock_throttling_kernel2/Rst_Async] [get_bd_pins psreset_kernel2/aux_reset_in]
+
+connect_bd_net -net aresetn_kernel                          [get_bd_pins psreset_kernel/interconnect_aresetn]
+connect_bd_net -net aresetn_kernel2                         [get_bd_pins psreset_kernel2/interconnect_aresetn]
+
+#---------------#
+# C_HAS_HBM_CLK #
+#---------------#
+
+if {$C_HAS_HBM_CLK == true} {
+
+    connect_bd_net -net [get_bd_nets aresetn_ctrl]           [get_bd_pins axi_ic_ctrl_mgmt_0/M06_ARESETN]              \
+                                                             [get_bd_pins clkwiz_hbm/s_axi_aresetn]                    \
+                                                             [get_bd_pins psreset_hbm/aux_reset_in]
+
+    connect_bd_net -net [get_bd_nets aresetn_freerun_refclk] [get_bd_pins axi_ic_ctrl_mgmt_1/M03_ARESETN]              \
+                                                             [get_bd_pins frequency_counter_hbm/s_axi_aresetn]
+
+    connect_bd_net -net [get_bd_nets aresetn_pcie]           [get_bd_pins psreset_hbm/ext_reset_in]
+
+    connect_bd_net -net hbm_aresetn_int                      [get_bd_pins psreset_hbm/interconnect_aresetn] [get_bd_pins fanout_aresetn_hbm/d]
+
+    connect_bd_net -net clk_hbm_locked                       [get_bd_pins clkwiz_hbm/locked] [get_bd_pins psreset_hbm/dcm_locked]
+
+    connect_bd_net -net hbm_aresetn                          [get_bd_pins fanout_aresetn_hbm/q] [get_bd_ports hbm_aresetn]
+
+}
+
+
+connect_bd_net -net vcc                                     [get_bd_pins vcc/dout]                                     \
+                                                            [get_bd_pins shutdown_clocks_latch/D]                      \
+                                                            [get_bd_pins fanout_aresetn_hbm/resetn]
+
+connect_bd_net -net gpio_ucs_control_status_gpio2           [get_bd_pins gpio_ucs_control_status/gpio2_io_o]           \
+                                                            [get_bd_pins slice_startup_done_gpio/Din]                  \
+                                                            [get_bd_pins slice_check_gpio/Din]
+
+
+connect_bd_net -net startup_done                            [get_bd_pins slice_startup_done_gpio/Dout]                 \
+                                                            [get_bd_pins clock_throttling_kernel/Startup_Done]         \
+                                                            [get_bd_pins clock_throttling_kernel2/Startup_Done]
+
+
+connect_bd_net -net slice_check_gpio_dout                   [get_bd_pins slice_check_gpio/Dout] [get_bd_pins adder_check_gpio/A]
+
+connect_bd_net -net adder_check_gpio_sum                    [get_bd_pins adder_check_gpio/S] [get_bd_pins reduce_check_gpio/Op1]
+
+connect_bd_net -net reduce_check_gpio_res                   [get_bd_pins reduce_check_gpio/Res] [get_bd_pins or_shutdown_clocks/Op2]
+
+connect_bd_net -net shutdown_clocks                         [get_bd_ports shutdown_clocks] [get_bd_pins or_shutdown_clocks/Op1]
+
+connect_bd_net -net or_shutdown_clocks_res                  [get_bd_pins or_shutdown_clocks/Res] [get_bd_pins shutdown_clocks_latch/CE]
+
+connect_bd_net -net shutdown_clocks_latched                 [get_bd_pins shutdown_clocks_latch/Q]                      \
+                                                            [get_bd_pins clkwiz_kernel/power_down]                     \
+                                                            [get_bd_pins clkwiz_kernel2/power_down]                    \
+                                                            [get_bd_pins gpio_ucs_status_concat/In0]
+
+connect_bd_net -net gnd15                                   [get_bd_pins gnd15/dout] [get_bd_pins gpio_ucs_status_concat/In1]
+
+connect_bd_net -net clock_throttling_avg                    [get_bd_pins clock_throttling_avg/Rate_Avg] [get_bd_pins gpio_ucs_status_concat/In2]
+
+connect_bd_net -net gnd2                                    [get_bd_pins gnd2/dout] [get_bd_pins gpio_ucs_status_concat/In3]
+
+connect_bd_net -net gpio_ucs_status_concat_dout             [get_bd_pins gpio_ucs_status_concat/dout] [get_bd_pins gpio_ucs_control_status/gpio_io_i]
+
+
+
+
+if {$C_HAS_HBM_CLK == true} {
+
+    connect_bd_net -net [get_bd_nets shutdown_clocks_latched] [get_bd_pins clkwiz_hbm/power_down]
+
+    connect_bd_net -net [get_bd_nets startup_done]            [get_bd_pins clkwiz_hbm/clk_out1_ce]
+
+}
+
+#-----------#
+# C_NUM_SLR #
+#-----------#
+
+set num_slr_index 0
+
+while {$num_slr_index < $C_NUM_SLR} {
+
+    connect_bd_net -net [get_bd_nets vcc]                   [get_bd_pins fanout_aresetn_ctrl_slr${num_slr_index}/resetn]
+    connect_bd_net -net [get_bd_nets vcc]                   [get_bd_pins fanout_aresetn_pcie_slr${num_slr_index}/resetn]
+    connect_bd_net -net [get_bd_nets vcc]                   [get_bd_pins fanout_aresetn_kernel_slr${num_slr_index}/resetn]
+    connect_bd_net -net [get_bd_nets vcc]                   [get_bd_pins fanout_aresetn_kernel2_slr${num_slr_index}/resetn]
+
+    connect_bd_net -net [get_bd_nets aresetn_ctrl]          [get_bd_pins fanout_aresetn_ctrl_slr${num_slr_index}/d]
+    connect_bd_net -net [get_bd_nets aresetn_pcie]          [get_bd_pins fanout_aresetn_pcie_slr${num_slr_index}/d]
+    connect_bd_net -net [get_bd_nets aresetn_kernel]        [get_bd_pins fanout_aresetn_kernel_slr${num_slr_index}/d]
+    connect_bd_net -net [get_bd_nets aresetn_kernel2]       [get_bd_pins fanout_aresetn_kernel2_slr${num_slr_index}/d]
+
+    connect_bd_net -net aresetn_ctrl_slr${num_slr_index}    [get_bd_pins fanout_aresetn_ctrl_slr${num_slr_index}/q] [get_bd_ports aresetn_ctrl_slr${num_slr_index}]
+    connect_bd_net -net aresetn_pcie_slr${num_slr_index}    [get_bd_pins fanout_aresetn_pcie_slr${num_slr_index}/q] [get_bd_ports aresetn_pcie_slr${num_slr_index}]
+    connect_bd_net -net aresetn_kernel_slr${num_slr_index}  [get_bd_pins fanout_aresetn_kernel_slr${num_slr_index}/q] [get_bd_ports aresetn_kernel_slr${num_slr_index}]
+    connect_bd_net -net aresetn_kernel2_slr${num_slr_index} [get_bd_pins fanout_aresetn_kernel2_slr${num_slr_index}/q] [get_bd_ports aresetn_kernel2_slr${num_slr_index}]
+
+    incr num_slr_index
+
+}
+
+#==========================================================================================================================================#
+# (4) Create address segments
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_mgmt
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address     -offset 0x00000000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins build_info/S_AXI]]
+assign_bd_address     -offset 0x00001000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins gpio_gapping_demand/S_AXI]]
+assign_bd_address     -offset 0x00002000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins gpio_ucs_control_status/S_AXI]]
+assign_bd_address     -offset 0x00003000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins clkwiz_kernel/s_axi_lite]]
+assign_bd_address     -offset 0x00004000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins clkwiz_kernel2/s_axi_lite]]
+assign_bd_address     -offset 0x00005000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins frequency_counter_kernel/S_AXI]]
+assign_bd_address     -offset 0x00006000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins frequency_counter_kernel2/S_AXI]]
+assign_bd_address     -offset 0x00009000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins frequency_counter_aclk/S_AXI]]
+
+if {$C_HAS_HBM_CLK == true} {
+
+    assign_bd_address -offset 0x00007000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins clkwiz_hbm/s_axi_lite]]
+    assign_bd_address -offset 0x00008000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins frequency_counter_hbm/S_AXI]]
+
+}
+
+assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore

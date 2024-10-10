@@ -1,0 +1,107 @@
+<: set CompName [getComponentNameString] :>
+<: setOutputDirectory "./" :>
+<: setFileName $CompName :>
+<: setFileExtension ".xdc" :>
+<: set type_if_0         [getIntValue "c_interconnect_port_0"] :>
+<: set type_if_1         [getIntValue "c_interconnect_port_1"] :>
+<: set read_clk_period_0 [get_property PARAM_VALUE.C_READ_CLOCK_PERIOD_0] :>
+<: set read_clk_period_1 [get_property PARAM_VALUE.C_READ_CLOCK_PERIOD_1] :>
+<: set async_clks        [getIntValue "c_async_clks"] :>
+<: set num_sync_ff       [getIntValue "c_num_sync_ff"] :>
+<: set imp_style         [getIntValue "c_impl_style"] :>
+<: set fsl_constraints   [expr ($async_clks == 1) && ($imp_style == 0)] :>
+<: set async_constraints [expr ($async_clks == 1)] :>
+<: set rst_constraints   [expr ($async_clks == 1)] :>
+<: set read_clk_ns_0     [expr ${read_clk_period_0} / 1000.0] :>
+<: set read_clk_ns_1     [expr ${read_clk_period_1} / 1000.0] :>
+# file: <=: CompName :>.xdc
+# (c) Copyright 2012-2014 Xilinx, Inc. All rights reserved.
+# 
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+# 
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+# 
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+# 
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+<: if {$fsl_constraints} { :>
+<:   set fsl_ram_mem "Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/ram_mem*/RAM*" :>
+<:   set fsl_1_to_0_clk "fsl_1_to_0/${fsl_ram_mem}/CLK" :>
+<:   set fsl_0_to_1_clk "fsl_0_to_1/${fsl_ram_mem}/CLK" :>
+set_max_delay -from [get_pins <=: $fsl_1_to_0_clk :>] -to [all_ffs] <=: $read_clk_ns_0 :> -datapath_only
+set_max_delay -from [get_pins <=: $fsl_0_to_1_clk :>] -to [all_ffs] <=: $read_clk_ns_1 :> -datapath_only
+<: } :>
+<: if {$async_constraints} { :>
+<:   set    fsl_clk_0_src " \[get_pin \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/write_addrgray_reg*/C\"\]" :>
+<:   append fsl_clk_0_src " \[get_pin \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/write_nextgray_reg*/C\"\]" :>
+<:   append fsl_clk_0_src " \[get_pin \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/read_lastgray_reg*/C\"\]" :>
+<:   append fsl_clk_0_src " \[get_pin \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/read_nextgray_reg*/C\"\]" :>
+<:     :>
+<:   set    fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/rd_write_addrgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/rd_write_nextgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/wr_read_lastgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/wr_read_nextgray_dx_reg\[*\]\"\]" :>
+<:   if {$num_sync_ff == 0} { :>
+<:     append fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/empty_reg\"\]" :>
+<:     append fsl_clk_0_dst " \[get_cells \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/full_i_reg\"\]" :>
+<:   } :>
+<:     :>
+<:   set    fsl_clk_1_src " \[get_pin \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/write_addrgray_reg*/C\"\]" :>
+<:   append fsl_clk_1_src " \[get_pin \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/write_nextgray_reg*/C\"\]" :>
+<:   append fsl_clk_1_src " \[get_pin \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/read_lastgray_reg*/C\"\]" :>
+<:   append fsl_clk_1_src " \[get_pin \"fsl_1_to_0/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/read_nextgray_reg*/C\"\]" :>
+<:     :>
+<:   set    fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/rd_write_addrgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/rd_write_nextgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/wr_read_lastgray_dx_reg\[*\]\"\]" :>
+<:   append fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/wr_read_nextgray_dx_reg\[*\]\"\]" :>
+<:   if {$num_sync_ff == 0} { :>
+<:     append fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/empty_reg\"\]" :>
+<:     append fsl_clk_1_dst " \[get_cells \"fsl_0_to_1/Using_FIFO.Async_FIFO_Gen.Async_FIFO_I1/full_i_reg\"\]" :>
+<:   } :>
+set_max_delay -from [list <=: $fsl_clk_1_src :> ] -to [list <=: $fsl_clk_0_dst :> ] <=: $read_clk_ns_0 :> -datapath_only
+set_max_delay -from [list <=: $fsl_clk_0_src :> ] -to [list <=: $fsl_clk_1_dst :> ] <=: $read_clk_ns_1 :> -datapath_only
+<: } :>
+<: if {$rst_constraints} { :>
+<:   set rst_mbox_tig_dst "\[get_pin \"fsl_*/*/*_reset_sync_reg\[0\]/D\"\]" :>
+<:   if {$type_if_0 == 2 && $type_if_1 == 2} { :>
+<:     append rst_mbox_tig_dst " \[get_pin \"Rst_Async.Bus_RST_FF_I*_1/D\"\]" :>
+<:   } :>
+set_false_path -to [list <=: $rst_mbox_tig_dst :> ]
+<: } :>

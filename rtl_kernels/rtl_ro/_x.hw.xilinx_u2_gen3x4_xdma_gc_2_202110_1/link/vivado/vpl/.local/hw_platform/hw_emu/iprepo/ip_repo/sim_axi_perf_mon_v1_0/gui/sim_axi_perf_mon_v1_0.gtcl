@@ -1,0 +1,3 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_ADDR_MIN_ENABLEMENT {ENABLE_ADDR_FILTER } {expr $ENABLE_ADDR_FILTER == true}
+proc gen_USERPARAMETER_ADDR_MAX_ENABLEMENT {ENABLE_ADDR_FILTER } {expr $ENABLE_ADDR_FILTER == true}

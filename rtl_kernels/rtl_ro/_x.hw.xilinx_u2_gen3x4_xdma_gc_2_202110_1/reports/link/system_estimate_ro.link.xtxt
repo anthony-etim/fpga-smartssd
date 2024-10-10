@@ -1,0 +1,36 @@
+===============================================================================
+Version:    v++ v2021.1 (64-bit)
+Build:      SW Build 3246112 on 2021-06-09-14:19:56
+Copyright:  Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+Created:    Fri Dec 31 12:52:38 2021
+===============================================================================
+
+-------------------------------------------------------------------------------
+Design Name:             ro.link
+Target Device:           xilinx:u2:gen3x4_xdma_gc_2:202110.1
+Target Clock:            300.000000MHz
+Total number of kernels: 1
+-------------------------------------------------------------------------------
+
+Kernel Summary
+Kernel Name  Type  Target              OpenCL Library  Compute Units
+-----------  ----  ------------------  --------------  -------------
+krnl_ro_rtl  ip_c  fpga0:OCL_REGION_0  ro.link         1
+
+
+-------------------------------------------------------------------------------
+OpenCL Binary:     ro.link
+Kernels mapped to: clc_region
+
+Timing Information (MHz)
+Compute Unit  Kernel Name  Module Name  Target Frequency  Estimated Frequency
+------------  -----------  -----------  ----------------  -------------------
+
+Latency Information
+Compute Unit  Kernel Name  Module Name  Start Interval  Best (cycles)  Avg (cycles)  Worst (cycles)  Best (absolute)  Avg (absolute)  Worst (absolute)
+------------  -----------  -----------  --------------  -------------  ------------  --------------  ---------------  --------------  ----------------
+
+Area Information
+Compute Unit  Kernel Name  Module Name  FF  LUT  DSP  BRAM  URAM
+------------  -----------  -----------  --  ---  ---  ----  ----
+-------------------------------------------------------------------------------

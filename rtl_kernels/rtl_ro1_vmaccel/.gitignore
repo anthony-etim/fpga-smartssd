@@ -1,0 +1,17 @@
+quick_setup.sh
+quick_run.sh
+quick_plot.sh
+.ipcache/
+_x/
+_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/
+tmp_kernel_pack_ro_hw_xilinx_u2_gen3x4_xdma_gc_2_202110_1/
+package.hw/
+packaged_kernel_ro_hw_xilinx_u2_gen3x4_xdma_gc_2_202110_1/
+
+*.log
+*.jou
+.Xil
+opencl_trace.csv
+xclbin.run_summary
+
+experiments/

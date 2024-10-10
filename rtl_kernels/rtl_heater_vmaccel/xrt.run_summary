@@ -1,0 +1,27 @@
+{
+    "schema_version": {
+        "major": "1",
+        "minor": "2",
+        "patch": "0"
+    },
+    "generation": {
+        "this_file": "\/home\/ubuntu\/vitis_accel_examples\/rtl_kernels\/rtl_heater\/xrt.run_summary",
+        "source": "vp",
+        "PID": "15300",
+        "timestamp": "1686883188172"
+    },
+    "files": [
+        {
+            "name": "device_trace_0.csv",
+            "type": "VP_TRACE"
+        },
+        {
+            "name": "device_trace_1.csv",
+            "type": "VP_TRACE"
+        },
+        {
+            "name": "summary.csv",
+            "type": "PROFILE_SUMMARY"
+        }
+    ]
+}

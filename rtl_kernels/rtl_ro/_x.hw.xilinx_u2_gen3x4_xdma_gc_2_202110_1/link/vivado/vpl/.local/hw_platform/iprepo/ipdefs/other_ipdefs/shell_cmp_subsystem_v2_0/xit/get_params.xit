@@ -1,0 +1,250 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+set shell_subsystem                             [::ipxit::current_inst]
+
+#==========================================================================================================================================#
+# Get Project settings
+#==========================================================================================================================================#
+
+# N/A
+
+#==========================================================================================================================================#
+# Get user parameters
+#==========================================================================================================================================#
+
+set axi_ic_ctrl_mgmt_num_mi 1
+
+# Subsystem Version Properties
+set C_SUBSYSTEM_ID                              [get_property CONFIG.VERSION.SUBSYSTEM_ID                       $shell_subsystem]
+set C_VIV_VERSION                               [get_property CONFIG.VERSION.VIV_VERSION                        $shell_subsystem]
+set C_MAJOR_VERSION                             [get_property CONFIG.VERSION.MAJOR_VERSION                      $shell_subsystem]
+set C_MINOR_VERSION                             [get_property CONFIG.VERSION.MINOR_VERSION                      $shell_subsystem]
+set C_CORE_REVISION                             [get_property CONFIG.VERSION.CORE_REVISION                      $shell_subsystem]
+set C_PATCH_REVISION                            [get_property CONFIG.VERSION.PATCH_REVISION                     $shell_subsystem]
+set C_PERFORCE_CL                               [get_property CONFIG.VERSION.PERFORCE_CL                        $shell_subsystem]
+set C_RESERVED_TAG                              [get_property CONFIG.VERSION.RESERVED_TAG                       $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# PARTITION_NAME = BLP or PLP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_PARTITION_NAME                            [get_property CONFIG.PARTITION_NAME                             $shell_subsystem]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# PLP Peripherals
+# HAS_JTAG_AXI_MASTER
+# HAS_UUID_ROM
+# HAS_USER_DEBUG
+# HAS_MEMORY_CALIB_STATUS
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_HAS_JTAG_AXI_MASTER                       [get_property CONFIG.HAS_JTAG_AXI_MASTER                        $shell_subsystem]
+
+set C_HAS_UUID_ROM                              [get_property CONFIG.HAS_UUID_ROM                               $shell_subsystem]
+set C_REGSLICE_UUID_ROM                         [get_property CONFIG.REGSLICE_UUID_ROM                          $shell_subsystem]
+
+set C_HAS_USER_DEBUG                            [get_property CONFIG.HAS_USER_DEBUG                             $shell_subsystem]
+set C_REGSLICE_USER_DEBUG_BRIDGE                [get_property CONFIG.REGSLICE_USER_DEBUG_BRIDGE                 $shell_subsystem]
+
+set C_HAS_MEMORY_CALIB_STATUS                   [get_property CONFIG.HAS_MEMORY_CALIB_STATUS                    $shell_subsystem]
+set C_REGSLICE_MEMORY_CALIB_STATUS              [get_property CONFIG.REGSLICE_MEMORY_CALIB_STATUS               $shell_subsystem]
+set C_NUM_MEMORY_CALIB                          [get_property CONFIG.NUM_MEMORY_CALIB                           $shell_subsystem]
+
+if {$C_PARTITION_NAME == "PLP"} {
+
+    if {$C_REGSLICE_UUID_ROM == "SLR"} {
+
+        set regslice_uuid_rom_regval 10
+
+    } else {
+
+        set regslice_uuid_rom_regval 11
+
+    }
+
+    if {$C_REGSLICE_USER_DEBUG_BRIDGE == "SLR"} {
+
+        set regslice_user_debug_bridge_regval 10
+
+    } else {
+
+        set regslice_user_debug_bridge_regval 11
+
+    }
+
+    if {$C_REGSLICE_MEMORY_CALIB_STATUS == "SLR"} {
+
+        set regslice_memory_calib_status_regval 10
+
+    } else {
+
+        set regslice_memory_calib_status_regval 11
+
+    }
+
+    if {$C_HAS_MEMORY_CALIB_STATUS == true} {
+
+        incr axi_ic_ctrl_mgmt_num_mi
+
+    }
+
+    if {$C_HAS_UUID_ROM == true} {
+
+        incr axi_ic_ctrl_mgmt_num_mi
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# BLP Peripherals
+# HAS_FLASH_PROGRAMMER
+# HAS_AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_HAS_FLASH_PROGRAMMER                      [get_property CONFIG.HAS_FLASH_PROGRAMMER                       $shell_subsystem]
+set C_REGSLICE_FLASH_PROGRAMMER                 [get_property CONFIG.REGSLICE_FLASH_PROGRAMMER                  $shell_subsystem]
+
+set C_HAS_AXI_HWICAP                            [get_property CONFIG.HAS_AXI_HWICAP                             $shell_subsystem]
+set C_HAS_AXI_ICAP_ARB                          [get_property CONFIG.HAS_AXI_ICAP_ARB                           $shell_subsystem]
+set C_REGSLICE_AXI_HWICAP                       [get_property CONFIG.REGSLICE_AXI_HWICAP                        $shell_subsystem]
+
+if {$C_PARTITION_NAME == "BLP"} {
+
+    if {$C_REGSLICE_FLASH_PROGRAMMER == "SLR"} {
+
+        set regslice_flash_programmer_regval 10
+
+    } else {
+
+        set regslice_flash_programmer_regval 11
+
+    }
+
+    if {$C_HAS_FLASH_PROGRAMMER == true} {
+
+        incr axi_ic_ctrl_mgmt_num_mi
+
+    }
+
+    if {$C_REGSLICE_AXI_HWICAP == "SLR"} {
+
+        set regslice_axi_hwicap_regval 10
+
+    } else {
+
+        set regslice_axi_hwicap_regval 0
+
+    }
+
+    if {$C_HAS_AXI_HWICAP == true} {
+
+        incr axi_ic_ctrl_mgmt_num_mi
+
+    }
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        incr axi_ic_ctrl_mgmt_num_mi
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# COMMON BLP & PLP Peripherals
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# HAS_MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set C_HAS_MGMT_DEBUG                            [get_property CONFIG.HAS_MGMT_DEBUG                             $shell_subsystem]
+set C_REGSLICE_MGMT_DEBUG                       [get_property CONFIG.REGSLICE_MGMT_DEBUG                        $shell_subsystem]
+set C_NUM_MB_DEBUG_PORTS                        [get_property CONFIG.NUM_MB_DEBUG_PORTS                         $shell_subsystem]
+
+if {$C_REGSLICE_MGMT_DEBUG == "SLR"} {
+
+    set regslice_mgmt_debug_regval 10
+    set regslice_mdm_regval 10
+
+} else {
+
+    set regslice_mgmt_debug_regval 11
+    set regslice_mdm_regval 10
+
+}
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    incr axi_ic_ctrl_mgmt_num_mi
+
+}
+
+set debug_bridge_design_type 0
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    set debug_bridge_design_type 1
+
+}
+
+set mgmt_debug_bridge_num_bs_master 1
+set mgmt_debug_hub_num_bs_master 1
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)} {
+
+    set mgmt_debug_bridge_num_bs_master 2
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#

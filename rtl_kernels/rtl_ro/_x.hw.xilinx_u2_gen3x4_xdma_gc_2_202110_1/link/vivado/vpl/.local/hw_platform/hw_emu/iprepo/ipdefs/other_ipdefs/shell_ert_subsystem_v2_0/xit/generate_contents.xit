@@ -1,0 +1,857 @@
+############################################################################################################################################
+#
+# (c) Copyright 2018 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (1) Create instance(s)
+#==========================================================================================================================================#
+
+##################################################################
+# DESIGN PROCs
+##################################################################
+
+# Hierarchical cell: reset_gen
+
+proc create_hier_cell_reset_gen { parentCell nameHier } {
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -from 0 -to 0 axi_gpio_rst_n
+    create_bd_pin -dir I -from 0 -to 0 wdt_reset
+    create_bd_pin -dir O -from 0 -to 0 resetn
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: and_gate, and set properties
+    set and_gate [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* and_gate ]
+    set_property -dict [ list \
+     CONFIG.C_OPERATION {and} \
+     CONFIG.C_SIZE {1} \
+    ] $and_gate
+
+    # Create instance: reset_inverter, and set properties
+    set reset_inverter [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* reset_inverter ]
+    set_property -dict [ list \
+     CONFIG.C_OPERATION {not} \
+     CONFIG.C_SIZE {1} \
+    ] $reset_inverter
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # Invert wdt_reset
+    connect_bd_net -net wdt_reset_net                   [get_bd_pins wdt_reset]                     [get_bd_pins reset_inverter/Op1]
+
+    # Connect axi_gpio_rst_n to and_gate input 1
+    connect_bd_net -net axi_gpio_rst_n_net            [get_bd_pins axi_gpio_rst_n]              [get_bd_pins and_gate/Op1]
+
+    # Connect inverted wdt_reset to and_gate input 2
+    connect_bd_net -net reset_inverter_net              [get_bd_pins reset_inverter/Res]            [get_bd_pins and_gate/Op2]
+
+    # Connect active low reset to output
+    connect_bd_net -net resetn_net                      [get_bd_pins and_gate/Res]                  [get_bd_pins resetn]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+# Hierarchical cell: microblaze_ert_lm
+proc create_hier_cell_microblaze_ert_lm { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_msg_id "BD_TCL-102" "ERROR" "create_hier_cell_microblaze_ert_lm() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:bram_rtl:1.0 BRAM_PORTB
+  create_bd_intf_pin -mode MirroredMaster -vlnv xilinx.com:interface:lmb_rtl:1.0 DLMB
+  create_bd_intf_pin -mode MirroredMaster -vlnv xilinx.com:interface:lmb_rtl:1.0 ILMB
+
+  # Create pins
+  create_bd_pin -dir I -type clk LMB_Clk
+  create_bd_pin -dir I -type rst SYS_Rst
+
+  # Create instance: dlmb, and set properties
+  set dlmb [ create_bd_cell -type ip -vlnv xilinx.com:ip:lmb_v10:3.* dlmb ]
+
+  # Create instance: ilmb, and set properties
+  set ilmb [ create_bd_cell -type ip -vlnv xilinx.com:ip:lmb_v10:3.* ilmb ]
+
+  # Create instance: lmb_bram, and set properties
+  set lmb_bram [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.* -set_params                                                    \
+    [ list                                                                                                                                  \
+        CONFIG.Enable_B {Use_ENB_Pin}                                                                                                       \
+        CONFIG.Memory_Type {True_Dual_Port_RAM}                                                                                             \
+        CONFIG.Use_RSTB_Pin {true}                                                                                                          \
+        CONFIG.Write_Width_A {32}                                                                                                           \
+        CONFIG.Write_Depth_A {32768}                                                                                                        \
+    ] lmb_bram ]
+
+  # Create instance: lmb_bram_if_cntlr, and set properties
+  set lmb_bram_if_cntlr [ create_bd_cell -type ip -vlnv xilinx.com:ip:lmb_bram_if_cntlr:4.* -set_params                                     \
+    [ list                                                                                                                                  \
+        CONFIG.C_NUM_LMB {2}                                                                                                                \
+    ] lmb_bram_if_cntlr ]
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net BRAM_PORTB_0_1 [get_bd_intf_pins BRAM_PORTB] [get_bd_intf_pins lmb_bram/BRAM_PORTB]
+  connect_bd_intf_net -intf_net Conn [get_bd_intf_pins DLMB] [get_bd_intf_pins dlmb/LMB_M]
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins ILMB] [get_bd_intf_pins ilmb/LMB_M]
+  connect_bd_intf_net -intf_net Conn2 [get_bd_intf_pins dlmb/LMB_Sl_0] [get_bd_intf_pins lmb_bram_if_cntlr/SLMB]
+  connect_bd_intf_net -intf_net Conn3 [get_bd_intf_pins ilmb/LMB_Sl_0] [get_bd_intf_pins lmb_bram_if_cntlr/SLMB1]
+  connect_bd_intf_net -intf_net lmb_bram_if_cntlr_BRAM_PORT [get_bd_intf_pins lmb_bram/BRAM_PORTA] [get_bd_intf_pins lmb_bram_if_cntlr/BRAM_PORT]
+
+  # Create port connections
+  connect_bd_net -net LMB_Clk_0_1 [get_bd_pins LMB_Clk] [get_bd_pins dlmb/LMB_Clk] [get_bd_pins ilmb/LMB_Clk] [get_bd_pins lmb_bram_if_cntlr/LMB_Clk]
+  connect_bd_net -net SYS_Rst_0_1 [get_bd_pins SYS_Rst] [get_bd_pins dlmb/SYS_Rst] [get_bd_pins ilmb/SYS_Rst] [get_bd_pins lmb_bram_if_cntlr/LMB_Rst]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+  # Create instance: axi_bram_ctrl_lmb, and set properties
+  set axi_bram_ctrl_lmb [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.* -set_params                                         \
+    [ list                                                                                                                                  \
+        CONFIG.PROTOCOL {AXI4LITE}                                                                                                          \
+        CONFIG.SINGLE_PORT_BRAM {1}                                                                                                         \
+    ] axi_bram_ctrl_lmb ]
+
+  # Create instance: axi_gpio_mb_base_addr, and set properties
+  set axi_gpio_mb_base_addr [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                          \
+    [ list                                                                                                                                  \
+        CONFIG.C_IS_DUAL {1}                                                                                                                \
+        CONFIG.C_ALL_INPUTS {1}                                                                                                             \
+        CONFIG.C_ALL_OUTPUTS {0}                                                                                                            \
+        CONFIG.C_ALL_INPUTS_2 {1}                                                                                                           \
+        CONFIG.C_ALL_OUTPUTS_2 {0}                                                                                                          \
+    ] axi_gpio_mb_base_addr ]
+    
+  set xc_ert_mgmt_pf_base_addr [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.*  -set_params                                    \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL $C_ERT_MGMT_PF_BASE_ADDR                                                                                           \
+        CONFIG.CONST_WIDTH {32}                                                                                                             \
+    ] xc_ert_mgmt_pf_base_addr ]
+    
+  set xc_ert_user_pf_base_addr [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.*  -set_params                                    \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL $C_ERT_USER_PF_BASE_ADDR                                                                                           \
+        CONFIG.CONST_WIDTH {32}                                                                                                             \
+    ] xc_ert_user_pf_base_addr ]         
+    
+  # Create instance: axi_gpio_ert_mb_rst_n, and set properties
+  set axi_gpio_ert_mb_rst_n [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                          \
+    [ list                                                                                                                                  \
+        CONFIG.C_ALL_OUTPUTS {1}                                                                                                            \
+        CONFIG.C_GPIO_WIDTH {1}                                                                                                             \
+    ] axi_gpio_ert_mb_rst_n ]
+
+  # Create instance: axi_gpio_wdt, and set properties
+  set axi_gpio_wdt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                                   \
+    [ list                                                                                                                                  \
+        CONFIG.C_ALL_OUTPUTS {1}                                                                                                            \
+        CONFIG.C_GPIO_WIDTH {1}                                                                                                             \
+    ] axi_gpio_wdt ]
+
+  # Create instance: axi_ic_ctrl_mgmt, and set properties
+  set axi_ic_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                       \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI {4}                                                                                                                   \
+        CONFIG.NUM_SI {1}                                                                                                                   \
+    ] axi_ic_ctrl_mgmt ]
+
+  # Create instance: axi_ic_ctrl_user, and set properties
+  if {$C_REMOVE_KDMA == false} {
+    set axi_ic_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                     \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI {3}                                                                                                                   \
+        CONFIG.NUM_SI {1}                                                                                                                   \
+    ] axi_ic_ctrl_user ]
+  } else {
+
+    dbg_puts "Setting axi_ic_ctrl_user when KDMA is removed"
+
+    set axi_ic_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                     \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI {2}                                                                                                                   \
+        CONFIG.NUM_SI {1}                                                                                                                   \
+    ] axi_ic_ctrl_user ]
+  }
+
+  # Create instance: axi_ic_ctrl_user_ert, and set properties
+  set axi_ic_ctrl_user_ert [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                   \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI {1}                                                                                                                   \
+        CONFIG.NUM_SI {3}                                                                                                                   \
+    ] axi_ic_ctrl_user_ert ]
+
+  # Create instance: axi_ic_ert_local, and set properties
+  set axi_ic_ert_local [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                       \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI {7}                                                                                                                   \
+        CONFIG.NUM_SI {1}                                                                                                                   \
+    ] axi_ic_ert_local ]
+
+  # Create instance: axi_intc, and set properties
+  set axi_intc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_intc:4.*  -set_params                                                      \
+    [ list                                                                                                                                  \
+        CONFIG.C_HAS_FAST {1}                                                                                                               \
+        CONFIG.C_NUM_INTR_INPUTS {5}                                                                                                        \
+        CONFIG.C_KIND_OF_INTR {0xFFFFFFE4}                                                                                                  \
+        CONFIG.C_KIND_OF_EDGE {0xFFFFFFFF}                                                                                                  \
+        CONFIG.C_ASYNC_INTR {0xFFFFFFFF}                                                                                                    \
+    ] axi_intc ]
+
+  # workaround to force C_DISABLE_SYNCHRONIZERS=1
+  set_property -dict [ list CONFIG.C_ENABLE_ASYNC {1} ] $axi_intc
+  set_property -dict [ list CONFIG.C_ENABLE_ASYNC {0} ] $axi_intc
+
+  # Create instance: axi_intc_host, and set properties
+  set axi_intc_host [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_intc:4.*  -set_params                                                      \
+    [ list                                                                                                                                  \
+        CONFIG.C_HAS_FAST {0}                                                                                                               \
+        CONFIG.C_NUM_INTR_INPUTS {1}                                                                                                        \
+        CONFIG.C_KIND_OF_INTR {0xFFFFFFFF}                                                                                                  \
+        CONFIG.C_KIND_OF_EDGE {0xFFFFFFFF}                                                                                                  \
+        CONFIG.C_ASYNC_INTR {0xFFFFFFFF}                                                                                                    \
+    ] axi_intc_host ]
+
+  # workaround to force C_DISABLE_SYNCHRONIZERS=1
+  set_property -dict [ list CONFIG.C_ENABLE_ASYNC {1} ] $axi_intc_host
+  set_property -dict [ list CONFIG.C_ENABLE_ASYNC {0} ] $axi_intc_host
+
+  # Create instance: axi_pc_cudma, and set properties
+  set axi_pc_cudma [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_protocol_converter:2.* axi_pc_cudma ]
+
+  # Create instance: axi_pc_cuisr, and set properties
+  set axi_pc_cuisr [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_protocol_converter:2.* axi_pc_cuisr ]
+
+  # Create instance: axi_timebase_wdt, and set properties
+  set axi_timebase_wdt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_timebase_wdt:3.* axi_timebase_wdt ]
+
+  # Create instance: cq_bram, and set properties
+  set cq_bram [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.*  -set_params                                                    \
+    [ list                                                                                                                                  \
+        CONFIG.Enable_B {Use_ENB_Pin}                                                                                                       \
+        CONFIG.Memory_Type {True_Dual_Port_RAM}                                                                                             \
+        CONFIG.Use_RSTB_Pin {true}                                                                                                          \
+        CONFIG.Write_Width_A {32}                                                                                                           \
+        CONFIG.Write_Depth_A $C_CQRAM_WRITE_DEPTH                                                                                                        \
+    ] cq_bram ]
+
+  # Create instance: cq_bram_ctrl_cqdma, and set properties
+  set cq_bram_ctrl_cqdma [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.*  -set_params                                       \
+    [ list                                                                                                                                  \
+        CONFIG.PROTOCOL {AXI4}                                                                                                              \
+        CONFIG.SINGLE_PORT_BRAM {1}                                                                                                         \
+    ] cq_bram_ctrl_cqdma ]
+
+  # Create instance: cq_bram_ctrl_user, and set properties
+  set cq_bram_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.*  -set_params                                        \
+    [ list                                                                                                                                  \
+        CONFIG.PROTOCOL {AXI4LITE}                                                                                                          \
+        CONFIG.SINGLE_PORT_BRAM {1}                                                                                                         \
+    ] cq_bram_ctrl_user ]
+
+  # Create instance: cudma_controller, and set properties
+  set cudma_controller [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_cudma_controller:1.* cudma_controller ]
+
+  # Create instance: cuisr, and set properties
+  set cuisr [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_cuisr:1.* cuisr ]
+
+  # Create instance: embd_scheduler_hw, and set properties
+  set embd_scheduler_hw [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_embedded_scheduler_hw:1.* embd_scheduler_hw ]
+
+  # Create instance: kdma, and set properties
+  if {$C_REMOVE_KDMA == false} {
+    set kdma [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_kdma:2.* -set_params                                                 \
+    [ list                                                                                                                                  \
+        CONFIG.C_M_AXI_GMEM_DATA_WIDTH $C_M_AXI_GMEM_DATA_WIDTH                                                                             \
+    ] kdma ]
+  } else {
+    dbg_puts "Setting xlconstant when KDMA is removed"
+    set tied_low [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.*  -set_params                                                  \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL {0}                                                                                                                \
+    ] tied_low ]
+  }
+
+  # Create instance: microblaze_ert, and set properties
+  set microblaze_ert [ create_bd_cell -type ip -vlnv xilinx.com:ip:microblaze:11.*  -set_params                                             \
+    [ list                                                                                                                                  \
+        CONFIG.C_BASE_VECTORS ${C_MB_BASE_VECTORS}                                                                                          \
+        CONFIG.C_D_AXI {1}                                                                                                                  \
+        CONFIG.C_I_AXI {0}                                                                                                                  \
+    ] microblaze_ert ]
+
+  # Create instance: microblaze_ert_lm
+  create_hier_cell_microblaze_ert_lm [current_bd_instance .] microblaze_ert_lm
+
+  # Create instance: reset_gen
+  create_hier_cell_reset_gen [current_bd_instance .] reset_gen
+
+  # Create instance: psreset_scheduler, and set properties
+  set psreset_scheduler [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* psreset_scheduler ]
+
+  # Create instance: psreset_ctrl, and set properties
+  set psreset_ctrl [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* psreset_ctrl ]
+
+  # Create instance: vip_ctrl_mgmt, and set properties
+  set vip_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_ctrl_mgmt ]
+
+  # Create instance: vip_ctrl_user, and set properties
+  set vip_ctrl_user [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_ctrl_user ]
+
+  # Create instance: vip_ctrl_user_ert, and set properties
+  set vip_ctrl_user_ert [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_ctrl_user_ert ]
+  
+  # Create instance: vip_mdm, and set properties
+  set vip_mdm [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_mdm ]  
+
+  # Create instance: vip_data_copy, and set properties
+  if {$C_REMOVE_KDMA == false} {
+    set vip_data_copy     [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* vip_data_copy]
+  }
+
+  # Create instance: xlconcat_intc, and set properties
+  set xlconcat_intc [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.*  -set_params                                                 \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_PORTS {5}                                                                                                                \
+    ] xlconcat_intc ]
+
+  # Create instance: xlconcat_intc, and set properties
+  set xlconcat_host_interrupt [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.*  -set_params                                       \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_PORTS {1}                                                                                                                \
+    ] xlconcat_host_interrupt ]
+
+  # Create instance: xlconcat_irq, and set properties
+  set xlconcat_irq [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.*  -set_params                                                  \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_PORTS {4}                                                                                                                \
+    ] xlconcat_irq ]
+
+  # Create instance: xc_irq_ack, and set properties
+  set xc_irq_ack [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.*  -set_params                                                  \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL {0}                                                                                                                \
+        CONFIG.CONST_WIDTH {16}                                                                                                             \
+    ] xc_irq_ack ]
+
+  # Instatiate the build info IP and populate with the version parameters
+  set build_info_ert [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params                                   \
+  [ list                                                                                                                                    \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID                                                                                                 \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION                                                                                                   \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION                                                                                               \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION                                                                                               \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION                                                                                               \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION                                                                                             \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL                                                                                                   \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG                                                                                                 \
+  ] build_info_ert ]
+
+  # Instatiate the build info IP and populate with the version parameters
+  set build_info_host [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params                                  \
+  [ list                                                                                                                                    \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID                                                                                                 \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION                                                                                                   \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION                                                                                               \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION                                                                                               \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION                                                                                               \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION                                                                                             \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL                                                                                                   \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG                                                                                                 \
+  ] build_info_host ]
+
+  # Create instance: tied_high, and set properties
+  set tied_high [create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* tied_high]
+  
+  # Create instance: reset_inverter, and set properties
+  set reset_inverter [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params                                        \
+  [ list                                                                                                                                    \
+      CONFIG.C_OPERATION {not}                                                                                                              \
+      CONFIG.C_SIZE {1}                                                                                                                     \
+  ] reset_inverter ]  
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create interface connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net axi_bram_ctrl_lmb_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_lmb/BRAM_PORTA] [get_bd_intf_pins microblaze_ert_lm/BRAM_PORTB]
+  connect_bd_intf_net -intf_net axi_ic_0_M00_AXI [get_bd_intf_pins axi_bram_ctrl_lmb/S_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt/M00_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M01_AXI [get_bd_intf_pins axi_gpio_ert_mb_rst_n/S_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt/M01_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M02_AXI [get_bd_intf_pins axi_intc_host/s_axi] [get_bd_intf_pins axi_ic_ctrl_mgmt/M02_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M03_AXI [get_bd_intf_pins build_info_host/S_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt/M03_AXI]
+  if {$C_REMOVE_KDMA == false} {
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_M00_AXI [get_bd_intf_pins axi_ic_ctrl_user/M00_AXI] [get_bd_intf_pins embd_scheduler_hw/host]
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_M01_AXI [get_bd_intf_pins axi_ic_ctrl_user/M01_AXI] [get_bd_intf_pins cq_bram_ctrl_user/S_AXI]
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_M02_AXI [get_bd_intf_pins axi_ic_ctrl_user/M02_AXI] [get_bd_intf_pins kdma/s_axi_control]
+  } else {
+    dbg_puts "Connecting axi_ic_ctrl_user when KDMA is removed"
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_M00_AXI [get_bd_intf_pins axi_ic_ctrl_user/M00_AXI] [get_bd_intf_pins embd_scheduler_hw/host]
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_M01_AXI [get_bd_intf_pins axi_ic_ctrl_user/M01_AXI] [get_bd_intf_pins cq_bram_ctrl_user/S_AXI]
+  }
+  connect_bd_intf_net -intf_net axi_ic_ctrl_user_ert_M00_AXI [get_bd_intf_pins axi_ic_ctrl_user_ert/M00_AXI] [get_bd_intf_pins vip_ctrl_user_ert/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M00_AXI [get_bd_intf_pins axi_gpio_wdt/S_AXI] [get_bd_intf_pins axi_ic_ert_local/M00_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M01_AXI [get_bd_intf_pins axi_ic_ert_local/M01_AXI] [get_bd_intf_pins axi_timebase_wdt/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M03_AXI [get_bd_intf_pins axi_ic_ert_local/M03_AXI] [get_bd_intf_pins axi_intc/s_axi]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M04_AXI [get_bd_intf_pins axi_gpio_mb_base_addr/S_AXI] [get_bd_intf_pins axi_ic_ert_local/M04_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M05_AXI [get_bd_intf_pins axi_ic_ert_local/M05_AXI] [get_bd_intf_pins build_info_ert/S_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M06_AXI [get_bd_intf_pins vip_mdm/S_AXI] [get_bd_intf_pins axi_ic_ert_local/M06_AXI]
+  connect_bd_intf_net -intf_net m_axi_mdm_net [get_bd_intf_ports m_axi_mdm] [get_bd_intf_pins vip_mdm/M_AXI]  
+  connect_bd_intf_net -intf_net axi_intc_interrupt [get_bd_intf_pins axi_intc/interrupt] [get_bd_intf_pins microblaze_ert/INTERRUPT]
+  connect_bd_intf_net -intf_net axi_pc_cudma_M_AXI [get_bd_intf_pins axi_ic_ctrl_user_ert/S00_AXI] [get_bd_intf_pins axi_pc_cudma/M_AXI]
+  connect_bd_intf_net -intf_net axi_pc_cuisr_M_AXI [get_bd_intf_pins axi_ic_ctrl_user_ert/S01_AXI] [get_bd_intf_pins axi_pc_cuisr/M_AXI]
+  connect_bd_intf_net -intf_net axi_ic_ert_local_M02_AXI [get_bd_intf_pins axi_ic_ctrl_user_ert/S02_AXI] [get_bd_intf_pins axi_ic_ert_local/M02_AXI]
+  connect_bd_intf_net -intf_net cq_bram_ctrl_user_BRAM_PORTA [get_bd_intf_pins cq_bram/BRAM_PORTA] [get_bd_intf_pins cq_bram_ctrl_user/BRAM_PORTA]
+  connect_bd_intf_net -intf_net cq_bram_ctrl_user_BRAM_PORTB [get_bd_intf_pins cq_bram/BRAM_PORTB] [get_bd_intf_pins cq_bram_ctrl_cqdma/BRAM_PORTA]
+  connect_bd_intf_net -intf_net cudma_controller_m_axi_CQDma [get_bd_intf_pins cq_bram_ctrl_cqdma/S_AXI] [get_bd_intf_pins cudma_controller/m_axi_CQDma]
+  connect_bd_intf_net -intf_net cudma_controller_m_axi_CUDma [get_bd_intf_pins axi_pc_cudma/S_AXI] [get_bd_intf_pins cudma_controller/m_axi_CUDma]
+  connect_bd_intf_net -intf_net cuisr_m_axi_a [get_bd_intf_pins axi_pc_cuisr/S_AXI] [get_bd_intf_pins cuisr/m_axi_a]
+  connect_bd_intf_net -intf_net mdm_mbdebug_int [get_bd_intf_ports mdm_mbdebug] [get_bd_intf_pins microblaze_ert/DEBUG]
+  connect_bd_intf_net -intf_net microblaze_ert_DLMB [get_bd_intf_pins microblaze_ert/DLMB] [get_bd_intf_pins microblaze_ert_lm/DLMB]
+  connect_bd_intf_net -intf_net microblaze_ert_ILMB [get_bd_intf_pins microblaze_ert/ILMB] [get_bd_intf_pins microblaze_ert_lm/ILMB]
+  connect_bd_intf_net -intf_net microblaze_ert_M_AXI_DP [get_bd_intf_pins axi_ic_ert_local/S00_AXI] [get_bd_intf_pins microblaze_ert/M_AXI_DP]
+  connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_1 [get_bd_intf_ports s_axi_ctrl_mgmt] [get_bd_intf_pins vip_ctrl_mgmt/S_AXI]
+  connect_bd_intf_net -intf_net s_axi_ctrl_user_1 [get_bd_intf_ports s_axi_ctrl_user] [get_bd_intf_pins vip_ctrl_user/S_AXI]
+  connect_bd_intf_net -intf_net vip_ctrl_mgmt_M_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/S00_AXI] [get_bd_intf_pins vip_ctrl_mgmt/M_AXI]
+  connect_bd_intf_net -intf_net vip_ctrl_user_M_AXI [get_bd_intf_pins axi_ic_ctrl_user/S00_AXI] [get_bd_intf_pins vip_ctrl_user/M_AXI]
+  connect_bd_intf_net -intf_net vip_ctrl_user_ert_M_AXI [get_bd_intf_ports m_axi_ctrl_user_ert] [get_bd_intf_pins vip_ctrl_user_ert/M_AXI]
+  if {$C_REMOVE_KDMA == false} {
+    connect_bd_intf_net -intf_net vip_data_copy_M_AXI [get_bd_intf_ports m_axi_data_copy] [get_bd_intf_pins vip_data_copy/M_AXI]
+    connect_bd_intf_net -intf_net kdma_m_axi_gmem [get_bd_intf_pins kdma/m_axi_gmem] [get_bd_intf_pins vip_data_copy/S_AXI]
+  }
+  connect_bd_net [get_bd_pins axi_gpio_mb_base_addr/gpio_io_i] [get_bd_pins xc_ert_mgmt_pf_base_addr/dout]
+  connect_bd_net [get_bd_pins axi_gpio_mb_base_addr/gpio2_io_i] [get_bd_pins xc_ert_user_pf_base_addr/dout]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (3) Create port connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Clocks
+
+  connect_bd_net -net aclk_ctrl_net                     [get_bd_ports aclk_ctrl]                                                            \
+                                                        [get_bd_pins axi_bram_ctrl_lmb/s_axi_aclk]                                          \
+                                                        [get_bd_pins axi_intc_host/s_axi_aclk]                                              \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/ACLK]                                                 \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M00_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M02_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M03_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M04_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/S00_ACLK]                                             \
+                                                        [get_bd_pins vip_ctrl_mgmt/aclk]                                                    \
+                                                        [get_bd_pins axi_ic_ert_local/M06_ACLK]                                             \
+                                                        [get_bd_pins vip_mdm/aclk]                                                          \                                                        
+                                                        [get_bd_pins psreset_ctrl/slowest_sync_clk]                                         \
+                                                        [get_bd_pins build_info_host/s_axi_aclk]                                            \
+                                                        [get_bd_pins vip_ctrl_user/aclk]                                                    \
+                                                        [get_bd_pins axi_ic_ctrl_user/S00_ACLK]
+
+    connect_bd_net -net aclk_pcie_int                   [get_bd_ports aclk_pcie]                                                            \
+                                                        [get_bd_pins axi_gpio_mb_base_addr/s_axi_aclk]                                      \
+                                                        [get_bd_pins axi_gpio_wdt/s_axi_aclk]                                               \
+                                                        [get_bd_pins axi_gpio_ert_mb_rst_n/s_axi_aclk]                                      \                                                        
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M01_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_user/ACLK]                                                 \
+                                                        [get_bd_pins axi_ic_ctrl_user/M00_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_user/M01_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/M00_ACLK]                                         \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S00_ACLK]                                         \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S01_ACLK]                                         \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S02_ACLK]                                         \                                                        
+                                                        [get_bd_pins axi_ic_ert_local/ACLK]                                                 \
+                                                        [get_bd_pins axi_ic_ert_local/M00_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/M01_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/M02_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/M03_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/M04_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/M05_ACLK]                                             \
+                                                        [get_bd_pins axi_ic_ert_local/S00_ACLK]                                             \
+                                                        [get_bd_pins axi_intc/processor_clk]                                                \
+                                                        [get_bd_pins axi_intc/s_axi_aclk]                                                   \
+                                                        [get_bd_pins axi_pc_cudma/aclk]                                                     \
+                                                        [get_bd_pins axi_pc_cuisr/aclk]                                                     \
+                                                        [get_bd_pins axi_timebase_wdt/s_axi_aclk]                                           \
+                                                        [get_bd_pins cq_bram_ctrl_cqdma/s_axi_aclk]                                         \
+                                                        [get_bd_pins cq_bram_ctrl_user/s_axi_aclk]                                          \
+                                                        [get_bd_pins cudma_controller/ap_clk]                                               \
+                                                        [get_bd_pins cuisr/ap_clk]                                                          \
+                                                        [get_bd_pins embd_scheduler_hw/dma_clk]                                                 \
+                                                        [get_bd_pins microblaze_ert/Clk]                                                    \
+                                                        [get_bd_pins microblaze_ert_lm/LMB_Clk]                                             \
+                                                        [get_bd_pins psreset_scheduler/slowest_sync_clk]                                    \
+                                                        [get_bd_pins vip_ctrl_user_ert/aclk]                                                \
+                                                        [get_bd_pins build_info_ert/s_axi_aclk]                                             \
+                                                        [get_bd_pins vip_data_copy/aclk]
+
+  # Resets
+
+  connect_bd_net -net aresetn_ctrl_net                  [get_bd_ports aresetn_ctrl]                                                         \
+                                                        [get_bd_pins axi_bram_ctrl_lmb/s_axi_aresetn]                                       \
+                                                        [get_bd_pins axi_intc_host/s_axi_aresetn]                                           \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/ARESETN]                                              \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M00_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M02_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M03_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M04_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/S00_ARESETN]                                          \
+                                                        [get_bd_pins vip_ctrl_mgmt/aresetn]                                                 \
+                                                        [get_bd_pins build_info_host/s_axi_aresetn]
+
+  connect_bd_net -net psreset_ctrl_net                  [get_bd_pins psreset_ctrl/interconnect_aresetn]                                     \
+                                                        [get_bd_pins axi_ic_ert_local/M06_ARESETN]                                          \
+                                                        [get_bd_pins vip_mdm/aresetn]                                                       \                                                        
+                                                        [get_bd_pins axi_ic_ctrl_user/S00_ARESETN]                                          \
+                                                        [get_bd_pins vip_ctrl_user/aresetn]
+
+  connect_bd_net -net psreset_scheduler_net             [get_bd_pins psreset_scheduler/bus_struct_reset]                                    \
+                                                        [get_bd_pins microblaze_ert_lm/SYS_Rst]
+
+  connect_bd_net -net embedded_scheduler_s_aresetn      [get_bd_pins axi_ic_ctrl_user/ARESETN]                                              \
+                                                        [get_bd_pins axi_ic_ctrl_user/M00_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_user/M01_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/M00_ARESETN]                                      \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S00_ARESETN]                                      \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S01_ARESETN]                                      \
+                                                        [get_bd_pins axi_ic_ctrl_user_ert/S02_ARESETN]                                      \                                                        
+                                                        [get_bd_pins axi_ic_ert_local/ARESETN]                                              \
+                                                        [get_bd_pins axi_ic_ert_local/M00_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/M01_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/M02_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/M03_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/M04_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/M05_ARESETN]                                          \
+                                                        [get_bd_pins axi_ic_ert_local/S00_ARESETN]                                          \
+                                                        [get_bd_pins psreset_scheduler/interconnect_aresetn]                                \
+                                                        [get_bd_pins psreset_ctrl/aux_reset_in]
+
+    connect_bd_net -net aresetn_pcie_psr_net            [get_bd_pins axi_gpio_mb_base_addr/s_axi_aresetn]                                   \
+                                                        [get_bd_pins axi_gpio_wdt/s_axi_aresetn]                                            \
+                                                        [get_bd_pins axi_intc/s_axi_aresetn]                                                \
+                                                        [get_bd_pins axi_pc_cudma/aresetn]                                                  \
+                                                        [get_bd_pins axi_pc_cuisr/aresetn]                                                  \
+                                                        [get_bd_pins axi_timebase_wdt/s_axi_aresetn]                                        \
+                                                        [get_bd_pins cq_bram_ctrl_cqdma/s_axi_aresetn]                                      \
+                                                        [get_bd_pins cq_bram_ctrl_user/s_axi_aresetn]                                       \
+                                                        [get_bd_pins cudma_controller/ap_rst_n]                                             \
+                                                        [get_bd_pins cuisr/ap_rst_n]                                                        \
+                                                        [get_bd_pins embd_scheduler_hw/dma_reset_n]                                             \
+                                                        [get_bd_pins psreset_scheduler/peripheral_aresetn]                                  \
+                                                        [get_bd_pins vip_ctrl_user_ert/aresetn]                                             \
+                                                        [get_bd_pins vip_data_copy/aresetn]                                                 \
+                                                        [get_bd_pins build_info_ert/s_axi_aresetn]
+
+  connect_bd_net -net aresetn_pcie_net                  [get_bd_ports aresetn_pcie]                                                         \
+                                                        [get_bd_pins axi_gpio_ert_mb_rst_n/s_axi_aresetn]                                   \
+                                                        [get_bd_pins axi_ic_ctrl_mgmt/M01_ARESETN]                                          \                                                        
+                                                        [get_bd_pins psreset_scheduler/ext_reset_in]
+                                                        
+
+  # General
+
+  connect_bd_net -net irq_slotavailable_net             [get_bd_pins embd_scheduler_hw/irq_slotavailable] [get_bd_pins xlconcat_intc/In0]
+  connect_bd_net -net irq_cu_completion_net             [get_bd_pins embd_scheduler_hw/irq_cu_completion] [get_bd_pins xlconcat_intc/In1]
+  connect_bd_net -net interrupt_mdm_net                 [get_bd_ports interrupt_mdm] [get_bd_pins xlconcat_intc/In4]
+
+  if {$C_REMOVE_KDMA == false} {
+
+    connect_bd_net -net aclk_pcie_int                   [get_bd_pins axi_ic_ctrl_user/M02_ACLK]                                             \
+                                                        [get_bd_pins kdma/ap_clk]
+
+    connect_bd_net -net embedded_scheduler_s_aresetn    [get_bd_pins axi_ic_ctrl_user/M02_ARESETN]
+
+    connect_bd_net -net aresetn_pcie_psr_net            [get_bd_pins cuisr/ap_rst_n]                                                        \
+                                                        [get_bd_pins kdma/ap_rst_n]                                                         \
+
+    connect_bd_net -net kdma_interrupt                  [get_bd_pins kdma/interrupt] [get_bd_pins xlconcat_intc/In2]
+
+  } else {
+
+    connect_bd_net -net kdma_interrupt                  [get_bd_pins tied_low/dout] [get_bd_pins xlconcat_intc/In2]
+
+  }
+
+  connect_bd_net -net axi_gpio_ert_mb_rst_n_gpio_io_o [get_bd_pins axi_gpio_ert_mb_rst_n/gpio_io_o] [get_bd_pins reset_gen/axi_gpio_rst_n]
+  connect_bd_net -net interrupt_wdt_net [get_bd_pins axi_timebase_wdt/wdt_reset] [get_bd_pins reset_gen/wdt_reset] [get_bd_pins xlconcat_host_interrupt/In0]
+  connect_bd_net -net xlconcat_host_interrupt_dout [get_bd_pins axi_intc_host/intr] [get_bd_pins xlconcat_host_interrupt/dout]
+  connect_bd_net -net axi_gpio_wdt_gpio_io_o [get_bd_pins axi_gpio_wdt/gpio_io_o] [get_bd_pins axi_timebase_wdt/freeze]
+  connect_bd_net -net interrupt_host [get_bd_ports interrupt_host] [get_bd_pins axi_intc_host/irq]
+  connect_bd_net -net wdt_interrupt [get_bd_pins xlconcat_intc/In3] [get_bd_pins axi_timebase_wdt/wdt_interrupt]
+  connect_bd_net -net cudma_controller_ap_done [get_bd_pins cudma_controller/ap_done] [get_bd_pins embd_scheduler_hw/ap_done_cudma]
+  connect_bd_net -net cuisr_ap_done [get_bd_pins cuisr/ap_done] [get_bd_pins embd_scheduler_hw/ap_done_cuisr]
+  connect_bd_net -net embd_scheduler_hw_CqBaseAddress [get_bd_pins cudma_controller/CqBaseAddress] [get_bd_pins embd_scheduler_hw/CqBaseAddress]
+  connect_bd_net -net embd_scheduler_hw_CuDmaQueue_reg [get_bd_pins cudma_controller/CuDmaQueue] [get_bd_pins embd_scheduler_hw/CuDmaQueue_reg]
+  connect_bd_net -net embd_scheduler_hw_NoofSlots [get_bd_pins cudma_controller/NoOfSlots] [get_bd_pins embd_scheduler_hw/NoofSlots]
+  connect_bd_net -net embd_scheduler_hw_Offset [get_bd_pins cuisr/Offset] [get_bd_pins embd_scheduler_hw/Offset]
+  connect_bd_net -net embd_scheduler_hw_SlotSize [get_bd_pins cudma_controller/SlotSize] [get_bd_pins embd_scheduler_hw/SlotSize]
+  connect_bd_net -net embd_scheduler_hw_ap_start_cudma [get_bd_pins cudma_controller/ap_start] [get_bd_pins embd_scheduler_hw/ap_start_cudma]
+  connect_bd_net -net embd_scheduler_hw_ap_start_cuisr [get_bd_pins cuisr/ap_start] [get_bd_pins embd_scheduler_hw/ap_start_cuisr]
+  connect_bd_net -net embd_scheduler_hw_irq_sr0 [get_bd_pins embd_scheduler_hw/irq_sr0] [get_bd_pins xlconcat_irq/In0]
+  connect_bd_net -net embd_scheduler_hw_irq_sr1 [get_bd_pins embd_scheduler_hw/irq_sr1] [get_bd_pins xlconcat_irq/In1]
+  connect_bd_net -net embd_scheduler_hw_irq_sr2 [get_bd_pins embd_scheduler_hw/irq_sr2] [get_bd_pins xlconcat_irq/In2]
+  connect_bd_net -net embd_scheduler_hw_irq_sr3 [get_bd_pins embd_scheduler_hw/irq_sr3] [get_bd_pins xlconcat_irq/In3]
+  connect_bd_net -net interrupt_cu_1 [get_bd_ports interrupt_cu] [get_bd_pins embd_scheduler_hw/irq_cu]
+  connect_bd_net -net mb_debug_sys_rst_int [get_bd_ports mb_debug_sys_rstn] [get_bd_pins reset_inverter/Op1]
+  connect_bd_net -net reset_inverter_net [get_bd_pins reset_inverter/Res] [get_bd_pins psreset_scheduler/mb_debug_sys_rst]
+  connect_bd_net -net reset_gen_resetn [get_bd_pins reset_gen/resetn] [get_bd_pins psreset_scheduler/aux_reset_in]
+  connect_bd_net -net proc_sys_reset_0_mb_reset [get_bd_pins axi_intc/processor_rst] [get_bd_pins microblaze_ert/Reset] [get_bd_pins psreset_scheduler/mb_reset]
+  connect_bd_net -net xlconcat_intc_dout [get_bd_pins axi_intc/intr] [get_bd_pins xlconcat_intc/dout]
+  connect_bd_net -net xlconcat_irq_dout [get_bd_ports interrupt_dma] [get_bd_pins xlconcat_irq/dout]
+  connect_bd_net -net xc_irq_ack_dout [get_bd_pins embd_scheduler_hw/irq_ack] [get_bd_pins xc_irq_ack/dout]
+  connect_bd_net [get_bd_pins tied_high/dout] [get_bd_pins psreset_ctrl/ext_reset_in]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Create address segments
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+# Create address segments
+
+assign_bd_address -offset 0x00000000 -range $C_RANGE_CQ_BRAM_CTRL_SEG -target_address_space [get_bd_addr_spaces cudma_controller/m_axi_CQDma] [get_bd_addr_segs cq_bram_ctrl_cqdma/S_AXI/Mem0]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_mgmt
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs build_info_host/S_AXI/Reg0]
+assign_bd_address -offset 0x00002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs axi_gpio_ert_mb_rst_n/S_AXI/Reg]
+assign_bd_address -offset 0x00003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs axi_intc_host/S_AXI/Reg]
+assign_bd_address -offset 0x00010000 -range $C_RANGE_AXI_BRAM_CTRL_LMB_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs axi_bram_ctrl_lmb/S_AXI/Mem0]
+
+assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_user
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address -offset 0x00000000 -range $C_RANGE_CQ_BRAM_CTRL_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user] [get_bd_addr_segs cq_bram_ctrl_user/S_AXI/Mem0]
+assign_bd_address -offset 0x00010000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_user] [get_bd_addr_segs embd_scheduler_hw/host/reg0]
+if {$C_REMOVE_KDMA == false} {
+    assign_bd_address -offset 0x00020000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi_ctrl_user] [get_bd_addr_segs kdma/s_axi_control/Reg]
+}
+
+assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_user]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# Master Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# CuDMA -> m_axi_ctrl_user_ert
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set m_axi_ctrl_user_ert_addr_space [get_bd_addr_spaces cudma_controller/m_axi_CUDma]
+set m_axi_ctrl_user_ert_addr_seg [get_bd_addr_segs m_axi_ctrl_user_ert/Reg]
+
+set m_axi_ctrl_user_ert_address_apertures { \
+    offset 0x00000000 range 16M
+    offset 0x01000000 range 8M
+    offset 0x01800000 range 4M
+    offset 0x01C00000 range 2M
+}
+
+assign_bd_address -external -master_boundary -target_address_space $m_axi_ctrl_user_ert_addr_space -dict $m_axi_ctrl_user_ert_address_apertures $m_axi_ctrl_user_ert_addr_seg
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# Master Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# CuISR -> m_axi_ctrl_user_ert
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set m_axi_ctrl_user_ert_addr_space [get_bd_addr_spaces cuisr/m_axi_a]
+set m_axi_ctrl_user_ert_addr_seg [get_bd_addr_segs m_axi_ctrl_user_ert/Reg]
+
+set m_axi_ctrl_user_ert_address_apertures { \
+    offset 0x00000000 range 16M
+    offset 0x01000000 range 8M
+    offset 0x01800000 range 4M
+    offset 0x01C00000 range 2M
+}
+
+assign_bd_address -external -master_boundary -target_address_space $m_axi_ctrl_user_ert_addr_space -dict $m_axi_ctrl_user_ert_address_apertures $m_axi_ctrl_user_ert_addr_seg
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# Master Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# KDMA -> m_axi_data_copy
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {$C_REMOVE_KDMA == false} {
+
+    set m_axi_data_copy_addr_space [get_bd_addr_spaces kdma/m_axi_gmem]
+    set m_axi_data_copy_addr_seg [get_bd_addr_segs m_axi_data_copy/Reg]
+
+    set m_axi_data_copy_address_apertures { \
+        offset 0x0000_0000_0000_0000 range 16E
+    }
+
+    assign_bd_address -external -target_address_space $m_axi_data_copy_addr_space -dict $m_axi_data_copy_address_apertures $m_axi_data_copy_addr_seg
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# Master Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ERT MDM -> m_axi_mdm
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set m_axi_mdm_addr_space [get_bd_addr_spaces -of [get_bd_intf_pins microblaze_ert/M_AXI_DP]]
+set m_axi_mdm_addr_seg [get_bd_addr_segs -of [get_bd_intf_ports m_axi_mdm]]
+
+set m_axi_mdm_address_apertures { \
+    offset 0x01F40000 range 4K
+}
+
+assign_bd_addr -external -master_boundary -target_address_space $m_axi_mdm_addr_space -dict $m_axi_mdm_address_apertures $m_axi_mdm_addr_seg [get_bd_addr_segs -of [get_bd_intf_ports m_axi_mdm]]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ERT Microblaze
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+# Instruction and Data Memory
+assign_bd_address -offset $C_MB_BASE_VECTORS -range $C_RANGE_AXI_BRAM_CTRL_LMB_SEG -target_address_space [get_bd_addr_spaces microblaze_ert/Instruction] [get_bd_addr_segs microblaze_ert_lm/lmb_bram_if_cntlr/SLMB1/Mem]
+assign_bd_address -offset $C_MB_BASE_VECTORS -range $C_RANGE_AXI_BRAM_CTRL_LMB_SEG -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs microblaze_ert_lm/lmb_bram_if_cntlr/SLMB/Mem]
+
+# Local Peripherals
+assign_bd_address -offset 0x01F00000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs build_info_ert/S_AXI/Reg0]
+assign_bd_address -offset 0x01F10000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs axi_timebase_wdt/S_AXI/Reg]
+assign_bd_address -offset 0x01F20000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs axi_intc/S_AXI/Reg]
+assign_bd_address -offset 0x01F30000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs axi_gpio_mb_base_addr/S_AXI/Reg]
+# NOTE:                   0x01F40000 reserved for accessing MDM peripheral in BLP/CMP
+assign_bd_address -offset 0x01F50000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_ert/Data] [get_bd_addr_segs axi_gpio_wdt/S_AXI/Reg]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# ERT MB -> m_axi_ctrl_user_ert
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set m_axi_ctrl_user_ert_addr_space [get_bd_addr_spaces microblaze_ert/Data]
+set m_axi_ctrl_user_ert_addr_seg [get_bd_addr_segs m_axi_ctrl_user_ert/Reg]
+
+set m_axi_ctrl_user_ert_address_apertures { \
+    offset 0x00000000 range 16M
+    offset 0x01000000 range 8M
+    offset 0x01800000 range 4M
+    offset 0x01C00000 range 2M
+}
+
+assign_bd_address -external -master_boundary -target_address_space $m_axi_ctrl_user_ert_addr_space -dict $m_axi_ctrl_user_ert_address_apertures $m_axi_ctrl_user_ert_addr_seg
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore

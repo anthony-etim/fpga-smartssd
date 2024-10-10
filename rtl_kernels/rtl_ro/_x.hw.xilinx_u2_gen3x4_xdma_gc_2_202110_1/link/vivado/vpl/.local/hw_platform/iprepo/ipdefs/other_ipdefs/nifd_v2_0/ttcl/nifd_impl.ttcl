@@ -1,0 +1,9 @@
+<: ;#Component and file information :>
+<: setOutputDirectory "./nifd_v2_0/constraints" :>
+<: setFileName "nifd_impl":>
+<: setFileExtension ".xdc" :>
+<: setFileUsedIn [list implementation] :>
+
+set_false_path -from [get_cells -hierarchical -filter {NAME =~ "*/nifd_frame_icap/rdbk_mem_reg*/RAM*"}] -to [get_cells -hierarchical -filter {NAME =~ "*/nifd_frame_icap/rdbk_bit_i_reg[*]"}]
+################################################################################
+

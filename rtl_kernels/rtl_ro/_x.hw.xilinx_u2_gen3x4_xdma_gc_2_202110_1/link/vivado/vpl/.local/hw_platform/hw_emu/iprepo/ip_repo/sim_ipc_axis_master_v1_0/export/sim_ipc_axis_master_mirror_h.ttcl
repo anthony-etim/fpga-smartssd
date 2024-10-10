@@ -1,0 +1,105 @@
+<: setOutputDirectory "export" :>
+<: setFileName [current_instname]_mirror :>
+<: set CompName [getFileName ] :>
+<: setFileExtension ".h.user" :>
+<: set tDataWidth [get_property PARAM_VALUE.C_M00_AXIS_TDATA_WIDTH] :>
+<: set tDataWidthDiv8 [expr { $tDataWidth/8 }] :>
+<: set IfDef IP_[string toupper $CompName ]_H :>
+// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+// 
+// This file contains confidential and proprietary information
+// of Xilinx, Inc. and is protected under U.S. and
+// international copyright and other intellectual property
+// laws.
+// 
+// DISCLAIMER
+// This disclaimer is not a license and does not grant any
+// rights to the materials distributed herewith. Except as
+// otherwise provided in a valid license issued to you by
+// Xilinx, and to the maximum extent permitted by applicable
+// law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+// WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+// AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+// BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+// INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+// (2) Xilinx shall not be liable (whether in contract or tort,
+// including negligence, or under any other theory of
+// liability) for any loss or damage of any kind or nature
+// related to, arising under or in connection with these
+// materials, including for any direct, or any indirect,
+// special, incidental, or consequential loss or damage
+// (including loss of data, profits, goodwill, or any type of
+// loss or damage suffered as a result of any action brought
+// by a third party) even if such damage or loss was
+// reasonably foreseeable or Xilinx had been advised of the
+// possibility of the same.
+// 
+// CRITICAL APPLICATIONS
+// Xilinx products are not designed or intended to be fail-
+// safe, or for use in any application requiring fail-safe
+// performance, such as life-support or safety devices or
+// systems, Class III medical devices, nuclear facilities,
+// applications related to the deployment of airbags, or any
+// other applications that could lead to death, personal
+// injury, or severe property or environmental damage
+// (individually and collectively, "Critical
+// Applications"). Customer assumes the sole risk and
+// liability of any use of Xilinx products in Critical
+// Applications, subject only to applicable laws and
+// regulations governing limitations on product liability.
+// 
+// THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+// PART OF THIS FILE AT ALL TIMES.
+// 
+// DO NOT MODIFY THIS FILE.
+
+#include "sim_ipc_axis_slave.h"
+#ifndef XTLM
+#include "xtlm.h"
+#endif
+#ifndef SYSTEMC_INCLUDED
+#include <systemc>
+#endif
+
+class <: print $CompName :> : public sc_core::sc_module
+{
+public:
+  <: print $CompName :>(const sc_core::sc_module_name& nm);
+  virtual ~<: print $CompName :>();
+
+  // module pin-to-pin RTL interface
+  sc_core::sc_in< bool > s_axis_aclk;
+  sc_core::sc_in< bool > s_axis_aresetn;
+  sc_core::sc_in< sc_dt::sc_bv<1> > s_axis_tvalid;
+  sc_core::sc_out< sc_dt::sc_bv<1> > s_axis_tready;
+  sc_core::sc_in< sc_dt::sc_bv<<: print $tDataWidth :>> > s_axis_tdata;
+  sc_core::sc_in< sc_dt::sc_bv<<: print $tDataWidthDiv8 :>> > s_axis_tstrb;
+  sc_core::sc_in< sc_dt::sc_bv<<: print $tDataWidthDiv8 :>> > s_axis_tkeep;
+  sc_core::sc_in< sc_dt::sc_bv<1> > s_axis_tlast;
+  sc_core::sc_in< sc_dt::sc_bv<1> > s_axis_tid;
+  sc_core::sc_in< sc_dt::sc_bv<1> > s_axis_tdest;
+  sc_core::sc_in< sc_dt::sc_bv<<: print $tDataWidth :>> > s_axis_tuser;
+
+  // module socket-to-socket AXI TLM interfaces
+  xtlm::xtlm_axis_target_socket* S_AXIS_socket;
+private:
+  xtlm::xaxis_pin2xtlm_t<<: print $tDataWidthDiv8 :>,<: print $tDataWidth :>,1,1,1,1>* mp_S_AXIS_transactor;
+  xsc::common::vectorN2scalar_converter<1>* mp_s_axis_tlast_converter;
+  sc_signal< bool > m_s_axis_tlast_converter_signal;
+  xsc::common::scalar2vectorN_converter<1>* mp_s_axis_tready_converter;
+  sc_signal< bool > m_s_axis_tready_converter_signal;
+  xsc::common::vectorN2scalar_converter<1>* mp_s_axis_tvalid_converter;
+  sc_signal< bool > m_s_axis_tvalid_converter_signal;
+  xsc::common::vectorN2scalar_converter<1>* mp_s_axis_tid_converter;
+  sc_signal< bool > m_s_axis_tid_converter_signal;
+  xsc::common::vectorN2scalar_converter<1>* mp_s_axis_tdest_converter;
+  sc_signal< bool > m_s_axis_tdest_converter_signal;
+protected:
+  sim_ipc_axis_slave* mp_impl;
+  virtual void before_end_of_elaboration();
+
+private:
+  <: print $CompName :>(const <: print $CompName :>&);
+  const <: print $CompName :>& operator=(const <: print $CompName :>&);
+  
+};

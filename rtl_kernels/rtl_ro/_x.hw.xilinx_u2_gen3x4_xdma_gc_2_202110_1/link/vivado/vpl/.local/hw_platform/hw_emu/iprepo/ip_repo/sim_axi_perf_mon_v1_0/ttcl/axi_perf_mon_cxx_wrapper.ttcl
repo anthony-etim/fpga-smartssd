@@ -1,0 +1,113 @@
+<: set ComponentName [getComponentNameString] :>
+<: setFileName $ComponentName :>
+<: setFileExtension ".cxx" :>
+<: setOutputDirectory "./sim/" :>
+<: setFileType "systemCSource" :>
+// (c) Copyright 2013 - 2018 Xilinx, Inc. All rights reserved.
+//
+// This file contains confidential and proprietary information
+// of Xilinx, Inc. and is protected under U.S. and
+// international copyright and other intellectual property
+// laws.
+//
+// DISCLAIMER
+// This disclaimer is not a license and does not grant any
+// rights to the materials distributed herewith. Except as
+// otherwise provided in a valid license issued to you by
+// Xilinx, and to the maximum extent permitted by applicable
+// law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+// WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+// AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+// BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+// INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+// (2) Xilinx shall not be liable (whether in contract or tort,
+// including negligence, or under any other theory of
+// liability) for any loss or damage of any kind or nature
+// related to, arising under or in connection with these
+// materials, including for any direct, or any indirect,
+// special, incidental, or consequential loss or damage
+// (including loss of data, profits, goodwill, or any type of
+// loss or damage suffered as a result of any action brought
+// by a third party) even if such damage or loss was
+// reasonably foreseeable or Xilinx had been advised of the
+// possibility of the same.
+//
+// CRITICAL APPLICATIONS
+// Xilinx products are not designed or intended to be fail-
+// safe, or for use in any application requiring fail-safe
+// performance, such as life-support or safety devices or
+// systems, Class III medical devices, nuclear facilities,
+// applications related to the deployment of airbags, or any
+// other applications that could lead to death, personal
+// injury, or severe property or environmental damage
+// (individually and collectively, "Critical
+// Applications"). Customer assumes the sole risk and
+// liability of any use of Xilinx products in Critical
+// Applications, subject only to applicable laws and
+// regulations governing limitations on product liability.
+//
+// THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+// PART OF THIS FILE AT ALL TIMES.
+
+<: set MONITOR_ID [get_property PARAM_VALUE.MONITOR_ID]:>
+<: set ID_WIDTH [get_property PARAM_VALUE.C_AXI_ID_WIDTH]:>
+<: set ADDR_WIDTH [get_property PARAM_VALUE.C_AXI_ADDR_WIDTH]:>
+<: set ADDR_MIN [get_property PARAM_VALUE.ADDR_MIN]:>
+<: set ADDR_MAX [get_property PARAM_VALUE.ADDR_MAX]:>
+<: set ENABLE_ADDR_FILTER [get_property PARAM_VALUE.ENABLE_ADDR_FILTER]:>
+
+#include "<: print $ComponentName :>.h"
+
+<: print $ComponentName :>::<: print $ComponentName :>(sc_core::sc_module_name p_name) :
+		sc_module(p_name) {
+
+	//Binding of ports
+	m_module = new xsc::axi_perf_mon::sim_axi_perf_mon< <: print [expr $ID_WIDTH == 0 ? 1 : $ID_WIDTH ] :>, <: print $ADDR_WIDTH :> >("axi_perf_<: print $MONITOR_ID :>",
+			"<: print $MONITOR_ID :>", <: print $ADDR_MIN :>, <: print $ADDR_MAX :>, <: print $ENABLE_ADDR_FILTER :>);
+ <: if { $ID_WIDTH == 0 } { :>
+  id_signal.write(0);
+ <: } :>
+	m_module->axi_aclk(axi_aclk);
+	m_module->axi_aresetn(axi_aresetn);
+ <: if { $ID_WIDTH == 0 } { :>
+  m_module->axi_awid(id_signal);
+ <: } else { :>
+  m_module->axi_awid(axi_awid);
+ <: } :>
+	m_module->axi_awaddr(axi_awaddr);
+	m_module->axi_awlen(axi_awlen);
+	m_module->axi_awsize(axi_awsize);
+	m_module->axi_awburst(axi_awburst);
+	m_module->axi_awvalid(axi_awvalid);
+	m_module->axi_awready(axi_awready);
+	m_module->axi_wlast(axi_wlast);
+	m_module->axi_wvalid(axi_wvalid);
+	m_module->axi_wready(axi_wready);
+	m_module->axi_bvalid(axi_bvalid);
+	m_module->axi_bready(axi_bready);
+
+ <: if { $ID_WIDTH == 0 } { :>
+  m_module->axi_arid(id_signal);
+ <: } else { :>
+  m_module->axi_arid(axi_arid);
+ <: } :>
+	m_module->axi_araddr(axi_araddr);
+	m_module->axi_arlen(axi_arlen);
+	m_module->axi_arsize(axi_arsize);
+	m_module->axi_arburst(axi_arburst);
+	m_module->axi_arvalid(axi_arvalid);
+	m_module->axi_arready(axi_arready);
+ <: if { $ID_WIDTH == 0 } { :>
+	m_module->axi_rid(id_signal);
+ <: } else { :>
+	m_module->axi_rid(axi_rid);
+ <: } :>
+	m_module->axi_rlast(axi_rlast);
+	m_module->axi_rvalid(axi_rvalid);
+	m_module->axi_rready(axi_rready);
+
+}
+
+#ifdef MTI_SYSTEMC
+SC_MODULE_EXPORT(<: print $ComponentName :>);
+#endif

@@ -1,0 +1,13 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+# ------------------------------------------------------------------------------
+# Additional timing constraints
+# ------------------------------------------------------------------------------
+create_clock -period 10.0 -name ref_clk [get_ports ref_clk_clk_p[0]]
+create_clock -period 10.000 -name c1_sys_clk_p [get_ports c1_sys_clk_p]
+create_clock -period 10.000 -name pcie_rp0_refclk -waveform {0.000 5.000} [get_ports ref_clk_ds_clk_p[0]]

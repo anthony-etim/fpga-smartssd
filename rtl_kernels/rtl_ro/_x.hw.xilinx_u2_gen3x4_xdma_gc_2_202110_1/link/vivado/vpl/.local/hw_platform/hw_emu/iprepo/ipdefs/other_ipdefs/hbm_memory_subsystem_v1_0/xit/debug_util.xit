@@ -1,0 +1,5 @@
+proc dbg_puts { s } {
+   if {[info exists ::env(HMSS_DEBUG_DATA)]} {
+      send_msg_id {hbm_memory_subsystem 3-2} INFO "$s"
+   }
+}

@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+# IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+# Start of session at: Fri Dec 31 12:00:04 2021
+# Process ID: 28803
+# Current directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro
+# Command line: vivado -mode batch -source src/krnl_ro/gen_xo.tcl -tclargs ./_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo hw xilinx_u2_gen3x4_xdma_gc_2_202110_1 xilinx_u2_gen3x4_xdma_gc_2_202110_1
+# Log file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/vivado.log
+# Journal file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/vivado.jou
+#-----------------------------------------------------------
+source src/krnl_ro/gen_xo.tcl

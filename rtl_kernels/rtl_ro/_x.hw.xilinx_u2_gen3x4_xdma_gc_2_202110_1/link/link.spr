@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="link" dir="" srcset="sources_1">
+  <FileSets>
+    <FileSet Name="kernel_krnl_ro_rtl" Type="DesignSrcs">
+      <File Path="/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/krnl_ro_rtl/krnl_ro_rtl/cpu_sources/vmul_cmodel.cpp"/>
+      <Config/>
+    </FileSet>
+    <FileSet Name="sources_1" Type="DesignSrcs">
+      <Config/>
+    </FileSet>
+  </FileSets>
+  <Runs>
+    <Run Id="run_link" Type="Ft102:LinkHwTarget" SrcSet="sources_1" Description="" Dir="run_link">
+      <Strategy>
+        <StratHandle Name="" Flow="Link HW 2018"/>
+        <Step Id="system_link">
+          <Option Id="OptionsStrList"></Option>
+        </Step>
+        <Step Id="cf2sw">
+          <Option Id="OptionsStrList"></Option>
+        </Step>
+        <Step Id="rtd2_system_diagram"/>
+        <Step Id="vpl">
+          <Option Id="ConfigFileStr">/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini</Option>
+          <Option Id="OptionsStrList"></Option>
+        </Step>
+        <Step Id="rtdgen"/>
+        <Step Id="xclbinutil">
+          <Option Id="OptionsStrList"></Option>
+        </Step>
+        <Step Id="xclbinutilinfo">
+          <Option Id="OptionsStrList"></Option>
+        </Step>
+        <Step Id="xclbinutil2nd" EnableStepBool="0"/>
+        <Step Id="generate_sc_driver"/>
+      </Strategy>
+      <GeneratedRun Dir="run_link" File="gen_run.xml"/>
+    </Run>
+  </Runs>
+</project>

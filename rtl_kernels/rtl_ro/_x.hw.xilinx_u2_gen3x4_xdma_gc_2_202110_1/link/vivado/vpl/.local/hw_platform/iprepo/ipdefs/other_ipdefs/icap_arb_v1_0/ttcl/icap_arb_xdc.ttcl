@@ -1,0 +1,13 @@
+<: ;#Component and file information :>
+<: setFileProcessingOrder late :>
+<: setOutputDirectory "./constraints" :>
+<: setFileName "icap_prim":>
+<: setFileExtension ".xdc" :>
+<: setFileUsedIn [list synthesis implementation] :>
+
+#create_generated_clock -source [get_ports -scoped_to_current_instance icap0_clk] -divide_by 1 [get_pins -filter {REF_PIN_NAME=~I0} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]
+#create_generated_clock -source [get_ports -scoped_to_current_instance icap1_clk] -divide_by 1 [get_pins -filter {REF_PIN_NAME=~I1} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]
+#set_clock_groups -logically_exclusive -group [get_clocks -of_objects [get_pins -filter {REF_PIN_NAME=~I0} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]] -group [get_clocks -of_objects [get_pins -filter {REF_PIN_NAME=~I1} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]]
+#set_case_analysis 0 [get_pins -filter {REF_PIN_NAME=~CE0} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]
+#set_case_analysis 0 [get_pins -filter {REF_PIN_NAME=~CE1} -of_objects [get_cells -hierarchical -filter {NAME =~ "*u_bufg*"}]]
+#set_false_path -from [get_cells -hierarchical -filter {NAME =~ "*icap_prim_S00_AXI_inst/icap_switch_reg*"}]

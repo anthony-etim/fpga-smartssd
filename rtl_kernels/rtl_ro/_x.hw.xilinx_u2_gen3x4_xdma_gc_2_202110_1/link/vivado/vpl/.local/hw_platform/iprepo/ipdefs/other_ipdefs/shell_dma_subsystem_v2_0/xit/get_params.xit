@@ -1,0 +1,133 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+set dma_subsystem                               [::ipxit::current_inst]
+
+#==========================================================================================================================================#
+# Get Project settings
+#==========================================================================================================================================#
+
+set C_DEVICE                                    [string toupper [xit::get_project_property DEVICE]]
+set C_PACKAGE                                   [string toupper [xit::get_project_property PACKAGE]]
+set C_SPEEDGRADE                                [string toupper [xit::get_project_property SPEEDGRADE]]
+
+#==========================================================================================================================================#
+# Get user parameters
+#==========================================================================================================================================#
+
+# Subsystem Version Properties
+set C_SUBSYSTEM_ID                              [get_property CONFIG.VERSION.SUBSYSTEM_ID       $dma_subsystem]
+set C_VIV_VERSION                               [get_property CONFIG.VERSION.VIV_VERSION        $dma_subsystem]
+set C_MAJOR_VERSION                             [get_property CONFIG.VERSION.MAJOR_VERSION      $dma_subsystem]
+set C_MINOR_VERSION                             [get_property CONFIG.VERSION.MINOR_VERSION      $dma_subsystem]
+set C_CORE_REVISION                             [get_property CONFIG.VERSION.CORE_REVISION      $dma_subsystem]
+set C_PATCH_REVISION                            [get_property CONFIG.VERSION.PATCH_REVISION     $dma_subsystem]
+set C_PERFORCE_CL                               [get_property CONFIG.VERSION.PERFORCE_CL        $dma_subsystem]
+set C_RESERVED_TAG                              [get_property CONFIG.VERSION.RESERVED_TAG       $dma_subsystem]
+
+set C_DMA_TYPE                                  [get_property CONFIG.DMA_TYPE                   $dma_subsystem]
+set C_HAS_TDM_SLR_CROSSING                      [get_property CONFIG.HAS_TDM_SLR_CROSSING       $dma_subsystem]
+set C_PCIE_LINK_CAP_MAX                         [get_property CONFIG.PCIE_LINK_CAP_MAX          $dma_subsystem]
+set C_SUPPORTS_P2P                              [get_property CONFIG.SUPPORTS_P2P               $dma_subsystem]
+set C_PCIE_BLK_LOCN                             [get_property CONFIG.PCIE_BLK_LOCN              $dma_subsystem]
+set C_DMA_REDUCE_RESOURCE                       [get_property CONFIG.DMA_REDUCE_RESOURCE        $dma_subsystem]
+
+# TODO: Define this user param when slave bridge support is added
+set C_HAS_SLAVE_BRIDGE                          false
+
+set C_NUM_MGMT_IRQS                             [get_property CONFIG.NUM_MGMT_IRQS              $dma_subsystem]
+
+# Create list of management interrupt port widths
+set C_MGMT_IRQ_WIDTHS                           [list \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_0           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_1           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_2           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_3           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_4           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_5           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_6           $dma_subsystem] \
+                                                [get_property CONFIG.MGMT_IRQ_WIDTH_7           $dma_subsystem]]
+                                                
+set C_NUM_USER_IRQS                             [get_property CONFIG.NUM_USER_IRQS              $dma_subsystem]
+
+# Create list of user interrupt port widths
+set C_USER_IRQ_WIDTHS                           [list \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_0           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_1           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_2           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_3           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_4           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_5           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_6           $dma_subsystem] \
+                                                [get_property CONFIG.USER_IRQ_WIDTH_7           $dma_subsystem]]
+
+#==========================================================================================================================================#
+# Constants
+#==========================================================================================================================================#
+
+set C_MAX_NUM_MGMT_IRQS 8
+set C_MAX_NUM_USER_IRQS 8
+
+# Determine the number of management interrupt bits
+set C_NUM_MGMT_IRQ_BITS 0
+for {set i 0} {$i < $C_NUM_MGMT_IRQS} {incr i} {
+
+    set C_NUM_MGMT_IRQ_BITS [expr $C_NUM_MGMT_IRQ_BITS + [lindex $C_MGMT_IRQ_WIDTHS $i]]
+    
+}
+
+# Determine the number of user interrupt bits
+set C_NUM_USER_IRQ_BITS 0
+for {set i 0} {$i < $C_NUM_USER_IRQS} {incr i} {
+
+    set C_NUM_USER_IRQ_BITS [expr $C_NUM_USER_IRQ_BITS + [lindex $C_USER_IRQ_WIDTHS $i]]
+    
+}

@@ -1,0 +1,1271 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (1) Create instance(s)
+#==========================================================================================================================================#
+
+dbg_puts "Selected Partition is $C_PARTITION_NAME"
+
+# Instatiate the build info IP and populate with the version parameters
+set build_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params                                         \
+[ list                                                                                                                                      \
+    CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID                                                                                                   \
+    CONFIG.C_VIV_VERSION $C_VIV_VERSION                                                                                                     \
+    CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION                                                                                                 \
+    CONFIG.C_MINOR_VERSION $C_MINOR_VERSION                                                                                                 \
+    CONFIG.C_CORE_REVISION $C_CORE_REVISION                                                                                                 \
+    CONFIG.C_PATCH_REVISION $C_PATCH_REVISION                                                                                               \
+    CONFIG.C_PERFORCE_CL $C_PERFORCE_CL                                                                                                     \
+    CONFIG.C_RESERVED_TAG $C_RESERVED_TAG                                                                                                   \
+] build_info ]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_INTERCONNECT
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# SYS_MGMT_WIZ
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+# Instantiate interconnect if more than one peripheral is present or if HW_ICAP is present (to move from aclk_ctrl to aclk_pcie)
+# or if MGMT_DEBUG is active
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+    dbg_puts "Adding AXI Interconnect for MGMT Ctrl with $axi_ic_ctrl_mgmt_num_mi masters"
+
+    # Create instance: axi_ic_ctrl_mgmt, and set properties
+    set axi_ic_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params                                     \
+    [ list                                                                                                                                  \
+        CONFIG.NUM_MI $axi_ic_ctrl_mgmt_num_mi                                                                                              \
+    ] axi_ic_ctrl_mgmt ]
+
+}
+
+if {[expr {$axi_ic_ctrl_mgmt_num_mi > 0}]} {
+
+    # Create instance: axi_vip_ctrl_mgmt, and set properties
+    set axi_vip_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_ctrl_mgmt ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+    dbg_puts "Adding Peripheral JTAG AXI Master"
+
+    # Create instance: jtag_axi_master, and set properties
+    set jtag_axi_master [ create_bd_cell -type ip -vlnv xilinx.com:ip:jtag_axi:1.* -set_params                                              \
+    [ list                                                                                                                                  \
+        CONFIG.PROTOCOL {2}                                                                                                                 \
+    ] jtag_axi_master ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    dbg_puts "Adding Peripheral AXI HWICAP"
+
+    # Create instance: regslice_axi_hwicap, and set properties
+    set regslice_axi_hwicap [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                                \
+    [ list                                                                                                                                  \
+        CONFIG.PROTOCOL {AXI4LITE}                                                                                                          \
+        CONFIG.REG_AR $regslice_axi_hwicap_regval                                                                                           \
+        CONFIG.REG_AW $regslice_axi_hwicap_regval                                                                                           \
+        CONFIG.REG_B $regslice_axi_hwicap_regval                                                                                            \
+        CONFIG.REG_R $regslice_axi_hwicap_regval                                                                                            \
+        CONFIG.REG_W $regslice_axi_hwicap_regval                                                                                            \
+    ] regslice_axi_hwicap ]
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        # Create instance: AXI_HWICAP, and set properties
+        set AXI_HWICAP [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_hwicap:3.* AXI_HWICAP ]
+        set_property -dict [ list \
+         CONFIG.C_ICAP_EXTERNAL {1} \
+       ] $AXI_HWICAP
+
+        # Create instance: icap_arb, and set properties
+        set icap_arb [ create_bd_cell -type ip -vlnv xilinx.com:ip:icap_arb:1.* icap_arb ]
+        set_property -dict [ list \
+         CONFIG.C_NUM_ICAP_MASTERS {2} \
+       ] $icap_arb
+
+    } else {
+
+        # Create instance: axi_hwicap, and set properties
+        set axi_hwicap [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_hwicap:3.* -set_params                                                 \
+        [ list                                                                                                                                  \
+            CONFIG.C_WRITE_FIFO_DEPTH {1024}                                                                                                    \
+        ] axi_hwicap ]
+
+    }
+
+    # Create instance: gnd_hwicap_1, and set properties
+    set gnd_hwicap_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params                                               \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL {0}                                                                                                                \
+    ] gnd_hwicap_1 ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# UUID_ROM
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_UUID_ROM == true)} {
+
+    dbg_puts "Adding Peripheral UUID ROM"
+
+    set uuid_rom [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_uuid_rom:1.* uuid_rom ]
+
+    if {$C_REGSLICE_UUID_ROM != "NONE"} {
+
+        # Create instance: regslice_uuid_rom, and set properties
+        set regslice_uuid_rom [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                              \
+        [ list                                                                                                                              \
+            CONFIG.PROTOCOL {AXI4LITE}                                                                                                      \
+            CONFIG.READ_WRITE_MODE {READ_ONLY}                                                                                              \
+            CONFIG.REG_AR $regslice_uuid_rom_regval                                                                                         \
+            CONFIG.REG_AW {7}                                                                                                               \
+            CONFIG.REG_B {7}                                                                                                                \
+            CONFIG.REG_R $regslice_uuid_rom_regval                                                                                          \
+            CONFIG.REG_W {7}                                                                                                                \
+        ] regslice_uuid_rom ]
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    dbg_puts "Adding Peripheral USER Debug"
+
+    if {$C_REGSLICE_USER_DEBUG_BRIDGE != "NONE"} {
+
+        # Create instance: regslice_user_debug_bridge, and set properties
+        set regslice_user_debug_bridge [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                     \
+        [ list                                                                                                                              \
+            CONFIG.PROTOCOL {AXI4LITE}                                                                                                      \
+            CONFIG.REG_AR $regslice_user_debug_bridge_regval                                                                                \
+            CONFIG.REG_AW $regslice_user_debug_bridge_regval                                                                                \
+            CONFIG.REG_B $regslice_user_debug_bridge_regval                                                                                 \
+            CONFIG.REG_R $regslice_user_debug_bridge_regval                                                                                 \
+            CONFIG.REG_W $regslice_user_debug_bridge_regval                                                                                 \
+        ] regslice_user_debug_bridge ]
+
+    }
+
+    # Create instance: user_debug_bridge, and set properties
+    set user_debug_bridge [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.* -set_params                                        \
+    [ list                                                                                                                                  \
+        CONFIG.C_DEBUG_MODE {2}                                                                                                             \
+        CONFIG.C_NUM_BS_MASTER {1}                                                                                                          \
+        CONFIG.C_DESIGN_TYPE $debug_bridge_design_type                                                                                      \
+    ] user_debug_bridge ]
+
+    # Create instance: user_debug_hub, and set properties
+    set user_debug_hub [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.* -set_params                                           \
+    [ list                                                                                                                                  \
+        CONFIG.C_NUM_BS_MASTER {1}                                                                                                          \
+        CONFIG.C_DESIGN_TYPE $debug_bridge_design_type                                                                                      \
+    ] user_debug_hub ]
+
+    # Create instance: axi_vip_ctrl_user_debug, and set properties
+    set axi_vip_ctrl_user_debug [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_ctrl_user_debug ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MEMORY_CALIB_STATUS == true)} {
+
+    dbg_puts "Adding Peripheral Memory Calibration GPIO"
+
+    if {$C_REGSLICE_MEMORY_CALIB_STATUS != "NONE"} {
+
+        # Create instance: regslice_ddr_calib_status, and set properties
+        set regslice_ddr_calib_status [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                      \
+        [ list                                                                                                                              \
+            CONFIG.PROTOCOL {AXI4LITE}                                                                                                      \
+            CONFIG.REG_AR $regslice_memory_calib_status_regval                                                                              \
+            CONFIG.REG_AW $regslice_memory_calib_status_regval                                                                              \
+            CONFIG.REG_B $regslice_memory_calib_status_regval                                                                               \
+            CONFIG.REG_R $regslice_memory_calib_status_regval                                                                               \
+            CONFIG.REG_W $regslice_memory_calib_status_regval                                                                               \
+        ] regslice_ddr_calib_status ]
+
+    }
+
+    # Create instance: ddr_calib_status, and set properties
+    set ddr_calib_status [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params                                             \
+    [ list                                                                                                                                  \
+        CONFIG.C_ALL_INPUTS {1}                                                                                                             \
+        CONFIG.C_GPIO_WIDTH {1}                                                                                                             \
+    ] ddr_calib_status ]
+
+    # Create instance: util_reduced_logic, and set properties
+    set and_reduce [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_reduced_logic:2.* -set_params                                         \
+    [ list                                                                                                                                  \
+        CONFIG.C_SIZE $C_NUM_MEMORY_CALIB                                                                                                   \
+        CONFIG.C_OPERATION {and}                                                                                                            \
+        CONFIG.LOGO_FILE {data/sym_andgate.png}                                                                                             \
+    ] and_reduce ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# FLASH_PROGRAMMER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_FLASH_PROGRAMMER == true)} {
+
+    dbg_puts "Adding Peripheral Flash Programmer"
+
+    if {$C_REGSLICE_FLASH_PROGRAMMER != "NONE"} {
+
+        # Create instance: regslice_flash_programmer, and set properties
+        set regslice_flash_programmer [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                      \
+        [ list                                                                                                                              \
+            CONFIG.PROTOCOL {AXI4LITE}                                                                                                      \
+            CONFIG.REG_AR $regslice_flash_programmer_regval                                                                                 \
+            CONFIG.REG_AW $regslice_flash_programmer_regval                                                                                 \
+            CONFIG.REG_B $regslice_flash_programmer_regval                                                                                  \
+            CONFIG.REG_R $regslice_flash_programmer_regval                                                                                  \
+            CONFIG.REG_W $regslice_flash_programmer_regval                                                                                  \
+        ] regslice_flash_programmer ]
+
+    }
+
+    # Create instance: flash_programmer, and set properties
+    set flash_programmer [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_quad_spi:3.* -set_params                                         \
+    [ list                                                                                                                                  \
+        CONFIG.C_FIFO_DEPTH {256}                                                                                                           \
+        CONFIG.C_SCK_RATIO {2}                                                                                                              \
+        CONFIG.C_SPI_MEMORY {2}                                                                                                             \
+        CONFIG.C_SPI_MODE {2}                                                                                                               \
+        CONFIG.C_USE_STARTUP {1}                                                                                                            \
+        CONFIG.C_USE_STARTUP_INT {1}                                                                                                        \
+    ] flash_programmer ]
+
+    # Create instance: gnd_flash_programmer_1, and set properties
+    set gnd_flash_programmer_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params                                     \
+    [ list                                                                                                                                  \
+        CONFIG.CONST_VAL {0}                                                                                                                \
+    ] gnd_flash_programmer_1 ]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {$C_HAS_MGMT_DEBUG == true} {
+
+    dbg_puts "Adding Peripheral MGMT Debug in $C_HAS_MGMT_DEBUG mode"
+
+    # Create instance: mgmt_debug_hub, and set properties
+    set mgmt_debug_hub [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.* -set_params                                           \
+    [ list                                                                                                                                  \
+        CONFIG.C_NUM_BS_MASTER $mgmt_debug_hub_num_bs_master                                                                                \
+        CONFIG.C_DESIGN_TYPE $debug_bridge_design_type                                                                                      \
+    ] mgmt_debug_hub ]
+
+    if {$C_PARTITION_NAME == "BLP"} {
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            # Create instance: regslice_mgmt_debug_bridge, and set properties
+            set regslice_mgmt_debug_bridge [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                 \
+            [ list                                                                                                                          \
+                CONFIG.PROTOCOL {AXI4LITE}                                                                                                  \
+                CONFIG.REG_AR $regslice_mgmt_debug_regval                                                                                   \
+                CONFIG.REG_AW $regslice_mgmt_debug_regval                                                                                   \
+                CONFIG.REG_B $regslice_mgmt_debug_regval                                                                                    \
+                CONFIG.REG_R $regslice_mgmt_debug_regval                                                                                    \
+                CONFIG.REG_W $regslice_mgmt_debug_regval                                                                                    \
+            ] regslice_mgmt_debug_bridge ]
+
+        }
+
+        # Create instance: jtag_fallback, and set properties
+        set jtag_fallback [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.* -set_params                                        \
+        [ list                                                                                                                              \
+            CONFIG.C_DEBUG_MODE {7}                                                                                                         \
+            CONFIG.C_NUM_BS_MASTER {1}                                                                                                      \
+        ] jtag_fallback ]
+
+        # Create instance: mgmt_debug_bridge, and set properties
+        set mgmt_debug_bridge [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.* -set_params                                    \
+        [ list                                                                                                                              \
+            CONFIG.C_BSCAN_MUX {3}                                                                                                          \
+            CONFIG.C_DEBUG_MODE {2}                                                                                                         \
+            CONFIG.C_NUM_BS_MASTER $mgmt_debug_bridge_num_bs_master                                                                         \
+            CONFIG.C_XVC_HW_ID {0x0002}                                                                                                     \
+        ] mgmt_debug_bridge ]
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            # Create instance: regslice_mdm_board_control, and set properties
+            set regslice_mdm_board_control [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                 \
+            [ list                                                                                                                          \
+                CONFIG.PROTOCOL {AXI4LITE}                                                                                                  \
+                CONFIG.REG_AR $regslice_mdm_regval                                                                                          \
+                CONFIG.REG_AW $regslice_mdm_regval                                                                                          \
+                CONFIG.REG_B $regslice_mdm_regval                                                                                           \
+                CONFIG.REG_R $regslice_mdm_regval                                                                                           \
+                CONFIG.REG_W $regslice_mdm_regval                                                                                           \
+            ] regslice_mdm_board_control ]
+
+        }
+
+        # Create instance: mdm_board_control, and set properties
+        set mdm_board_control [ create_bd_cell -type ip -vlnv xilinx.com:ip:mdm:3.* -set_params                                             \
+        [ list                                                                                                                              \
+            CONFIG.C_MB_DBG_PORTS $C_NUM_MB_DEBUG_PORTS                                                                                     \
+            CONFIG.C_USE_BSCAN {2}                                                                                                          \
+            CONFIG.C_USE_UART {1}                                                                                                           \
+        ] mdm_board_control ]
+
+        # Create instance: psreset_mdm, and set properties
+        set psreset_mdm [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* psreset_mdm ]
+
+        # Create instance: axi_vip_mdm, and set properties
+        set axi_vip_mdm [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_mdm ]
+
+    }
+
+}
+
+#==========================================================================================================================================#
+# (2) Create interface connections
+#==========================================================================================================================================#
+
+set axi_master_port_number 0
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_INTERCONNECT
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# SYS_MGMT_WIZ
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {[expr {$axi_ic_ctrl_mgmt_num_mi > 0}]} {
+
+    # Connect AXI VIP to s_axi_ctrl_mgmt
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_net [get_bd_intf_ports s_axi_ctrl_mgmt] [get_bd_intf_pins axi_vip_ctrl_mgmt/S_AXI]
+
+}
+
+# Connect axi_vip_ctrl_mgmt interface to axi_ic_ctrl_mgmt slave input if any MGMT peripherals are present
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+    connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt/S00_AXI]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+    dbg_puts "Connecting interfaces for JTAG AXI Master"
+
+    connect_bd_intf_net -intf_net jtag_axi_M_AXI_net [get_bd_intf_pins jtag_axi_master/M_AXI] [get_bd_intf_ports m_axi_jtag]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    dbg_puts "Connecting interfaces for HWICAP"
+    dbg_puts "HWICAP uses AXI MGMT Ctrl Master $axi_master_port_number"
+
+    # Connect regslice
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        dbg_puts "- Connecting regslice"
+
+        connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_axi_hwicap/S_AXI]
+        connect_bd_intf_net -intf_net axi_register_slice_0_M_AXI [get_bd_intf_pins regslice_axi_hwicap/M_AXI] [get_bd_intf_pins axi_hwicap/S_AXI_LITE]
+
+        incr axi_master_port_number
+
+        dbg_puts "- Connecting icap arbiter"
+
+        connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins icap_arb/s00_axi]
+
+        incr axi_master_port_number
+
+    } else {
+
+        dbg_puts "- Connecting regslice"
+
+        connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_axi_hwicap/S_AXI]
+        connect_bd_intf_net -intf_net axi_register_slice_0_M_AXI [get_bd_intf_pins regslice_axi_hwicap/M_AXI] [get_bd_intf_pins axi_hwicap/S_AXI_LITE]
+
+        incr axi_master_port_number
+
+    }
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {$C_HAS_MGMT_DEBUG == true} {
+
+    dbg_puts "Connecting interfaces for MGMT Debug in $C_HAS_MGMT_DEBUG mode"
+    dbg_puts "MGMT Debug uses AXI MGMT Ctrl Master $axi_master_port_number"
+
+    if {$C_PARTITION_NAME == "BLP"} {
+
+        connect_bd_intf_net -intf_net jtag_fallback_m0_bscan [get_bd_intf_pins jtag_fallback/m0_bscan] [get_bd_intf_pins mgmt_debug_bridge/prim_bscan]
+        connect_bd_intf_net -intf_net mgmt_debug_bridge_m0_bscan [get_bd_intf_pins mgmt_debug_bridge/m0_bscan] [get_bd_intf_pins mgmt_debug_hub/S_BSCAN]
+
+        connect_bd_intf_net -intf_net m0_bscan_net [get_bd_intf_pins mgmt_debug_bridge/m1_bscan] [get_bd_intf_ports m0_bscan]
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            dbg_puts "- Connecting regslice in $C_REGSLICE_MGMT_DEBUG Mode"
+
+            # Add regslices
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_mgmt_debug_bridge/S_AXI]
+            connect_bd_intf_net -intf_net regslice_mgmt_debug_bridge_M_AXI [get_bd_intf_pins mgmt_debug_bridge/S_AXI] [get_bd_intf_pins regslice_mgmt_debug_bridge/M_AXI]
+
+        } else {
+
+            # Point to point connections
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins mgmt_debug_bridge/S_AXI]
+
+        }
+
+        connect_bd_intf_net -intf_net mgmt_debug_hub_m0_bscan [get_bd_intf_pins mgmt_debug_hub/m0_bscan] [get_bd_intf_pins mdm_board_control/BSCAN]
+
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            dbg_puts "- Connecting regslice in $C_REGSLICE_MGMT_DEBUG Mode"
+
+            # Add regslices
+
+            connect_bd_intf_net -intf_net s_axi_mdm_regslice_vip_net [get_bd_intf_ports s_axi_mdm] [get_bd_intf_pins axi_vip_mdm/S_AXI]
+            connect_bd_intf_net -intf_net s_axi_mdm_net [get_bd_intf_pins axi_vip_mdm/M_AXI] [get_bd_intf_pins regslice_mdm_board_control/S_AXI]
+            connect_bd_intf_net -intf_net regslice_mdm_board_control_M_AXI [get_bd_intf_pins mdm_board_control/S_AXI] [get_bd_intf_pins regslice_mdm_board_control/M_AXI]
+
+        } else {
+
+            # Point to point connections
+
+            connect_bd_intf_net -intf_net s_axi_mdm_vip_net [get_bd_intf_ports s_axi_mdm] [get_bd_intf_pins axi_vip_mdm/S_AXI]
+            connect_bd_intf_net -intf_net s_axi_mdm_net     [get_bd_intf_pins axi_vip_mdm/M_AXI] [get_bd_intf_pins mdm_board_control/S_AXI]
+
+        }
+
+        # Connect Microblaze debug ports
+
+        set debug_port_index 0
+
+        while {$debug_port_index < $C_NUM_MB_DEBUG_PORTS} {
+
+            connect_bd_intf_net -intf_net mdm_board_control_MBDEBUG_${debug_port_index} [get_bd_intf_ports mdm_mbdebug_${debug_port_index}] [get_bd_intf_pins mdm_board_control/MBDEBUG_${debug_port_index}]
+            incr debug_port_index
+
+        }
+
+    }
+
+    if {$C_PARTITION_NAME == "PLP"} {
+
+        connect_bd_intf_net -intf_net s0_bscan_net [get_bd_intf_ports s0_bscan] [get_bd_intf_pins mgmt_debug_hub/S_BSCAN]
+
+    }
+
+
+    if {$C_PARTITION_NAME == "BLP"} {
+
+        incr axi_master_port_number
+        dbg_puts "MGMT Debug uses AXI MGMT Ctrl Master $axi_master_port_number"
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# UUID_ROM
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_UUID_ROM == true)} {
+
+    dbg_puts "Connecting interfaces for UUID ROM"
+
+    if {$C_REGSLICE_UUID_ROM != "NONE"} {
+
+        # Connect regslice
+
+        dbg_puts "- Connecting regslice in $C_REGSLICE_UUID_ROM Mode"
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_uuid_rom/S_AXI]
+            connect_bd_intf_net -intf_net axi_register_slice_uuid_rom_M_AXI [get_bd_intf_pins regslice_uuid_rom/M_AXI] [get_bd_intf_pins uuid_rom/S_AXI]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins regslice_uuid_rom/S_AXI]
+            connect_bd_intf_net -intf_net axi_register_slice_0_M_AXI [get_bd_intf_pins regslice_uuid_rom/M_AXI] [get_bd_intf_pins uuid_rom/S_AXI]
+
+        }
+
+    } else {
+
+        # Point to point connection
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins uuid_rom/S_AXI]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins uuid_rom/S_AXI]
+
+        }
+
+    }
+
+    incr axi_master_port_number
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    dbg_puts "Connecting interfaces for USER Debug"
+
+    # Connect AXI VIP to s_axi_ctrl_user_debug
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_debug_net [get_bd_intf_ports s_axi_ctrl_user_debug] [get_bd_intf_pins axi_vip_ctrl_user_debug/S_AXI]
+
+    connect_bd_intf_net -intf_net user_debug_bridge_m0_bscan [get_bd_intf_pins user_debug_bridge/m0_bscan] [get_bd_intf_pins user_debug_hub/S_BSCAN]
+    connect_bd_intf_net -intf_net user_debug_hub_m0_bscan [get_bd_intf_ports m_debug_hub_user] [get_bd_intf_pins user_debug_hub/m0_bscan]
+
+    if {$C_REGSLICE_USER_DEBUG_BRIDGE != "NONE"} {
+
+        dbg_puts "- Connecting regslice in $C_REGSLICE_USER_DEBUG_BRIDGE Mode"
+
+        # Connect regslice
+
+        connect_bd_intf_net -intf_net axi_vip_ctrl_user_debug_net [get_bd_intf_pins axi_vip_ctrl_user_debug/M_AXI] [get_bd_intf_pins regslice_user_debug_bridge/S_AXI]
+        connect_bd_intf_net -intf_net regslice_user_debug_bridge_M_AXI [get_bd_intf_pins regslice_user_debug_bridge/M_AXI] [get_bd_intf_pins user_debug_bridge/S_AXI]
+
+    } else {
+
+        # Point to point connection
+
+        connect_bd_intf_net -intf_net axi_vip_ctrl_user_debug_net [get_bd_intf_pins axi_vip_ctrl_user_debug/M_AXI] [get_bd_intf_pins user_debug_bridge/S_AXI]
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MEMORY_CALIB_STATUS == true)} {
+
+    dbg_puts "Connecting interfaces for Memory Calibration GPIO"
+    dbg_puts "Memory Calibration GPIO uses AXI MGMT Ctrl Master $axi_master_port_number"
+
+    # OR reduce DDR Calibration bus into single bit to be read from AXI GPIO block
+
+    connect_bd_net [get_bd_ports memory_calib_complete] [get_bd_pins and_reduce/Op1]
+    connect_bd_net [get_bd_pins and_reduce/Res] [get_bd_pins ddr_calib_status/gpio_io_i]
+
+    if {$C_REGSLICE_MEMORY_CALIB_STATUS != "NONE"} {
+
+        # Connect regslice
+
+        dbg_puts "- Connecting regslice in $C_REGSLICE_MEMORY_CALIB_STATUS Mode"
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_ddr_calib_status/S_AXI]
+            connect_bd_intf_net -intf_net regslice_ddr_calib_status_M_AXI [get_bd_intf_pins regslice_ddr_calib_status/M_AXI] [get_bd_intf_pins ddr_calib_status/S_AXI]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins regslice_ddr_calib_status/S_AXI]
+            connect_bd_intf_net -intf_net axi_register_slice_0_M_AXI [get_bd_intf_pins regslice_ddr_calib_status/M_AXI] [get_bd_intf_pins ddr_calib_status/S_AXI]
+
+        }
+
+    } else {
+
+        # Point to point connection
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins ddr_calib_status/S_AXI]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins ddr_calib_status/S_AXI]
+
+        }
+
+    }
+
+    incr axi_master_port_number
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# FLASH_PROGRAMMER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_FLASH_PROGRAMMER == true)} {
+
+    dbg_puts "Connecting interfaces for Flash Programmer"
+    dbg_puts "Flash Programmer uses AXI MGMT Ctrl Master $axi_master_port_number"
+
+    if {$C_REGSLICE_FLASH_PROGRAMMER != "NONE"} {
+
+        # Connect regslice
+
+        dbg_puts "- Connecting regslice in $C_REGSLICE_FLASH_PROGRAMMER Mode"
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins regslice_flash_programmer/S_AXI]
+            connect_bd_intf_net -intf_net regslice_flash_programmer_M_AXI [get_bd_intf_pins regslice_flash_programmer/M_AXI] [get_bd_intf_pins flash_programmer/AXI_LITE]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins regslice_flash_programmer/S_AXI]
+            connect_bd_intf_net -intf_net regslice_flash_programmer_M_AXI [get_bd_intf_pins regslice_flash_programmer/M_AXI] [get_bd_intf_pins flash_programmer/AXI_LITE]
+
+        }
+
+    } else {
+
+        # Point to point connection
+
+        if {[expr {$axi_ic_ctrl_mgmt_num_mi > 1}]} {
+
+            connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins flash_programmer/AXI_LITE]
+
+        } elseif {[expr {$axi_ic_ctrl_mgmt_num_mi == 1}]} {
+
+            connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_net [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins flash_programmer/AXI_LITE]
+
+        }
+
+    }
+
+    incr axi_master_port_number
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# BUILD_INFO
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+connect_bd_intf_net -intf_net axi_ic_mgmt_M0${axi_master_port_number}_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_AXI] [get_bd_intf_pins build_info/S_AXI]
+
+#==========================================================================================================================================#
+# (3) Create port connections
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# Ctrl Clock & Reset Nets
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# aclk_ctrl
+# aclk_ctrl_2x
+# aresetn_ctrl
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# SYS_MGMT_WIZ
+# FLASH_PROGRAMMER
+# AXI_HWICAP (For AXI Interconnect)
+# MGMT_DEBUG
+# UUID_ROM
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_HAS_UUID_ROM == true) || ($C_HAS_USER_DEBUG == true) || ($C_HAS_AXI_HWICAP == true) || ($C_HAS_MEMORY_CALIB_STATUS == true) || ($C_HAS_FLASH_PROGRAMMER == true) || ($C_HAS_MGMT_DEBUG == true)} {
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_ports aclk_ctrl]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_ports aresetn_ctrl]
+
+}
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) || (($C_HAS_AXI_HWICAP == true) || ($C_HAS_MEMORY_CALIB_STATUS == true) || ($C_HAS_FLASH_PROGRAMMER == true) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true)))} {
+
+    if {(($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true))} {
+
+          dbg_puts "Connecting AXI_MGMT_CTRL_VIP to aclk_pcie"
+
+          connect_bd_net -net aclk_pcie_net [get_bd_ports aclk_pcie] [get_bd_pins axi_vip_ctrl_mgmt/aclk]
+          connect_bd_net -net aresetn_pcie_net [get_bd_ports aresetn_pcie] [get_bd_pins axi_vip_ctrl_mgmt/aresetn]
+
+    } else {
+
+          dbg_puts "Connecting AXI_MGMT_CTRL_VIP to aclk_ctrl"
+
+          connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins axi_vip_ctrl_mgmt/aclk]
+          connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins axi_vip_ctrl_mgmt/aresetn]
+
+    }
+
+}
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins axi_vip_ctrl_user_debug/aclk]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins axi_vip_ctrl_user_debug/aresetn]
+
+}
+
+if {($C_REGSLICE_UUID_ROM == "TDM") || ($C_REGSLICE_USER_DEBUG_BRIDGE == "TDM") || ($C_REGSLICE_MEMORY_CALIB_STATUS == "TDM") || ($C_REGSLICE_FLASH_PROGRAMMER == "TDM") || (($C_REGSLICE_MGMT_DEBUG == "TDM") && ($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+    connect_bd_net -net aclk_ctrl_2x_net [get_bd_ports aclk_ctrl_2x]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# DMA Clock & Reset Nets
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# aclk_pcie
+# aresetn_pcie
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+
+if {(($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true))} {
+
+    dbg_puts "Connecting aclk_pcie"
+    dbg_puts "Connecting aresetn_pcie"
+
+    connect_bd_net -net aclk_pcie_net [get_bd_ports aclk_pcie]
+    connect_bd_net -net aresetn_pcie_net [get_bd_ports aresetn_pcie]
+
+    dbg_puts "End aclk_pcie"
+    dbg_puts "End aresetn_pcie"
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_INTERCONNECT - Slave Clock and Resets on MGMT clock
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+# SYS_MGMT_WIZ Clock
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) && ($C_PARTITION_NAME == "BLP")} {
+
+  if {$C_HAS_AXI_HWICAP == true} {
+
+      dbg_puts "Connecting AXI_INTERCONNECT to aclk_pcie"
+
+      connect_bd_net -net aclk_pcie_net [get_bd_ports aclk_pcie] [get_bd_pins axi_ic_ctrl_mgmt/ACLK] [get_bd_pins axi_ic_ctrl_mgmt/S00_ACLK]
+      connect_bd_net -net aresetn_pcie_net [get_bd_ports aresetn_pcie] [get_bd_pins axi_ic_ctrl_mgmt/ARESETN] [get_bd_pins axi_ic_ctrl_mgmt/S00_ARESETN]
+
+  } else {
+
+      dbg_puts "Connecting AXI_INTERCONNECT to aclk_ctrl"
+
+      connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_ports aclk_ctrl] [get_bd_pins axi_ic_ctrl_mgmt/ACLK] [get_bd_pins axi_ic_ctrl_mgmt/S00_ACLK]
+      connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_ports aresetn_ctrl] [get_bd_pins axi_ic_ctrl_mgmt/ARESETN] [get_bd_pins axi_ic_ctrl_mgmt/S00_ARESETN]
+
+  }
+
+}
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) && ($C_PARTITION_NAME == "PLP")} {
+
+      dbg_puts "Connecting AXI_INTERCONNECT to aclk_ctrl"
+
+      connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_ports aclk_ctrl] [get_bd_pins axi_ic_ctrl_mgmt/ACLK] [get_bd_pins axi_ic_ctrl_mgmt/S00_ACLK]
+      connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_ports aresetn_ctrl] [get_bd_pins axi_ic_ctrl_mgmt/ARESETN] [get_bd_pins axi_ic_ctrl_mgmt/S00_ARESETN]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_INTERCONNECT - Master Clock and Resets on DMA clock
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+# Reset master port number
+
+set axi_master_port_number 0
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    connect_bd_net -net aclk_pcie_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ACLK]
+    connect_bd_net -net aresetn_pcie_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ARESETN]
+    incr axi_master_port_number
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ACLK]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ARESETN]
+        incr axi_master_port_number
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_INTERCONNECT - Master Clock and Resets on MGMT clock
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG - mgmt_debug_brdge
+# MEMORY_CALIB_STATUS
+# SYS_MGMT_WIZ Clock
+# FLASH_PROGRAMMER
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {([expr {$axi_ic_ctrl_mgmt_num_mi > 1}]) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)) || (($C_PARTITION_NAME == "BLP") && ($C_HAS_MGMT_DEBUG == true))} {
+
+    while {$axi_master_port_number < $axi_ic_ctrl_mgmt_num_mi} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ACLK]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins axi_ic_ctrl_mgmt/M0${axi_master_port_number}_ARESETN]
+        incr axi_master_port_number
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+    dbg_puts "Connecting ports for JTAG AXI Master"
+
+    connect_bd_net -net aclk_pcie_net [get_bd_pins jtag_axi_master/aclk]
+    connect_bd_net -net aresetn_pcie_net [get_bd_pins jtag_axi_master/aresetn]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# AXI_HWICAP
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_AXI_HWICAP == true)} {
+
+    if {$C_HAS_AXI_ICAP_ARB == true} {
+
+        dbg_puts "Connecting ports for HWICAP and ICAP ARBITER"
+
+        connect_bd_intf_net -intf_net s_icap_net [get_bd_intf_pins s_icap] [get_bd_intf_pins icap_arb/S01_ICAP]
+        connect_bd_intf_net -intf_net s_icap_arb_net [get_bd_intf_pins s_icap_arb] [get_bd_intf_pins icap_arb/S01_ICAP_ARB]
+        connect_bd_intf_net -intf_net axi_hwicap_0_ICAP [get_bd_intf_pins axi_hwicap/ICAP] [get_bd_intf_pins icap_arb/S00_ICAP]
+        connect_bd_intf_net -intf_net axi_hwicap_0_ICAP_ARBITER [get_bd_intf_pins axi_hwicap/ICAP_ARBITER] [get_bd_intf_pins icap_arb/S00_ICAP_ARB]
+
+        connect_bd_net -net aclk_pcie_net [get_bd_pins axi_hwicap/s_axi_aclk]
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins icap_arb/s00_axi_aclk]
+        connect_bd_net -net aresetn_pcie_net [get_bd_pins axi_hwicap/s_axi_aresetn]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins icap_arb/s00_axi_aresetn]
+        connect_bd_net -net axi_hwicap_0_ip2intc_irpt [get_bd_ports interrupt_axi_hwicap] [get_bd_pins axi_hwicap/ip2intc_irpt]
+        connect_bd_net -net gnd_hwicap_1_dout [get_bd_pins axi_hwicap/eos_in] [get_bd_pins gnd_hwicap_1/dout]
+        connect_bd_net -net icap_clk_0_1 [get_bd_ports clk_icap] [get_bd_pins axi_hwicap/icap_clk] [get_bd_pins icap_arb/icap_clk]
+
+        # Connect regslice
+
+        connect_bd_net -net aclk_pcie_net [get_bd_pins regslice_axi_hwicap/aclk]
+        connect_bd_net -net aresetn_pcie_net [get_bd_pins regslice_axi_hwicap/aresetn]
+
+    } else {
+
+        dbg_puts "Connecting ports for HWICAP"
+
+        connect_bd_net -net aclk_pcie_net [get_bd_pins axi_hwicap/s_axi_aclk]
+        connect_bd_net -net aresetn_pcie_net [get_bd_pins axi_hwicap/s_axi_aresetn]
+        connect_bd_net -net axi_hwicap_0_ip2intc_irpt [get_bd_ports interrupt_axi_hwicap] [get_bd_pins axi_hwicap/ip2intc_irpt]
+        connect_bd_net -net gnd_hwicap_1_dout [get_bd_pins axi_hwicap/eos_in] [get_bd_pins gnd_hwicap_1/dout]
+        connect_bd_net -net icap_clk_0_1 [get_bd_ports clk_icap] [get_bd_pins axi_hwicap/icap_clk]
+
+        # Connect regslice
+
+        connect_bd_net -net aclk_pcie_net [get_bd_pins regslice_axi_hwicap/aclk]
+        connect_bd_net -net aresetn_pcie_net [get_bd_pins regslice_axi_hwicap/aresetn]
+
+    }
+
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# UUID_ROM
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_UUID_ROM == true)} {
+
+    dbg_puts "Connecting ports for UUID_ROM"
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins uuid_rom/S_AXI_ACLK]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins uuid_rom/S_AXI_ARESETN]
+
+    if {$C_REGSLICE_UUID_ROM != "NONE"} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_uuid_rom/aclk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_uuid_rom/aresetn]
+
+        if {[expr {$C_REGSLICE_UUID_ROM == "TDM"}]} {
+
+            # Connect regslice
+
+            connect_bd_net -net aclk_ctrl_2x_net [get_bd_pins regslice_uuid_rom/aclk2x]
+
+        }
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# USER_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    dbg_puts "Connecting ports for USER Debug"
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins user_debug_bridge/s_axi_aclk] [get_bd_pins user_debug_hub/clk]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins user_debug_bridge/s_axi_aresetn]
+
+    if {$C_REGSLICE_USER_DEBUG_BRIDGE != "NONE"} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_user_debug_bridge/aclk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_user_debug_bridge/aresetn]
+
+        if {[expr {$C_REGSLICE_USER_DEBUG_BRIDGE == "TDM"}]} {
+
+            # Connect regslice
+
+            connect_bd_net -net aclk_ctrl_2x_net [get_bd_pins regslice_user_debug_bridge/aclk2x]
+
+        }
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MEMORY_CALIB_STATUS
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_MEMORY_CALIB_STATUS == true)} {
+
+    dbg_puts "Connecting ports for Memory Calibration GPIO"
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins ddr_calib_status/s_axi_aclk]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins ddr_calib_status/s_axi_aresetn]
+
+    if {$C_REGSLICE_MEMORY_CALIB_STATUS != "NONE"} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_ddr_calib_status/aclk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_ddr_calib_status/aresetn]
+
+        if {[expr {$C_REGSLICE_MEMORY_CALIB_STATUS == "TDM"}]} {
+
+            # Connect regslice
+
+            connect_bd_net -net aclk_ctrl_2x_net [get_bd_pins regslice_ddr_calib_status/aclk2x]
+
+        }
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# FLASH_PROGRAMMER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP") && ($C_HAS_FLASH_PROGRAMMER == true)} {
+
+    dbg_puts "Connecting ports for Flash Programmer"
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins flash_programmer/ext_spi_clk] [get_bd_pins flash_programmer/s_axi_aclk]
+    connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins flash_programmer/s_axi_aresetn]
+    connect_bd_net -net flash_programmer_ip2intc_irpt [get_bd_ports interrupt_flash_programmer] [get_bd_pins flash_programmer/ip2intc_irpt]
+    connect_bd_net -net gn_0_dout [get_bd_pins flash_programmer/usrcclkts] [get_bd_pins gnd_flash_programmer_1/dout]
+
+    if {$C_REGSLICE_FLASH_PROGRAMMER != "NONE"} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_flash_programmer/aclk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_flash_programmer/aresetn]
+
+        if {[expr {$C_REGSLICE_FLASH_PROGRAMMER == "TDM"}]} {
+
+            # Connect regslice
+
+            connect_bd_net -net aclk_ctrl_2x_net [get_bd_pins regslice_flash_programmer/aclk2x]
+
+        }
+
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MGMT_DEBUG
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {$C_HAS_MGMT_DEBUG == true} {
+
+    dbg_puts "Connecting ports for MGMT Debug in $C_HAS_MGMT_DEBUG mode"
+
+    connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins mgmt_debug_hub/clk]
+
+    if {$C_PARTITION_NAME == "BLP"} {
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins mgmt_debug_bridge/s_axi_aclk] [get_bd_pins psreset_mdm/slowest_sync_clk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins mgmt_debug_bridge/s_axi_aresetn]
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_mgmt_debug_bridge/aclk]
+            connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_mgmt_debug_bridge/aresetn]
+
+            if {[expr {$C_REGSLICE_MGMT_DEBUG == "TDM"}]} {
+
+                # Connect regslice
+
+                connect_bd_net -net aclk_ctrl_2x_net [get_bd_pins regslice_mgmt_debug_bridge/aclk2x]
+
+            }
+
+        }
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins mdm_board_control/S_AXI_ACLK]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins mdm_board_control/S_AXI_ARESETN]
+        connect_bd_net -net ext_reset_ctrl_plp_net [get_bd_ports aresetn_ctrl_plp] [get_bd_pins psreset_mdm/ext_reset_in]
+        connect_bd_net -net mdm_debug_sys_rst_ert_net [get_bd_ports mdm_debug_sys_rstn_ert] [get_bd_pins psreset_mdm/peripheral_aresetn]
+        connect_bd_net -net mdm_board_control_Debug_SYS_Rst [get_bd_pins mdm_board_control/Debug_SYS_Rst] [get_bd_ports mdm_debug_sys_rst_cmc] [get_bd_pins psreset_mdm/mb_debug_sys_rst]
+        connect_bd_net -net mdm_board_control_Interrupt [get_bd_ports interrupt_mdm_board_control] [get_bd_pins mdm_board_control/Interrupt]
+
+        if {$C_REGSLICE_MGMT_DEBUG != "NONE"} {
+
+            connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins regslice_mdm_board_control/aclk]
+            connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins regslice_mdm_board_control/aresetn]
+
+        }
+
+        connect_bd_net -net aclk_ctrl_mgmt_net [get_bd_pins axi_vip_mdm/aclk]
+        connect_bd_net -net aresetn_ctrl_mgmt_net [get_bd_pins axi_vip_mdm/aresetn]
+    }
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# BUILD_INFO
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+connect_bd_net -net aclk_ctrl_mgmt_net      [get_bd_pins build_info/S_AXI_ACLK]
+connect_bd_net -net aresetn_ctrl_mgmt_net   [get_bd_pins build_info/s_axi_aresetn]
+
+#==========================================================================================================================================#
+# (4) Create address segments
+#==========================================================================================================================================#
+
+dbg_puts "Creating Address Segments"
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# MASTER Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# m_axi_jtag
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+set m_axi_jtag_address_apertures "
+
+    offset 0x00000000 range 64k
+
+"
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# JTAG_AXI_MASTER
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_JTAG_AXI_MASTER == true)} {
+
+    assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces jtag_axi_master/Data] -dict $m_axi_jtag_address_apertures [get_bd_addr_segs m_axi_jtag/Reg]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_user_debug
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "PLP") && ($C_HAS_USER_DEBUG == true)} {
+
+    assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_debug]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_mgmt
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+if {($C_PARTITION_NAME == "BLP")} {
+
+    assign_bd_address -offset 0x00000000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs build_info/S_AXI/Reg0]
+
+    if {($C_HAS_AXI_HWICAP == true)} {
+
+        assign_bd_address -offset 0x00008000 -range 32k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs axi_hwicap/S_AXI_LITE/Reg]
+
+        if {$C_HAS_AXI_ICAP_ARB == true} {
+
+            assign_bd_address -offset 0x00001000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs icap_arb/s00_axi/reg0]
+
+        }
+
+    }
+
+    if {($C_HAS_FLASH_PROGRAMMER == true)} {
+
+        assign_bd_address -offset 0x00002000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs flash_programmer/AXI_LITE/Reg]
+
+    }
+
+    if {($C_HAS_MGMT_DEBUG == true)} {
+
+        assign_bd_address -offset 0x00010000 -range 64k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs mgmt_debug_bridge/S_AXI/Reg0]
+
+        # Assign 'private' segment for ERT AXI access to MDM JTAG UART
+        assign_bd_address -offset 0x01F40000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_mdm] [get_bd_addr_segs mdm_board_control/S_AXI/Reg]
+
+    }
+
+    # Combine all segments
+    assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt]
+
+}
+
+if {($C_PARTITION_NAME == "PLP")} {
+
+    assign_bd_address -offset 0x00000000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs build_info/S_AXI/Reg0]
+
+    if {($C_HAS_MEMORY_CALIB_STATUS == true)} {
+
+        assign_bd_address -offset 0x0003000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs ddr_calib_status/S_AXI/Reg]
+
+    }
+
+    if {($C_HAS_UUID_ROM == true)} {
+
+        assign_bd_address -offset 0x00004000 -range 4k -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt] [get_bd_addr_segs uuid_rom/S_AXI/reg0]
+
+    }
+
+    # Combine all segments
+    assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt]
+
+}
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore

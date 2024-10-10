@@ -1,0 +1,100 @@
+{
+    "Used Resources": [
+        {
+            "ip_instance": "ulp_krnl_ro_rtl_1_0",
+            "resources": [
+                {
+                    "LUT": "1227"
+                },
+                {
+                    "LUTAsLogic": "1227"
+                },
+                {
+                    "LUTAsMem": "0"
+                },
+                {
+                    "REG": "1234"
+                },
+                {
+                    "CARRY8": "48"
+                },
+                {
+                    "F7MUX": "4"
+                },
+                {
+                    "F8MUX": "2"
+                },
+                {
+                    "F9MUX": "0"
+                },
+                {
+                    "BRAM": "3"
+                },
+                {
+                    "URAM": "0"
+                },
+                {
+                    "DSP": "0"
+                },
+                {
+                    "GLOBAL_CLOCK_BUFFERS": "0"
+                },
+                {
+                    "PLL": "0"
+                },
+                {
+                    "MMCM": "0"
+                },
+                {
+                    "GTHE4_CHANNEL": "0"
+                },
+                {
+                    "GTHE4_COMMON": "0"
+                },
+                {
+                    "GTYE4_CHANNEL": "0"
+                },
+                {
+                    "GTYE4_COMMON": "0"
+                }
+            ]
+        }
+    ],
+    "Available Resources": [
+        {
+            "pblock": "pblock_dynamic_region",
+            "resources": [
+                {
+                    "BRAM": "646"
+                },
+                {
+                    "BRAM_SLR0": "646"
+                },
+                {
+                    "DSP": "1344"
+                },
+                {
+                    "DSPs_SLR0": "1344"
+                },
+                {
+                    "LUT": "342496"
+                },
+                {
+                    "LUT_SLR0": "342496"
+                },
+                {
+                    "REG": "684992"
+                },
+                {
+                    "REG_SLR0": "684992"
+                },
+                {
+                    "URAM": "112"
+                },
+                {
+                    "URAM_SLR0": "112"
+                }
+            ]
+        }
+    ]
+}

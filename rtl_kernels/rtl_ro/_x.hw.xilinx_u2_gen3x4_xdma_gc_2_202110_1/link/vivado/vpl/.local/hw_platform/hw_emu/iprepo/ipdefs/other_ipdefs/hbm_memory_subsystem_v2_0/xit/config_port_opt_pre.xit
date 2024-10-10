@@ -1,0 +1,165 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distributed herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# Setup lists to be passed into connection calculation
+set HBM_MEM_TXNS {}
+set HBM_MEM_TXNS_MAP {}
+set HBM_PORT_LOCS {}
+set HBM_PORT_LOCS_TRAFFIC {}
+set KERNEL_MASTER_GROUPS {}
+set HBM_PORT_PROHIBIT {}
+
+# For each AXI master input port get it's memory segments into an
+# array to be used by algorithm
+for {set s_idx 0} {$s_idx < [dict get $CONFIG total_hmss_num_mi]} {incr s_idx} {
+    # Initialise memory regions used to all zero
+    set mem_txns [lrepeat 32 0]
+    # If master is enabled
+    if {[config_get_saxi_en $s_idx $CONFIG]} {
+       # Get a list of memory segment for this master
+       set list_of_mem_segs [config_get_memsegs $s_idx $CONFIG]
+       # Loop through each mem location
+       for {set mem_idx 0} {$mem_idx < [dict get $CONFIG total_hbm_num_pc]} {incr mem_idx} {
+          set mem_seg [format HBM_MEM%.2d $mem_idx]
+          if {[lsearch -exact $list_of_mem_segs $mem_seg] > -1} {
+             lset mem_txns $mem_idx 1
+          }
+       }
+       # Append results for this port to HBM_MEM_TXNS (also track which port this belongs to)
+       # Currently incremting linearly through Snn_AXI but may not always the the case
+       lappend HBM_MEM_TXNS $mem_txns
+       lappend HBM_MEM_TXNS_MAP $s_idx
+    }
+}
+
+# For each AXI master input port get it's port location information
+# Default is no portloc info and enable traffic calc for every port
+set HBM_PORT_LOCS [lrepeat [dict get $CONFIG total_hmss_num_mi] -1]
+set HBM_PORT_LOCS_TRAFFIC [lrepeat [dict get $CONFIG total_hmss_num_mi] 1]
+for {set s_idx 0} {$s_idx < [dict get $CONFIG total_hmss_num_mi]} {incr s_idx} {
+   set key [format S%.2d_PORTLOC $s_idx]
+   # Everything should be error-checked up to here
+   if [dict exists $CONFIG ADVANCED_PROPERTIES PORTLOC $key] {
+      set portloc_info [dict get $CONFIG ADVANCED_PROPERTIES PORTLOC $key]
+      lset HBM_PORT_LOCS         $s_idx [lindex $portloc_info 0]
+      lset HBM_PORT_LOCS_TRAFFIC $s_idx [lindex $portloc_info 1]
+   }
+}
+
+# Port prohibits
+# Default is no port prohibits - single stack devices will have prohibits on upper ports
+set HBM_PORT_PROHIBIT [lrepeat [expr [dict get $CONFIG total_hbm_num_mi_1stack]*2] 0]
+for {set s_idx 0} {$s_idx < [llength $HBM_PORT_PROHIBIT]} {incr s_idx} {
+   if {$s_idx >= [dict get $CONFIG total_hbm_num_mi]} {
+      if {[lsearch -exact -integer $HBM_PORT_LOCS $s_idx] > -1} {
+          send_msg_id {hbm_memory_subsystem 3-1} ERROR "GEN_CONTENTS::Trying to loc a kernel port to a HBM port that is prohibited (single stack device) :: $s_idx"
+          return
+      } else {
+         lset HBM_PORT_PROHIBIT $s_idx 1
+      }
+   }
+}
+# Get prohibits supplied by user
+if [dict exists $CONFIG ADVANCED_PROPERTIES HBM_PORT_PROHIBIT] {
+   for {set s_idx 0} {$s_idx < [dict get $CONFIG total_hmss_num_mi]} {incr s_idx} {
+      set key [format S%.2d_AXI $s_idx]
+      set prohibit_list [dict get $CONFIG ADVANCED_PROPERTIES HBM_PORT_PROHIBIT]
+      # Everything should be error-checked up to here
+      if {[lsearch -exact $prohibit_list $key] > -1} {
+         lset HBM_PORT_PROHIBIT $s_idx 1
+         # Need to check that we don't have a port loc at this location
+         # if we do error out
+         if {[lsearch -exact -integer $HBM_PORT_LOCS $s_idx] > -1} {
+             send_msg_id {hbm_memory_subsystem 3-1} ERROR "GEN_CONTENTS::Trying to loc a kernel port to a HBM port that is prohibited :: $key"
+             return
+         }
+
+      }
+   }
+}
+
+# Tweak HBM_MEM_TXNS to remove HBM_MEM00 in case where we have kernels connected and they don't want HBM_MEM00
+set mem0_present 0
+if {[llength $HBM_MEM_TXNS] > 1} {
+   for {set k_idx 1} {$k_idx < [llength $HBM_MEM_TXNS]} {incr k_idx} {
+       if {[lindex $HBM_MEM_TXNS $k_idx 0] == 1} {
+          incr mem0_present
+       }
+   }
+   # Set master 0 mem 0 present to zero
+   if {$mem0_present == 0} {
+      lset HBM_MEM_TXNS 0 0 0
+   }
+}
+
+# Group kernel master per kernel using integer IDs
+set g_idx 0
+set kernel_number_dict [dict create]
+set KERNEL_MASTER_GROUPS [lrepeat [dict get $CONFIG total_hmss_num_mi] 0]
+if {![info exists ::env(HMSS_DISABLE_KERNEL_GROUPING)]} {
+   for {set s_idx 0} {$s_idx < [dict get $CONFIG total_hmss_num_mi]} {incr s_idx} {
+      set key [format S%.2d_KERNEL $s_idx]
+      if {[config_get_saxi_en $s_idx $CONFIG]} {
+         # Everything should be error-checked up to here
+         if [dict exists $CONFIG $key] {
+            # Check if we have already found this kernel
+            # If we have then use the group number stored
+            if [dict exists $kernel_number_dict [dict get $CONFIG $key]] {
+               lset KERNEL_MASTER_GROUPS $s_idx [dict get $kernel_number_dict [dict get $CONFIG $key]]
+            # If not then add that kernel and move to next groupid
+            } else {
+              dict set kernel_number_dict [dict get $CONFIG $key] $g_idx
+              lset KERNEL_MASTER_GROUPS $s_idx $g_idx
+              incr g_idx
+            }
+         }
+      }
+   }
+}
+

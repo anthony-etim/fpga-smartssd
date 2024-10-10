@@ -1,0 +1,290 @@
+INFO: [v++ 60-1306] Additional information associated with this v++ link can be found at:
+	Reports: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link
+	Log files: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.link_summary, at Fri Dec 31 12:00:32 2021
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Fri Dec 31 12:00:32 2021
+INFO: [v++ 60-1315] Creating rulecheck session with output '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/v++_link_ro.link_guidance.html', at Fri Dec 31 12:00:33 2021
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1/xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2021.1
+INFO: [v++ 60-629] Linking for hardware target
+INFO: [v++ 60-423]   Target device: xilinx_u2_gen3x4_xdma_gc_2_202110_1
+INFO: [v++ 60-1332] Run 'run_link' status: Not started
+INFO: [v++ 60-1443] [12:00:36] Run run_link: Step system_link: Started
+INFO: [v++ 60-1453] Command Line: system_link --xo /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo -keep --xpfm /opt/xilinx/platforms/xilinx_u2_gen3x4_xdma_gc_2_202110_1/xilinx_u2_gen3x4_xdma_gc_2_202110_1.xpfm --target hw --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [SYSTEM_LINK 60-1316] Initiating connection to rulecheck server, at Fri Dec 31 12:00:38 2021
+INFO: [SYSTEM_LINK 82-70] Extracting xo v3 file /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo
+INFO: [SYSTEM_LINK 82-53] Creating IP database /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-38] [12:00:38] build_xd_ip_db started: /tools/Xilinx/Vitis/2021.1/bin/build_xd_ip_db -ip_search 0  -sds-pf /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/hw.hpfm -clkid 0 -ip /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/iprepo/xilinx_com_RTLKernel_krnl_ro_rtl_int_1_0,krnl_ro_rtl -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-37] [12:00:42] build_xd_ip_db finished successfully
+Time (s): cpu = 00:00:05 ; elapsed = 00:00:04 . Memory (MB): peak = 2019.191 ; gain = 0.000 ; free physical = 9850 ; free virtual = 23908
+INFO: [SYSTEM_LINK 82-51] Create system connectivity graph
+INFO: [SYSTEM_LINK 82-102] Applying explicit connections to the system connectivity graph: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [SYSTEM_LINK 82-38] [12:00:42] cfgen started: /tools/Xilinx/Vitis/2021.1/bin/cfgen -dmclkid 0 -r /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [CFGEN 83-0] Kernel Specs: 
+INFO: [CFGEN 83-0]   kernel: krnl_ro_rtl, num: 1  {krnl_ro_rtl_1}
+INFO: [CFGEN 83-2226] Inferring mapping for argument krnl_ro_rtl_1.a to bank0
+INFO: [CFGEN 83-2226] Inferring mapping for argument krnl_ro_rtl_1.b to bank0
+INFO: [CFGEN 83-2226] Inferring mapping for argument krnl_ro_rtl_1.d to bank0
+INFO: [CFGEN 83-2226] Inferring mapping for argument krnl_ro_rtl_1.c to bank0
+INFO: [SYSTEM_LINK 82-37] [12:00:44] cfgen finished successfully
+Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 2019.191 ; gain = 0.000 ; free physical = 9850 ; free virtual = 23907
+INFO: [SYSTEM_LINK 82-52] Create top-level block diagram
+INFO: [SYSTEM_LINK 82-38] [12:00:44] cf2bd started: /tools/Xilinx/Vitis/2021.1/bin/cf2bd  --linux --trace_buffer 1024 --input_file /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/cfgraph/cfgen_cfgraph.xml --ip_db /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.cdb/xd_ip_db.xml --cf_name dr --working_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.xsd --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --target_bd ulp.bd
+INFO: [CF2BD 82-31] Launching cf2xd: cf2xd -linux -trace-buffer 1024 -i /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/cfgraph/cfgen_cfgraph.xml -r /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o dr.xml
+INFO: [CF2BD 82-28] cf2xd finished successfully
+INFO: [CF2BD 82-31] Launching cf_xsd: cf_xsd -disable-address-gen -bd ulp.bd -dn dr -dp /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/sys_link/_sysl/.xsd
+INFO: [CF2BD 82-28] cf_xsd finished successfully
+INFO: [SYSTEM_LINK 82-37] [12:00:47] cf2bd finished successfully
+Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 2019.191 ; gain = 0.000 ; free physical = 9835 ; free virtual = 23897
+INFO: [v++ 60-1441] [12:00:47] Run run_link: Step system_link: Completed
+Time (s): cpu = 00:00:12 ; elapsed = 00:00:11 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 9872 ; free virtual = 23934
+INFO: [v++ 60-1443] [12:00:47] Run run_link: Step cf2sw: Started
+INFO: [v++ 60-1453] Command Line: cf2sw -sdsl /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat -rtd /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw.rtd -nofilter /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/cf2sw_full.rtd -xclbin /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.1.xml
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [v++ 60-1441] [12:00:49] Run run_link: Step cf2sw: Completed
+Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 9859 ; free virtual = 23922
+INFO: [v++ 60-1443] [12:00:49] Run run_link: Step rtd2_system_diagram: Started
+INFO: [v++ 60-1453] Command Line: rtd2SystemDiagram
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [v++ 60-1441] [12:00:49] Run run_link: Step rtd2_system_diagram: Completed
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.24 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 9843 ; free virtual = 23906
+INFO: [v++ 60-1443] [12:00:49] Run run_link: Step vpl: Started
+INFO: [v++ 60-1453] Command Line: vpl -t hw -f xilinx_u2_gen3x4_xdma_gc_2_202110_1 --remote_ip_cache /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/.ipcache -s --output_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int --log_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link --report_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link --config /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/vplConfig.ini -k /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_info.dat --webtalk_flag Vitis --temp_dir /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link --no-info --iprepo /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xo/ip_repo/xilinx_com_RTLKernel_krnl_ro_rtl_int_1_0 --messageDb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link/vpl.pb /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/dr.bd.tcl
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+
+****** vpl v2021.1 (64-bit)
+  **** SW Build 3246112 on 2021-06-09-14:19:56
+    ** Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+
+INFO: [VPL 60-839] Read in kernel information from file '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/kernel_info.dat'.
+INFO: [VPL 74-78] Compiler Version string: 2021.1
+INFO: [VPL 60-423]   Target device: xilinx_u2_gen3x4_xdma_gc_2_202110_1
+INFO: [VPL 60-1032] Extracting hardware platform to /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/vivado/vpl/.local/hw_platform
+[12:01:03] Run vpl: Step create_project: Started
+Creating Vivado project.
+[12:01:04] Run vpl: Step create_project: Completed
+[12:01:04] Run vpl: Step create_bd: Started
+[12:01:40] Run vpl: Step create_bd: Completed
+[12:01:40] Run vpl: Step update_bd: Started
+[12:01:40] Run vpl: Step update_bd: Completed
+[12:01:40] Run vpl: Step generate_target: Started
+[12:02:04] Run vpl: Step generate_target: Completed
+[12:02:04] Run vpl: Step config_hw_runs: Started
+[12:02:09] Run vpl: Step config_hw_runs: Completed
+[12:02:09] Run vpl: Step synth: Started
+[12:02:39] Block-level synthesis in progress, 0 of 59 jobs complete, 8 jobs running.
+[12:03:10] Block-level synthesis in progress, 0 of 59 jobs complete, 8 jobs running.
+[12:03:40] Block-level synthesis in progress, 5 of 59 jobs complete, 3 jobs running.
+[12:04:10] Block-level synthesis in progress, 9 of 59 jobs complete, 7 jobs running.
+[12:04:41] Block-level synthesis in progress, 11 of 59 jobs complete, 6 jobs running.
+[12:05:11] Block-level synthesis in progress, 16 of 59 jobs complete, 4 jobs running.
+[12:05:41] Block-level synthesis in progress, 16 of 59 jobs complete, 8 jobs running.
+[12:06:11] Block-level synthesis in progress, 20 of 59 jobs complete, 6 jobs running.
+[12:06:41] Block-level synthesis in progress, 23 of 59 jobs complete, 7 jobs running.
+[12:07:12] Block-level synthesis in progress, 27 of 59 jobs complete, 4 jobs running.
+[12:07:42] Block-level synthesis in progress, 30 of 59 jobs complete, 6 jobs running.
+[12:08:12] Block-level synthesis in progress, 31 of 59 jobs complete, 7 jobs running.
+[12:08:43] Block-level synthesis in progress, 37 of 59 jobs complete, 5 jobs running.
+[12:09:13] Block-level synthesis in progress, 37 of 59 jobs complete, 8 jobs running.
+[12:09:43] Block-level synthesis in progress, 40 of 59 jobs complete, 6 jobs running.
+[12:10:14] Block-level synthesis in progress, 42 of 59 jobs complete, 8 jobs running.
+[12:10:44] Block-level synthesis in progress, 47 of 59 jobs complete, 5 jobs running.
+[12:11:14] Block-level synthesis in progress, 51 of 59 jobs complete, 5 jobs running.
+[12:11:45] Block-level synthesis in progress, 54 of 59 jobs complete, 5 jobs running.
+[12:12:15] Block-level synthesis in progress, 59 of 59 jobs complete, 0 jobs running.
+[12:12:45] Top-level synthesis in progress.
+[12:13:04] Run vpl: Step synth: Completed
+[12:13:04] Run vpl: Step impl: Started
+[12:19:07] Finished 2nd of 6 tasks (FPGA linking synthesized kernels to platform). Elapsed time: 00h 18m 15s 
+
+[12:19:07] Starting logic optimization..
+[12:19:07] Phase 1 Generate And Synthesize MIG Cores
+[12:22:07] Phase 2 Generate And Synthesize Debug Cores
+[12:23:37] Phase 3 Retarget
+[12:23:37] Phase 4 Constant propagation
+[12:23:37] Phase 5 Sweep
+[12:24:08] Phase 6 BUFG optimization
+[12:24:08] Phase 7 Shift Register Optimization
+[12:24:08] Phase 8 Post Processing Netlist
+[12:25:08] Finished 3rd of 6 tasks (FPGA logic optimization). Elapsed time: 00h 06m 01s 
+
+[12:25:08] Starting logic placement..
+[12:25:38] Phase 1 Placer Initialization
+[12:25:38] Phase 1.1 Placer Initialization Netlist Sorting
+[12:26:08] Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+[12:26:08] Phase 1.3 Build Placer Netlist Model
+[12:27:08] Phase 1.4 Constrain Clocks/Macros
+[12:27:08] Phase 2 Global Placement
+[12:27:08] Phase 2.1 Floorplanning
+[12:27:38] Phase 2.1.1 Partition Driven Placement
+[12:27:38] Phase 2.1.1.1 PBP: Partition Driven Placement
+[12:27:38] Phase 2.1.1.2 PBP: Clock Region Placement
+[12:28:09] Phase 2.1.1.3 PBP: Compute Congestion
+[12:28:09] Phase 2.1.1.4 PBP: UpdateTiming
+[12:28:09] Phase 2.1.1.5 PBP: Add part constraints
+[12:28:09] Phase 2.2 Update Timing before SLR Path Opt
+[12:28:09] Phase 2.3 Post-Processing in Floorplanning
+[12:28:09] Phase 2.4 Global Placement Core
+[12:29:39] Phase 2.4.1 Physical Synthesis In Placer
+[12:30:39] Phase 3 Detail Placement
+[12:30:39] Phase 3.1 Commit Multi Column Macros
+[12:30:39] Phase 3.2 Commit Most Macros & LUTRAMs
+[12:30:39] Phase 3.3 Small Shape DP
+[12:30:39] Phase 3.3.1 Small Shape Clustering
+[12:31:09] Phase 3.3.2 Flow Legalize Slice Clusters
+[12:31:09] Phase 3.3.3 Slice Area Swap
+[12:31:09] Phase 3.4 Place Remaining
+[12:31:39] Phase 3.5 Re-assign LUT pins
+[12:31:39] Phase 3.6 Pipeline Register Optimization
+[12:31:39] Phase 3.7 Fast Optimization
+[12:31:39] Phase 4 Post Placement Optimization and Clean-Up
+[12:31:39] Phase 4.1 Post Commit Optimization
+[12:32:40] Phase 4.1.1 Post Placement Optimization
+[12:32:40] Phase 4.1.1.1 BUFG Insertion
+[12:32:40] Phase 1 Physical Synthesis Initialization
+[12:32:40] Phase 4.1.1.2 Post Placement Timing Optimization
+[12:34:10] Phase 4.2 Post Placement Cleanup
+[12:34:10] Phase 4.3 Placer Reporting
+[12:34:10] Phase 4.3.1 Print Estimated Congestion
+[12:34:40] Phase 4.4 Final Placement Cleanup
+[12:36:41] Finished 4th of 6 tasks (FPGA logic placement). Elapsed time: 00h 11m 32s 
+
+[12:36:41] Starting logic routing..
+[12:37:11] Phase 1 Build RT Design
+[12:37:41] Phase 2 Router Initialization
+[12:37:41] Phase 2.1 Fix Topology Constraints
+[12:37:41] Phase 2.2 Pre Route Cleanup
+[12:38:11] Phase 2.3 Global Clock Net Routing
+[12:38:11] Phase 2.4 Update Timing
+[12:39:11] Phase 2.5 Update Timing for Bus Skew
+[12:39:11] Phase 2.5.1 Update Timing
+[12:39:11] Phase 3 Initial Routing
+[12:39:11] Phase 3.1 Global Routing
+[12:39:41] Phase 4 Rip-up And Reroute
+[12:39:41] Phase 4.1 Global Iteration 0
+[12:41:42] Phase 4.2 Global Iteration 1
+[12:42:12] Phase 4.3 Global Iteration 2
+[12:42:42] Phase 5 Delay and Skew Optimization
+[12:42:42] Phase 5.1 Delay CleanUp
+[12:42:42] Phase 5.1.1 Update Timing
+[12:43:12] Phase 5.1.2 Update Timing
+[12:43:12] Phase 5.2 Clock Skew Optimization
+[12:43:12] Phase 6 Post Hold Fix
+[12:43:12] Phase 6.1 Hold Fix Iter
+[12:43:12] Phase 6.1.1 Update Timing
+[12:43:42] Phase 7 Leaf Clock Prog Delay Opt
+[12:44:43] Phase 7.1 Delay CleanUp
+[12:44:43] Phase 7.1.1 Update Timing
+[12:45:13] Phase 7.1.2 Update Timing
+[12:45:13] Phase 7.2 Hold Fix Iter
+[12:45:13] Phase 7.2.1 Update Timing
+[12:46:13] Phase 8 Route finalize
+[12:46:13] Phase 9 Verifying routed nets
+[12:46:13] Phase 10 Depositing Routes
+[12:46:43] Phase 11 Post Router Timing
+[12:47:13] Phase 12 Physical Synthesis in Router
+[12:47:13] Phase 12.1 Physical Synthesis Initialization
+[12:47:13] Phase 12.2 Critical Path Optimization
+[12:47:44] Finished 5th of 6 tasks (FPGA routing). Elapsed time: 00h 11m 02s 
+
+[12:47:44] Starting bitstream generation..
+[12:51:15] Creating bitmap...
+[12:52:35] Writing bitstream ./level0_i_ulp_my_rm_partial.bit...
+[12:52:35] Finished 6th of 6 tasks (FPGA bitstream generation). Elapsed time: 00h 04m 50s 
+[12:52:34] Run vpl: Step impl: Completed
+[12:52:35] Run vpl: FINISHED. Run Status: impl Complete!
+INFO: [v++ 60-1441] [12:52:35] Run run_link: Step vpl: Completed
+Time (s): cpu = 00:00:18 ; elapsed = 00:51:45 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 26313 ; free virtual = 31872
+INFO: [v++ 60-1443] [12:52:35] Run run_link: Step rtdgen: Started
+INFO: [v++ 60-1453] Command Line: rtdgen
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [v++ 60-991] clock name 'blp_s_aclk_kernel_ref_clk_00' (clock ID '0') is being mapped to clock name 'DATA_CLK' in the xclbin
+INFO: [v++ 60-991] clock name 'blp_s_aclk_kernel2_ref_clk_00' (clock ID '1') is being mapped to clock name 'KERNEL_CLK' in the xclbin
+INFO: [v++ 60-1230] The compiler selected the following frequencies for the runtime controllable kernel clock(s) and scalable system clock(s): Kernel (DATA) clock: blp_s_aclk_kernel_ref_clk_00 = 292, Kernel (KERNEL) clock: blp_s_aclk_kernel2_ref_clk_00 = 500
+INFO: [v++ 60-1453] Command Line: cf2sw -a /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/address_map.xml -sdsl /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/sdsl.dat -xclbin /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/xclbin_orig.xml -rtd /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd -o /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml
+INFO: [v++ 60-1652] Cf2sw returned exit code: 0
+INFO: [v++ 60-1441] [12:52:37] Run run_link: Step rtdgen: Completed
+Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 26244 ; free virtual = 31827
+INFO: [v++ 60-1443] [12:52:37] Run run_link: Step xclbinutil: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --add-section BITSTREAM:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/partial.bit --force --target hw --key-value SYS:dfx_enable:true --add-section :JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.rtd --append-section :JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/appendSection.rtd --add-section CLOCK_FREQ_TOPOLOGY:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_xml.rtd --add-section BUILD_METADATA:JSON:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_build.rtd --add-section EMBEDDED_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml --add-section SYSTEM_METADATA:RAW:/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json --key-value SYS:PlatformVBNV:xilinx_u2_gen3x4_xdma_gc_2_202110_1 --output /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+XRT Build Version: 2.11.634 (2021.1)
+       Build Date: 2021-06-08 22:10:49
+          Hash ID: 5ad5998d67080f00bca5bf15b3838cf35e0a7b26
+Creating a default 'in-memory' xclbin image.
+
+Section: 'BITSTREAM'(0) was successfully added.
+Size   : 17871092 bytes
+Format : RAW
+File   : '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/partial.bit'
+
+Section: 'MEM_TOPOLOGY'(6) was successfully added.
+Format : JSON
+File   : 'mem_topology'
+
+Section: 'IP_LAYOUT'(8) was successfully added.
+Format : JSON
+File   : 'ip_layout'
+
+Section: 'CONNECTIVITY'(7) was successfully added.
+Format : JSON
+File   : 'connectivity'
+
+Section: 'CLOCK_FREQ_TOPOLOGY'(11) was successfully added.
+Size   : 274 bytes
+Format : JSON
+File   : '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_xml.rtd'
+
+Section: 'BUILD_METADATA'(14) was successfully added.
+Size   : 2640 bytes
+Format : JSON
+File   : '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link_build.rtd'
+
+Section: 'EMBEDDED_METADATA'(2) was successfully added.
+Size   : 3317 bytes
+Format : RAW
+File   : '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/ro.link.xml'
+
+Section: 'SYSTEM_METADATA'(22) was successfully added.
+Size   : 6809 bytes
+Format : RAW
+File   : '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/int/systemDiagramModelSlrBaseAddress.json'
+
+Section: 'PARTITION_METADATA'(20) was successfully appended to.
+Format : JSON
+File   : 'partition_metadata'
+
+Section: 'IP_LAYOUT'(8) was successfully appended to.
+Format : JSON
+File   : 'ip_layout'
+Successfully wrote (17893056 bytes) to the output file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin
+Leaving xclbinutil.
+INFO: [v++ 60-1441] [12:52:38] Run run_link: Step xclbinutil: Completed
+Time (s): cpu = 00:00:00.20 ; elapsed = 00:00:00.44 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 27915 ; free virtual = 33518
+INFO: [v++ 60-1443] [12:52:38] Run run_link: Step xclbinutilinfo: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --quiet --force --info /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.info --input /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [v++ 60-1441] [12:52:38] Run run_link: Step xclbinutilinfo: Completed
+Time (s): cpu = 00:00:00.27 ; elapsed = 00:00:00.30 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 28515 ; free virtual = 34118
+INFO: [v++ 60-1443] [12:52:38] Run run_link: Step generate_sc_driver: Started
+INFO: [v++ 60-1453] Command Line: 
+INFO: [v++ 60-1454] Run Directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/link/run_link
+INFO: [v++ 60-1441] [12:52:38] Run run_link: Step generate_sc_driver: Completed
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1910.840 ; gain = 0.000 ; free physical = 28515 ; free virtual = 34118
+WARNING: [v++ 60-2336] Parameter compiler.enableSlrComputeUnitDrc was set to true, but no SLRs were specified via the command line.
+INFO: [v++ 60-244] Generating system estimate report...
+INFO: [v++ 60-1092] Generated system estimate report: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/system_estimate_ro.link.xtxt
+INFO: [v++ 60-586] Created /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.ltx
+INFO: [v++ 60-586] Created ./build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin
+INFO: [v++ 60-1307] Run completed. Additional information can be found in:
+	Guidance: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/v++_link_ro.link_guidance.html
+	Timing Report: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpt
+	Vivado Log: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link/vivado.log
+	Steps Log File: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/logs/link/link.steps.log
+
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/build_dir.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.link.xclbin.link_summary 
+INFO: [v++ 60-791] Total elapsed time: 0h 52m 17s
+INFO: [v++ 60-1653] Closing dispatch client.

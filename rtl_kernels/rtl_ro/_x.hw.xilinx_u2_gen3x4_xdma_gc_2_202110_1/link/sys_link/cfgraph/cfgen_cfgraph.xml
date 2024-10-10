@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<cf:model cf:cpu="x86" cf:partition="0" cf:prefix="p_0_" cf:name="dr" xd:type="design" xmlns:xd="http://www.xilinx.com/xd" xmlns:cf="http://www.xilinx.com/connections">
+  <cf:block cf:name="hwblk_krnl_ro_rtl">
+    <cf:port cf:name="s_axi_control" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="a" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="b" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="d" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="c" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="length_r" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="ro_in" cf:portType="stream" cf:direction="in"/>
+    <cf:port cf:name="ro_out" cf:portType="stream" cf:direction="in"/>
+  </cf:block>
+  <cf:block cf:name="swblk_krnl_ro_rtl">
+    <cf:port cf:name="s_axi_control" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="a" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="b" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="d" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="c" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="length_r" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="ro_in" cf:portType="stream" cf:direction="out"/>
+    <cf:port cf:name="ro_out" cf:portType="stream" cf:direction="out"/>
+  </cf:block>
+  <cf:comp cf:name="xilinx_u2_gen3x4_xdma_202020_1" xd:componentRef="xilinx_u2_gen3x4_xdma_202020_1" xd:clockId="0"/>
+  <cf:comp cf:name="krnl_ro_rtl_1" xd:componentRef="krnl_ro_rtl" xd:clockId="0"/>
+  <cf:instance cf:name="hwinst_krnl_ro_rtl_1" cf:blockName="hwblk_krnl_ro_rtl" cf:compName="krnl_ro_rtl_1">
+    <cf:portMap cf:blockPort="s_axi_control" cf:compPort="s_axi_control" xd:register="0x0"/>
+    <cf:portMap cf:blockPort="a" cf:compPort="m_axi_gmem" cf:ctrlPort="s_axi_control" xd:register="0x10"/>
+    <cf:portMap cf:blockPort="b" cf:compPort="m_axi_gmem" cf:ctrlPort="s_axi_control" xd:register="0x1c"/>
+    <cf:portMap cf:blockPort="d" cf:compPort="m_axi_gmem" cf:ctrlPort="s_axi_control" xd:register="0x28"/>
+    <cf:portMap cf:blockPort="c" cf:compPort="m_axi_gmem" cf:ctrlPort="s_axi_control" xd:register="0x34"/>
+    <cf:portMap cf:blockPort="length_r" cf:compPort="s_axi_control" xd:register="0x40"/>
+    <cf:portMap cf:blockPort="ro_in" cf:compPort="s_axi_control" xd:register="0x48"/>
+    <cf:portMap cf:blockPort="ro_out" cf:compPort="s_axi_control" xd:register="0x50"/>
+  </cf:instance>
+  <cf:instance cf:name="swinst_krnl_ro_rtl_1" cf:blockName="swblk_krnl_ro_rtl" cf:compName="xilinx_u2_gen3x4_xdma_202020_1">
+    <cf:portMap cf:blockPort="s_axi_control" cf:compPort="slr1/interconnect_axilite_user_M01_AXI"/>
+    <cf:portMap cf:blockPort="a" cf:compPort="axi_interconnect_0_S01_AXI" cf:ctrlPort="slr1/interconnect_axilite_user_M01_AXI" cf:sptag="bank0"/>
+    <cf:portMap cf:blockPort="b" cf:compPort="axi_interconnect_0_S01_AXI" cf:ctrlPort="slr1/interconnect_axilite_user_M01_AXI" cf:sptag="bank0"/>
+    <cf:portMap cf:blockPort="d" cf:compPort="axi_interconnect_0_S01_AXI" cf:ctrlPort="slr1/interconnect_axilite_user_M01_AXI" cf:sptag="bank0"/>
+    <cf:portMap cf:blockPort="c" cf:compPort="axi_interconnect_0_S01_AXI" cf:ctrlPort="slr1/interconnect_axilite_user_M01_AXI" cf:sptag="bank0"/>
+    <cf:portMap cf:blockPort="length_r" cf:compPort="slr1/interconnect_axilite_user_M01_AXI"/>
+    <cf:portMap cf:blockPort="ro_in" cf:compPort="slr1/interconnect_axilite_user_M01_AXI"/>
+    <cf:portMap cf:blockPort="ro_out" cf:compPort="slr1/interconnect_axilite_user_M01_AXI"/>
+  </cf:instance>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="s_axi_control" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="s_axi_control">
+    <cf:dataMover cf:compName="xilinx_u2_gen3x4_xdma_202020_1" cf:softwareLib="axi_lite"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="a" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="a">
+    <cf:dataMover cf:compName="krnl_ro_rtl_1" cf:softwareLib="zero_copy"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="b" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="b">
+    <cf:dataMover cf:compName="krnl_ro_rtl_1" cf:softwareLib="zero_copy"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="d" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="d">
+    <cf:dataMover cf:compName="krnl_ro_rtl_1" cf:softwareLib="zero_copy"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="c" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="c">
+    <cf:dataMover cf:compName="krnl_ro_rtl_1" cf:softwareLib="zero_copy"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="length_r" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="length_r">
+    <cf:dataMover cf:compName="xilinx_u2_gen3x4_xdma_202020_1" cf:softwareLib="axi_lite"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="ro_in" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="ro_in">
+    <cf:dataMover cf:compName="xilinx_u2_gen3x4_xdma_202020_1" cf:softwareLib="axi_lite"/>
+  </cf:connection>
+  <cf:connection cf:srcInst="swinst_krnl_ro_rtl_1" cf:srcPort="ro_out" cf:dstInst="hwinst_krnl_ro_rtl_1" cf:dstPort="ro_out">
+    <cf:dataMover cf:compName="xilinx_u2_gen3x4_xdma_202020_1" cf:softwareLib="axi_lite"/>
+  </cf:connection>
+</cf:model>

@@ -1,0 +1,884 @@
+<: ;#Component and file information :>
+<: set ComponentName [getComponentNameString] :>
+<: setOutputDirectory [ttcl_string_concat $ComponentName "/example_design"] :>
+<: setFileName [ttcl_string_concat $ComponentName "_exdes"] :>
+<: set c_family [getProjectFamily] :>
+<: set enable_async [getBooleanValue "C_ENABLE_ASYNC"] :>
+<: set data_width [get_property PARAM_VALUE.C_ICAP_DWIDTH] :>
+<: set startup [getIntValue "C_INCLUDE_STARTUP"] :>
+<: set shared_startup [getIntValue "C_SHARED_STARTUP"] :>
+<: set fifo_depth [getIntValue "C_WRITE_FIFO_DEPTH"] :>
+<: set icap_ext [getIntValue "C_ICAP_EXTERNAL"] :>
+<: set devi_id [getIntValue "C_DEVICE_ID"] :>
+<: set enable_sg 0 :>
+<: set enable_dre_s2mm 0 :>
+<: set enable_dre_mm2s 0 :>
+<: set data_width_axis 0 :>
+<: set data_width_s2mm 0 :>
+<: set data_width_s2mm_axis 0 :>
+<: set is_mm2s 1 :>
+<: set is_s2mm 1 :>
+<: set is_stsctrl 0 :>
+<: set is_dma 0 :>
+<: set is_cdma 1 :>
+<: set is_mcdma 0 :>
+<: set is_blankout 1 :>
+<: set bl_mm2s 0 :>
+<: set bl_s2mm 0 :>
+<: set wd [ file dirname [ get_property xml_file_name [ current_ipbom ] ] ] :>
+<: setFileExtension ".vhd" :>
+-- (c) Copyright 2009 - 2013 Xilinx, Inc. All rights reserved.
+-- 
+-- This file contains confidential and proprietary information
+-- of Xilinx, Inc. and is protected under U.S. and
+-- international copyright and other intellectual property
+-- laws.
+-- 
+-- DISCLAIMER
+-- This disclaimer is not a license and does not grant any
+-- rights to the materials distributed herewith. Except as
+-- otherwise provided in a valid license issued to you by
+-- Xilinx, and to the maximum extent permitted by applicable
+-- law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+-- WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+-- AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+-- BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+-- INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+-- (2) Xilinx shall not be liable (whether in contract or tort,
+-- including negligence, or under any other theory of
+-- liability) for any loss or damage of any kind or nature
+-- related to, arising under or in connection with these
+-- materials, including for any direct, or any indirect,
+-- special, incidental, or consequential loss or damage
+-- (including loss of data, profits, goodwill, or any type of
+-- loss or damage suffered as a result of any action brought
+-- by a third party) even if such damage or loss was
+-- reasonably foreseeable or Xilinx had been advised of the
+-- possibility of the same.
+-- 
+-- CRITICAL APPLICATIONS
+-- Xilinx products are not designed or intended to be fail-
+-- safe, or for use in any application requiring fail-safe
+-- performance, such as life-support or safety devices or
+-- systems, Class III medical devices, nuclear facilities,
+-- applications related to the deployment of airbags, or any
+-- other applications that could lead to death, personal
+-- injury, or severe property or environmental damage
+-- (individually and collectively, "Critical
+-- Applications"). Customer assumes the sole risk and
+-- liability of any use of Xilinx products in Critical
+-- Applications, subject only to applicable laws and
+-- regulations governing limitations on product liability.
+-- 
+-- THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+-- PART OF THIS FILE AT ALL TIMES.
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_misc.all;
+
+
+library unisim;
+use unisim.vcomponents.all;
+library work;
+
+entity <=:$ComponentName:>_exdes is
+   port (
+         clk_in1_p : in std_logic;
+         clk_in1_n : in std_logic;
+         reset : in std_logic;
+         start : in std_logic;
+         done : out std_logic; 
+         status : out std_logic);
+
+
+end entity;
+
+architecture impl of <=:$ComponentName:>_exdes is
+  attribute DowngradeIPIdentifiedWarnings: string;
+  attribute DowngradeIPIdentifiedWarnings of impl : architecture is "yes";
+
+
+component clock_gen is
+     port (
+           clk_in1_p : in std_logic;
+           clk_in1_n : in std_logic;
+           reset    : in std_logic;
+           locked   : out std_logic;
+           clock_lite : out std_logic;
+           clock : out std_logic
+          );
+
+end component;
+
+component axi_traffic_gen_0 is 
+  port (
+  s_axi_aclk : in std_logic;
+  s_axi_aresetn : in std_logic;
+  m_axi_lite_ch1_awaddr : out std_logic_vector (31 downto 0);
+  m_axi_lite_ch1_awprot : out std_logic_vector (2 downto 0);
+  m_axi_lite_ch1_awvalid : out std_logic;
+  m_axi_lite_ch1_awready : in std_logic;
+  m_axi_lite_ch1_wdata : out std_logic_vector (31 downto 0);
+  m_axi_lite_ch1_wstrb : out std_logic_vector (3 downto 0);
+  m_axi_lite_ch1_wvalid : out std_logic;
+  m_axi_lite_ch1_wready : in std_logic;
+  m_axi_lite_ch1_bresp : in std_logic_vector (1 downto 0);
+  m_axi_lite_ch1_bvalid : in std_logic;
+  m_axi_lite_ch1_bready : out std_logic;
+  m_axi_lite_ch1_araddr : out std_logic_vector (31 downto 0);
+  m_axi_lite_ch1_arvalid : out std_logic;
+  m_axi_lite_ch1_arready : in std_logic;
+  m_axi_lite_ch1_rdata : in std_logic_vector (31 downto 0);
+  m_axi_lite_ch1_rvalid : in std_logic;
+  m_axi_lite_ch1_rready : out std_logic;
+  m_axi_lite_ch1_rresp : in std_logic_vector (1 downto 0);
+<: if {$icap_ext == 1 && $data_width == 32 && $fifo_depth == 64 && $startup == 0} { :>
+  m_axi_lite_ch2_awaddr : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+  m_axi_lite_ch2_awprot : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+  m_axi_lite_ch2_awvalid : OUT STD_LOGIC;
+  m_axi_lite_ch2_awready : IN STD_LOGIC;
+  m_axi_lite_ch2_wdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+  m_axi_lite_ch2_wstrb : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+  m_axi_lite_ch2_wvalid : OUT STD_LOGIC;
+  m_axi_lite_ch2_wready : IN STD_LOGIC;
+  m_axi_lite_ch2_bresp : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+  m_axi_lite_ch2_bvalid : IN STD_LOGIC;
+  m_axi_lite_ch2_bready : OUT STD_LOGIC;
+  m_axi_lite_ch2_araddr : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+  m_axi_lite_ch2_arvalid : OUT STD_LOGIC;
+  m_axi_lite_ch2_arready : IN STD_LOGIC;
+  m_axi_lite_ch2_rdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+  m_axi_lite_ch2_rvalid : IN STD_LOGIC;
+  m_axi_lite_ch2_rresp : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+  m_axi_lite_ch2_rready : OUT STD_LOGIC;
+<: } :>
+  done : out std_logic;
+  status : out std_logic_vector (31 downto 0)
+);
+end component;
+
+
+<: if {!$is_blankout} { :>
+component axi_traffic_gen_v2_0_top is
+generic (
+
+ C_FAMILY                   :string := "virtex7";
+ C_BASEADDR                 :std_logic_vector(31 downto 0) := x"ffffffff" ;
+ C_HIGHADDR                 :std_logic_vector(31 downto 0) := x"00000000" ;
+ C_ZERO_INVALID             :integer := 1              ;
+ C_NO_EXCL                  :integer := 0              ;
+ C_S_AXI_DATA_WIDTH         :integer := 32             ;
+ C_S_AXI_AWUSER_WIDTH       :integer := 8              ;
+ C_S_AXI_ARUSER_WIDTH       :integer := 8              ;
+ C_S_AXI_ID_WIDTH           :integer := 1              ;
+ C_M_AXI_THREAD_ID_WIDTH    :integer := 1              ;
+ C_M_AXI_DATA_WIDTH         :integer := 32             ;
+ C_M_AXI_AWUSER_WIDTH       :integer := 8              ;
+ C_M_AXI_ARUSER_WIDTH       :integer := 8              ;
+ C_AXIS_TDATA_WIDTH         :integer := 32             ;
+ C_AXIS_TUSER_WIDTH         :integer := 8              ;
+ C_AXIS_TID_WIDTH           :integer := 8              ;
+ C_AXIS_TDEST_WIDTH         :integer := 8              ;
+ C_ATG_BASIC_AXI4           :integer := 0              ;
+ C_ATG_STATIC               :integer := 0              ;
+ C_ATG_SYSTEM_INIT          :integer := 0              ;
+ C_ATG_SYSTEM_TEST          :integer := 0              ;
+ C_ATG_STREAMING            :integer := 0              ;
+ C_ATG_STREAMING_MST_ONLY   :integer := 1              ;
+ C_ATG_STREAMING_MST_LPBK   :integer := 0              ;
+ C_ATG_STREAMING_SLV_LPBK   :integer := 0              ;
+ C_ATG_STREAMING_MAX_LEN_BITS:integer := 1              ;
+ C_ATG_SLAVE_ONLY           :integer := 0              ;
+ C_ATG_STATIC_WR_ADDRESS    :std_logic_vector(31 downto 0) := x"12A0_0000"  ;
+ C_ATG_STATIC_RD_ADDRESS    :std_logic_vector(31 downto 0) := x"13A0_0000"  ;
+ C_ATG_STATIC_EN_READ       :integer := 1              ;
+ C_ATG_STATIC_EN_WRITE      :integer := 1              ;
+ C_ATG_STATIC_FREE_RUN      :integer := 1              ;
+ C_ATG_STATIC_LENGTH        :integer := 16             ;
+ C_ATG_SYSTEM_INIT_DATA_MIF :string := "atg_data.mif" ;
+ C_ATG_SYSTEM_INIT_ADDR_MIF :string := "atg_addr.mif" ;
+ C_ATG_SYSTEM_INIT_CTRL_MIF :string := "atg_ctrl.mif" ;
+ C_ATG_SYSTEM_INIT_MASK_MIF :string := "atg_mask.mif" ;
+ C_ATG_MIF_DATA_DEPTH       :integer:= 16             ;
+ C_ATG_MIF_ADDR_BITS        :integer:= 4              ;
+ C_ATG_SYSTEM_CMD_MAX_RETRY :std_logic_vector(31 downto 0) := x"00000064";
+ C_ATG_SYSTEM_TEST_MAX_CLKS :std_logic_vector(31 downto 0) := x"000007D0"; 
+ C_ATG_SYSTEM_MAX_CHANNELS  :std_logic_vector(31 downto 0) := x"00000001";
+ C_ATG_SYSTEM_CH1_LOW       :std_logic_vector(31 downto 0) := x"0000_0000";
+ C_ATG_SYSTEM_CH1_HIGH      :std_logic_vector(31 downto 0) := x"FFFF_FFFF";
+ C_ATG_SYSTEM_CH2_LOW       :std_logic_vector(31 downto 0) := x"0000_0100";
+ C_ATG_SYSTEM_CH2_HIGH      :std_logic_vector(31 downto 0) := x"0000_01FF";
+ C_ATG_SYSTEM_CH3_LOW       :std_logic_vector(31 downto 0) := x"0000_0200";
+ C_ATG_SYSTEM_CH3_HIGH      :std_logic_vector(31 downto 0) := x"0000_02FF";
+ C_ATG_SYSTEM_CH4_LOW       :std_logic_vector(31 downto 0) := x"0000_0300";
+ C_ATG_SYSTEM_CH4_HIGH      :std_logic_vector(31 downto 0) := x"0000_03FF";
+ C_ATG_SYSTEM_CH5_LOW       :std_logic_vector(31 downto 0) := x"0000_0400";
+ C_ATG_SYSTEM_CH5_HIGH      :std_logic_vector(31 downto 0) := x"0000_04FF";
+ C_RAMINIT_CMDRAM0_F        :string :=  "NONE"         ; 
+ C_RAMINIT_CMDRAM1_F        :string :=  "NONE"         ; 
+ C_RAMINIT_CMDRAM2_F        :string :=  "NONE"         ; 
+ C_RAMINIT_CMDRAM3_F        :string :=  "NONE"         ; 
+ C_RAMINIT_SRAM0_F          :string :=  "NONE"         ; 
+ C_RAMINIT_PARAMRAM0_F      :string :=  "NONE" 
+
+); 
+ port (
+ s_axi_aclk           : in std_logic ;
+ s_axi_aresetn        :  in std_logic;
+
+ s_axi_awid           :  in std_logic_vector (C_S_AXI_ID_WIDTH-1 downto 0);
+ s_axi_awaddr         :  in std_logic_vector (31 downto 0);
+ s_axi_awlen          :   in std_logic_vector (7 downto 0);
+ s_axi_awsize         :   in std_logic_vector (2 downto 0);
+ s_axi_awburst        :  in std_logic_vector (1 downto 0);
+ s_axi_awlock         :  in std_logic_vector (0 downto 0);
+ s_axi_awcache        :  in std_logic_vector (3 downto 0);
+ s_axi_awprot         :  in std_logic_vector (2 downto 0);
+ s_axi_awqos          :  in std_logic_vector (3 downto 0);
+ s_axi_awuser         :  in std_logic_vector (C_S_AXI_AWUSER_WIDTH-1 downto 0);
+ s_axi_awvalid        :  in std_logic; 
+ s_axi_awready        :  out std_logic;
+ s_axi_wlast          :  in std_logic;                                                
+ s_axi_wdata          :  in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);         
+ s_axi_wstrb          :  in std_logic_vector (C_S_AXI_DATA_WIDTH/8-1 downto 0);       
+ s_axi_wvalid         :  in std_logic;                                                
+ s_axi_wready         :  out std_logic;                                              
+ s_axi_bid            :  out std_logic_vector (C_S_AXI_ID_WIDTH-1 downto 0);         
+ s_axi_bresp          :  out std_logic_vector (1 downto 0);
+ s_axi_bvalid         :  out std_logic;
+ s_axi_bready         :  in std_logic;          
+
+ s_axi_arid           :  in std_logic_vector (C_S_AXI_ID_WIDTH-1 downto 0);         
+ s_axi_araddr         :  in std_logic_vector (31 downto 0);                                
+ s_axi_arlen          :  in std_logic_vector (7 downto 0);                                 
+ s_axi_arsize         :  in std_logic_vector (2 downto 0);                                 
+ s_axi_arburst        :  in std_logic_vector (1 downto 0);                                 
+ s_axi_arlock         :  in std_logic_vector (0 downto 0);                                 
+ s_axi_arcache        :  in std_logic_vector (3 downto 0);                                 
+ s_axi_arprot         :  in std_logic_vector (2 downto 0);                                 
+ s_axi_arqos          :  in std_logic_vector (3 downto 0);                                 
+ s_axi_aruser         :  in std_logic_vector (C_M_AXI_ARUSER_WIDTH-1 downto 0);            
+ s_axi_arvalid        :  in std_logic;                                                    
+ s_axi_arready        :  out std_logic;                                                     
+ s_axi_rid            :  out std_logic_vector (C_S_AXI_ID_WIDTH-1 downto 0);         
+ s_axi_rlast          :  out std_logic;
+ s_axi_rdata          :  out std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
+ s_axi_rresp          :  out std_logic_vector (1 downto 0);
+ s_axi_rvalid         :  out std_logic;
+ s_axi_rready         :  in std_logic;
+
+
+
+ m_axi_awid           :  out std_logic_vector (C_M_AXI_THREAD_ID_WIDTH-1 downto 0);
+ m_axi_awaddr         :  out std_logic_vector (31 downto 0);
+ m_axi_awlen          :  out std_logic_vector (7 downto 0);
+ m_axi_awsize         :  out std_logic_vector (2 downto 0);
+ m_axi_awburst        :  out std_logic_vector (1 downto 0);
+ m_axi_awlock         :  out std_logic_vector (0 downto 0);
+ m_axi_awcache        :  out std_logic_vector (3 downto 0);
+ m_axi_awprot         :  out std_logic_vector (2 downto 0);
+ m_axi_awqos          :  out std_logic_vector (3 downto 0);
+ m_axi_awuser         :  out std_logic_vector (C_M_AXI_AWUSER_WIDTH-1 downto 0);
+ m_axi_awvalid        :  out std_logic;
+ m_axi_awready        :  in std_logic;
+ m_axi_wlast          :  out std_logic;
+ m_axi_wdata          :  out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_wstrb          :  out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_wvalid         :  out std_logic;
+ m_axi_wready         :  in std_logic;
+ m_axi_bid            :  in std_logic_vector (C_M_AXI_THREAD_ID_WIDTH-1 downto 0);
+ m_axi_bresp          :  in std_logic_vector (1 downto 0);                   
+ m_axi_bvalid         :  in std_logic;
+ m_axi_bready         :  out std_logic;
+
+ m_axi_arid           :  out std_logic_vector (C_M_AXI_THREAD_ID_WIDTH-1 downto 0);
+ m_axi_araddr         :  out std_logic_vector (31 downto 0);
+ m_axi_arlen          :  out std_logic_vector (7 downto 0);
+ m_axi_arsize         :  out std_logic_vector (2 downto 0);
+ m_axi_arburst        :  out std_logic_vector (1 downto 0);
+ m_axi_arlock         :  out std_logic_vector (0 downto 0);
+ m_axi_arcache        :  out std_logic_vector (3 downto 0);
+ m_axi_arprot         :  out std_logic_vector (2 downto 0);
+ m_axi_arqos          :  out std_logic_vector (3 downto 0);
+ m_axi_aruser         :  out std_logic_vector (C_M_AXI_ARUSER_WIDTH-1 downto 0);
+ m_axi_arvalid        :  out std_logic;
+ m_axi_arready        :  in std_logic;
+ m_axi_rid            :  in std_logic_vector (C_M_AXI_THREAD_ID_WIDTH-1 downto 0);
+ m_axi_rlast          :  in std_logic;
+ m_axi_rdata          :  in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_rresp          :  in std_logic_vector (1 downto 0);
+ m_axi_rvalid         :  in std_logic;
+ m_axi_rready         :  out std_logic;
+ 
+ m_axis_1_tready      :  in std_logic;
+ m_axis_1_tvalid      :  out std_logic;
+ m_axis_1_tlast       :  out std_logic;
+ m_axis_1_tdata       :  out std_logic_vector (C_AXIS_TDATA_WIDTH-1 downto 0);
+ m_axis_1_tstrb       :  out std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ m_axis_1_tkeep       :  out std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ m_axis_1_tuser       :  out std_logic_vector (C_AXIS_TUSER_WIDTH-1 downto 0);
+ m_axis_1_tid         :  out std_logic_vector (C_AXIS_TID_WIDTH-1 downto 0);
+ m_axis_1_tdest       :  out std_logic_vector (C_AXIS_TDEST_WIDTH-1 downto 0);
+ s_axis_1_tready      :  out std_logic;
+ s_axis_1_tvalid      :  in std_logic;
+ s_axis_1_tlast       :  in std_logic;
+ s_axis_1_tdata       :  in std_logic_vector (C_AXIS_TDATA_WIDTH-1 downto 0);
+ s_axis_1_tstrb       :  in std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ s_axis_1_tkeep       :  in std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ s_axis_1_tuser       :  in std_logic_vector (C_AXIS_TUSER_WIDTH-1 downto 0);
+ s_axis_1_tid         :  in std_logic_vector (C_AXIS_TID_WIDTH-1 downto 0);
+ s_axis_1_tdest       :  in std_logic_vector (C_AXIS_TDEST_WIDTH-1 downto 0);
+ axis1_err_counter    :  out std_logic_vector (15 downto 0);
+ 
+ s_axis_2_tready      :  out std_logic;
+ s_axis_2_tvalid      :  in std_logic;
+ s_axis_2_tlast       :  in std_logic;
+ s_axis_2_tdata       :  in std_logic_vector (C_AXIS_TDATA_WIDTH-1 downto 0);
+ s_axis_2_tstrb       :  in std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ s_axis_2_tkeep       :  in std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ s_axis_2_tuser       :  in std_logic_vector (C_AXIS_TUSER_WIDTH-1 downto 0);
+ s_axis_2_tid         :  in std_logic_vector (C_AXIS_TID_WIDTH-1 downto 0);
+ s_axis_2_tdest       :  in std_logic_vector (C_AXIS_TDEST_WIDTH-1 downto 0);
+ 
+ m_axis_2_tready      :  in std_logic;
+ m_axis_2_tvalid      :  out std_logic;
+ m_axis_2_tlast       :  out std_logic;
+ m_axis_2_tdata       :  out std_logic_vector (C_AXIS_TDATA_WIDTH-1 downto 0);
+ m_axis_2_tstrb       :  out std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ m_axis_2_tkeep       :  out std_logic_vector ((C_AXIS_TDATA_WIDTH/8)-1 downto 0);
+ m_axis_2_tuser       :  out std_logic_vector (C_AXIS_TUSER_WIDTH-1 downto 0);
+ m_axis_2_tid         :  out std_logic_vector (C_AXIS_TID_WIDTH-1 downto 0);
+ m_axis_2_tdest       :  out std_logic_vector (C_AXIS_TDEST_WIDTH-1 downto 0);
+ 
+ 
+ irq_out              :  out std_logic;
+ err_out              :  out std_logic;
+
+ 
+ m_axi_lite_ch1_awaddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch1_awprot   :   out std_logic_vector (2 downto 0);
+ m_axi_lite_ch1_awvalid  :   out std_logic;
+ m_axi_lite_ch1_awready  :   in std_logic;
+ m_axi_lite_ch1_wdata    :   out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch1_wstrb    :   out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_lite_ch1_wvalid   :   out std_logic;
+ m_axi_lite_ch1_wready   :   in std_logic;
+ m_axi_lite_ch1_bresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch1_bvalid   :   in std_logic;
+ m_axi_lite_ch1_bready   :   out std_logic;
+ m_axi_lite_ch1_araddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch1_arvalid  :   out std_logic;
+ m_axi_lite_ch1_arready  :   in std_logic;
+ m_axi_lite_ch1_rdata    :   in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch1_rvalid   :   in std_logic;
+ m_axi_lite_ch1_rresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch1_rready   :   out std_logic;
+ m_axi_lite_ch2_awaddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch2_awprot   :   out std_logic_vector (2 downto 0);
+ m_axi_lite_ch2_awvalid  :   out std_logic;
+ m_axi_lite_ch2_awready  :   in std_logic;
+ m_axi_lite_ch2_wdata    :   out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch2_wstrb    :   out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_lite_ch2_wvalid   :   out std_logic;
+ m_axi_lite_ch2_wready   :   in std_logic;
+ m_axi_lite_ch2_bresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch2_bvalid   :   in std_logic;
+ m_axi_lite_ch2_bready   :   out std_logic;
+ m_axi_lite_ch2_araddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch2_arvalid  :   out std_logic;
+ m_axi_lite_ch2_arready  :   in std_logic;
+ m_axi_lite_ch2_rdata    :   in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch2_rvalid   :   in std_logic;
+ m_axi_lite_ch2_rresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch2_rready   :   out std_logic;
+ m_axi_lite_ch3_awaddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch3_awprot   :   out std_logic_vector (2 downto 0);
+ m_axi_lite_ch3_awvalid  :   out std_logic;
+ m_axi_lite_ch3_awready  :   in std_logic;
+ m_axi_lite_ch3_wdata    :   out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch3_wstrb    :   out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_lite_ch3_wvalid   :   out std_logic;
+ m_axi_lite_ch3_wready   :   in std_logic;
+ m_axi_lite_ch3_bresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch3_bvalid   :   in std_logic;
+ m_axi_lite_ch3_bready   :   out std_logic;
+ m_axi_lite_ch3_araddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch3_arvalid  :   out std_logic;
+ m_axi_lite_ch3_arready  :   in std_logic;
+ m_axi_lite_ch3_rdata    :   in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch3_rvalid   :   in std_logic;
+ m_axi_lite_ch3_rresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch3_rready   :   out std_logic;
+ m_axi_lite_ch4_awaddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch4_awprot   :   out std_logic_vector (2 downto 0);
+ m_axi_lite_ch4_awvalid  :   out std_logic;
+ m_axi_lite_ch4_awready  :   in std_logic;
+ m_axi_lite_ch4_wdata    :   out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch4_wstrb    :   out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_lite_ch4_wvalid   :   out std_logic;
+ m_axi_lite_ch4_wready   :   in std_logic;
+ m_axi_lite_ch4_bresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch4_bvalid   :   in std_logic;
+ m_axi_lite_ch4_bready   :   out std_logic;
+ m_axi_lite_ch4_araddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch4_arvalid  :   out std_logic;
+ m_axi_lite_ch4_arready  :   in std_logic;
+ m_axi_lite_ch4_rdata    :   in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch4_rvalid   :   in std_logic;
+ m_axi_lite_ch4_rresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch4_rready   :   out std_logic;
+ m_axi_lite_ch5_awaddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch5_awprot   :   out std_logic_vector (2 downto 0);
+ m_axi_lite_ch5_awvalid  :   out std_logic;
+ m_axi_lite_ch5_awready  :   in std_logic;
+ m_axi_lite_ch5_wdata    :   out std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch5_wstrb    :   out std_logic_vector (C_M_AXI_DATA_WIDTH/8-1 downto 0);
+ m_axi_lite_ch5_wvalid   :   out std_logic;
+ m_axi_lite_ch5_wready   :   in std_logic;
+ m_axi_lite_ch5_bresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch5_bvalid   :   in std_logic;
+ m_axi_lite_ch5_bready   :   out std_logic;
+ m_axi_lite_ch5_araddr   :   out std_logic_vector (31 downto 0);
+ m_axi_lite_ch5_arvalid  :   out std_logic;
+ m_axi_lite_ch5_arready  :   in std_logic;
+ m_axi_lite_ch5_rdata    :   in std_logic_vector (C_M_AXI_DATA_WIDTH-1 downto 0);
+ m_axi_lite_ch5_rvalid   :   in std_logic;
+ m_axi_lite_ch5_rresp    :   in std_logic_vector (1 downto 0);
+ m_axi_lite_ch5_rready   :   out std_logic;
+ done                    :   out std_logic;
+ status                  :   out std_logic_vector (31 downto 0)                 
+);
+end component;
+<: } :>
+
+COMPONENT <=:$ComponentName:> is
+  PORT (
+    icap_clk : IN STD_LOGIC;
+    eos_in : IN STD_LOGIC;
+    s_axi_aclk : IN STD_LOGIC;
+    s_axi_aresetn : IN STD_LOGIC;
+    s_axi_awaddr : IN STD_LOGIC_VECTOR(8 DOWNTO 0);
+    s_axi_awvalid : IN STD_LOGIC;
+    s_axi_awready : OUT STD_LOGIC;
+    s_axi_wdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    s_axi_wstrb : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+    s_axi_wvalid : IN STD_LOGIC;
+    s_axi_wready : OUT STD_LOGIC;
+    s_axi_bresp : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+    s_axi_bvalid : OUT STD_LOGIC;
+    s_axi_bready : IN STD_LOGIC;
+    s_axi_araddr : IN STD_LOGIC_VECTOR(8 DOWNTO 0);
+    s_axi_arvalid : IN STD_LOGIC;
+    s_axi_arready : OUT STD_LOGIC;
+    s_axi_rdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    s_axi_rresp : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+<: if {$startup == 1 && $shared_startup == 1} { :>	
+    clk : IN STD_LOGIC;
+<: } :>
+    s_axi_rvalid : OUT STD_LOGIC;
+    s_axi_rready : IN STD_LOGIC;
+<: if {$icap_ext == 1} { :>
+    icap_csib : OUT STD_LOGIC;
+    icap_rdwrb : OUT STD_LOGIC;
+    cap_req : OUT STD_LOGIC;
+    icap_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    icap_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    cap_gnt : IN STD_LOGIC;
+    cap_rel : IN STD_LOGIC;
+<: if {$uc_family == 1} { :>
+    icap_avail  : IN STD_LOGIC;
+<: } :>
+<: } :>
+    ip2intc_irpt : OUT STD_LOGIC
+  );
+END COMPONENT;
+<: if {$icap_ext == 1} { :>
+
+COMPONENT <=: $ComponentName :>_arbiter is
+  PORT (
+    icap_clk : in std_logic;                                                     
+  resetn : in std_logic;                                                        
+  cap_req : in std_logic_vector(1 downto 0);                
+  cap_rel : out std_logic_vector(1 downto 0);               
+  cap_gnt : out std_logic_vector(1 downto 0);               
+  cap_avail : out std_logic;             
+  icap_i_0                 : out  std_logic_vector(31 downto 0);               
+  icap_i_1                 : out  std_logic_vector(31 downto 0);               
+  icap_o_0                 : in std_logic_vector(31 downto 0);                 
+  icap_o_1                 : in std_logic_vector(31 downto 0);                 
+  icap_csib                : in std_logic_vector(1 downto 0);
+  icap_rdwrb               : in std_logic_vector(1 downto 0)
+  );
+END COMPONENT;
+<: } :>
+
+
+signal    m_axi_lite_awready          :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_awvalid          :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_awaddr           :  std_logic_vector (31 downto 0);-- AXI4-Lite
+signal    m_axi_lite_wready           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_wvalid           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_wdata            :  std_logic_vector (31 downto 0);-- AXI4-Lite
+signal    m_axi_lite_bready           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_bvalid           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_bresp            :  std_logic_vector(1 downto 0)      ;-- AXI4-Lite
+signal    s_axi_lite_arready          :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_arvalid          :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_araddr           :  std_logic_vector (31 downto 0);-- AXI4-Lite
+signal    s_axi_lite_rready           :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_rvalid           :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_rdata            :  std_logic_vector (31 downto 0);-- AXI4-Lite
+signal    s_axi_lite_rresp            :  std_logic_vector(1 downto 0)      ;-- AXI4-Lite
+<: if {$icap_ext == 1 && $data_width == 32 && $fifo_depth == 64 && $startup == 0} { :>
+signal    m_axi_lite_ch2_awready          :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_awvalid          :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_awaddr           :  std_logic_vector (31 downto 0);-- AXI4-Lite    
+signal    m_axi_lite_ch2_wready           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_wvalid           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_wdata            :  std_logic_vector (31 downto 0);-- AXI4-Lite    
+signal    m_axi_lite_ch2_bready           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_bvalid           :  std_logic                         ;-- AXI4-Lite
+signal    m_axi_lite_ch2_bresp            :  std_logic_vector(1 downto 0)      ;-- AXI4-Lite
+signal    s_axi_lite_ch2_arready          :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_ch2_arvalid          :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_ch2_araddr           :  std_logic_vector (31 downto 0);-- AXI4-Lite    
+signal    s_axi_lite_ch2_rready           :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_ch2_rvalid           :  std_logic                         ;-- AXI4-Lite
+signal    s_axi_lite_ch2_rdata            :  std_logic_vector (31 downto 0);-- AXI4-Lite    
+signal    s_axi_lite_ch2_rresp            :  std_logic_vector(1 downto 0)      ;-- AXI4-Lite
+<: } :>
+  signal clock_lite : std_logic;
+  signal clock : std_logic;
+  signal locked : std_logic;
+  signal locked_d1 : std_logic;
+  signal reset_lock : std_logic;
+  signal kick_off_d1 : std_logic;
+  signal kick_off_full : std_logic;
+  signal kick_off_full_d2 : std_logic;
+  signal kick_off_full_d1_tig_cdc : std_logic;
+  signal reset_lock_full : std_logic;
+  signal reset_lock_full_d2 : std_logic;
+  signal reset_lock_full_d1_tig_cdc : std_logic;
+<: if {$enable_async} { :>
+  ATTRIBUTE async_reg                      	: STRING;
+  ATTRIBUTE async_reg OF kick_off_full_d1_tig_cdc  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF kick_off_full_d2          : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF kick_off_full             : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF reset_lock_full_d1_tig_cdc  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF reset_lock_full_d2          : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF reset_lock_full             : SIGNAL IS "true"; 
+<: } :>
+
+
+
+---
+signal awlen : std_logic_vector (7 downto 0);
+signal awvalid : std_logic;
+signal init_done : std_logic; 
+signal counter : unsigned (27 downto 0);
+signal counter_sig : std_logic_vector (27 downto 0);
+signal wvalid : std_logic;
+signal kick_off : std_logic;
+---
+
+signal pass : std_logic;
+signal fail : std_logic;
+signal cdma_intr : std_logic;
+signal done_int : std_logic;
+signal atg_done : std_logic;
+signal atg_status : std_logic_vector (31 downto 0);
+signal one_vcc : std_logic;
+signal four_vcc : std_logic_vector (3 downto 0);
+<: if {$icap_ext == 1} { :>
+signal icap_i_int_0        : std_logic_vector(31 downto 0);  
+signal icap_i_int_1        : std_logic_vector(31 downto 0);  
+signal icap_o_int_0        : std_logic_vector(31 downto 0);
+signal icap_o_int_1        : std_logic_vector(31 downto 0);--:= (others => '0');
+signal icap_csib_int     : std_logic_vector(1 downto 0);
+signal icap_rdwrb_int    : std_logic_vector(1 downto 0);
+signal cap_req_int : std_logic_vector(1 downto 0);
+signal cap_rel_int :  std_logic_vector(1 downto 0); 
+signal cap_gnt_int :  std_logic_vector(1 downto 0);
+<: if {$uc_family == 1} { :>
+
+signal icap_avail_int  : std_logic;
+
+<: } :>
+<: } :>
+
+begin
+<: if {$icap_ext == 1 && $data_width == 32 && $fifo_depth == 64 && $startup == 0} { :>
+<: } else { :>
+<: if {$icap_ext == 1} { :>
+icap_csib_int(1) <= '1';
+icap_rdwrb_int(1) <= '0';
+cap_req_int(1) <= '0';
+<: } :>
+<: } :>
+
+one_vcc <= '1';
+four_vcc <= "1111";
+
+CLOCK_GEN_INST : clock_gen 
+         port map (
+           clk_in1_p => clk_in1_p,
+           clk_in1_n => clk_in1_n,
+           reset    => reset,
+           locked   => locked,  
+           clock_lite => clock_lite,
+           clock => clock);      
+
+reset_lock <= locked;
+
+
+process (clock_lite)
+begin
+   if (clock_lite'event and clock_lite = '1') then
+         locked_d1 <= locked;
+   end if;
+end process;
+
+process (clock_lite)
+begin
+   if (clock_lite'event and clock_lite = '1') then
+         kick_off_d1 <= kick_off;
+   end if;
+end process;
+
+<: if {$enable_async} { :>
+process (clock)
+begin
+   if (clock'event and clock = '1') then
+         kick_off_full_d1_tig_cdc <= kick_off_d1;
+         kick_off_full_d2         <= kick_off_full_d1_tig_cdc;
+         kick_off_full            <= kick_off_full_d2;
+   end if;
+end process;
+<: } :>
+
+
+
+<: if {$enable_async} { :>
+process (clock)
+begin
+   if (clock'event and clock = '1') then
+         reset_lock_full_d1_tig_cdc <= locked_d1;
+         reset_lock_full_d2         <= reset_lock_full_d1_tig_cdc;
+         reset_lock_full            <= reset_lock_full_d2;
+   end if;
+end process;
+<: } :>
+
+
+ATG1:  axi_traffic_gen_0 
+   port map (
+<: if {$enable_async} { :>
+    s_axi_aclk         => clock,
+    s_axi_aresetn      => kick_off_full,
+<: } else { :>
+    s_axi_aclk         => clock_lite,
+    s_axi_aresetn      => kick_off,
+<: } :>
+    m_axi_lite_ch1_awaddr   => m_axi_lite_awaddr,
+    m_axi_lite_ch1_awprot   => open,
+    m_axi_lite_ch1_awvalid  => m_axi_lite_awvalid,
+    m_axi_lite_ch1_awready  => m_axi_lite_awready,
+    m_axi_lite_ch1_wdata    => m_axi_lite_wdata,
+    m_axi_lite_ch1_wstrb    => open,
+    m_axi_lite_ch1_wvalid   => m_axi_lite_wvalid,
+    m_axi_lite_ch1_wready   => m_axi_lite_wready,
+    m_axi_lite_ch1_bresp    => m_axi_lite_bresp,
+    m_axi_lite_ch1_bvalid   => m_axi_lite_bvalid,
+    m_axi_lite_ch1_bready   => m_axi_lite_bready,
+    m_axi_lite_ch1_araddr   => s_axi_lite_araddr,
+    m_axi_lite_ch1_arvalid  => s_axi_lite_arvalid,
+    m_axi_lite_ch1_arready  => s_axi_lite_arready,
+    m_axi_lite_ch1_rdata    => s_axi_lite_rdata,
+    m_axi_lite_ch1_rvalid   => s_axi_lite_rvalid,
+    m_axi_lite_ch1_rready   => s_axi_lite_rready,
+    m_axi_lite_ch1_rresp    => s_axi_lite_rresp,
+<: if {$icap_ext == 1 && $data_width == 32 && $fifo_depth == 64 && $startup == 0} { :>
+    m_axi_lite_ch2_awaddr   => m_axi_lite_ch2_awaddr,
+    m_axi_lite_ch2_awprot   => open,
+    m_axi_lite_ch2_awvalid  => m_axi_lite_ch2_awvalid,
+    m_axi_lite_ch2_awready  => m_axi_lite_ch2_awready,
+    m_axi_lite_ch2_wdata    => m_axi_lite_ch2_wdata,
+    m_axi_lite_ch2_wstrb    => open,
+    m_axi_lite_ch2_wvalid   => m_axi_lite_ch2_wvalid,
+    m_axi_lite_ch2_wready   => m_axi_lite_ch2_wready,
+    m_axi_lite_ch2_bresp    => m_axi_lite_ch2_bresp,
+    m_axi_lite_ch2_bvalid   => m_axi_lite_ch2_bvalid,
+    m_axi_lite_ch2_bready   => m_axi_lite_ch2_bready,
+    m_axi_lite_ch2_araddr   => s_axi_lite_ch2_araddr,
+    m_axi_lite_ch2_arvalid  => s_axi_lite_ch2_arvalid,
+    m_axi_lite_ch2_arready  => s_axi_lite_ch2_arready,
+    m_axi_lite_ch2_rdata    => s_axi_lite_ch2_rdata,
+    m_axi_lite_ch2_rvalid   => s_axi_lite_ch2_rvalid,
+    m_axi_lite_ch2_rready   => s_axi_lite_ch2_rready,
+    m_axi_lite_ch2_rresp    => s_axi_lite_ch2_rresp,
+<: } :>
+    done                    => atg_done,
+    status                  => atg_status 
+  );
+<: if {$icap_ext == 1} { :>
+ARBITER : <=: $ComponentName :>_arbiter
+    PORT MAP (
+    icap_clk     => clock_lite,       
+    resetn       => reset_lock,
+    cap_req      => cap_req_int,  
+    cap_rel      => cap_rel_int,  
+    cap_gnt      => cap_gnt_int,  
+    icap_i_0     => icap_i_int_0,  
+    icap_i_1     => icap_i_int_1,  
+    icap_o_0     => icap_o_int_0,  
+    icap_o_1     => icap_o_int_1,  
+    icap_rdwrb   => icap_rdwrb_int,  
+    icap_csib    => icap_csib_int,  
+<: if {$uc_family == 1} { :>
+    cap_avail   => icap_avail_int
+<: } else { :>
+    cap_avail   => open
+<: } :>
+    );
+<: if {$data_width == 32 && $fifo_depth == 64 && $startup == 0} { :>
+
+DUT_PARTNER : <=: $ComponentName :>
+            PORT MAP (
+            ip2intc_irpt     => open,       
+            icap_clk         => clock_lite,
+            eos_in           => kick_off,  
+        <: if {$enable_async} { :>
+            s_axi_aclk       => clock,
+            s_axi_aresetn    => reset_lock_full,
+        <: } else { :>
+            s_axi_aclk       => clock_lite,
+            s_axi_aresetn    => reset_lock,
+        <: } :>
+            s_axi_awaddr     => m_axi_lite_ch2_awaddr (8 downto 0),
+            s_axi_awvalid    => m_axi_lite_ch2_awvalid,
+            s_axi_awready    => m_axi_lite_ch2_awready,
+            s_axi_wdata      => m_axi_lite_ch2_wdata,
+            s_axi_wstrb      => four_vcc,
+            s_axi_wvalid     => m_axi_lite_ch2_wvalid,
+            s_axi_wready     => m_axi_lite_ch2_wready,
+            s_axi_bresp      => m_axi_lite_ch2_bresp,
+            s_axi_bvalid     => m_axi_lite_ch2_bvalid,
+            s_axi_bready     => m_axi_lite_ch2_bready,
+            s_axi_araddr     => s_axi_lite_ch2_araddr (8 downto 0),
+            s_axi_arvalid    => s_axi_lite_ch2_arvalid,
+            s_axi_arready    => s_axi_lite_ch2_arready,
+            s_axi_rdata      => s_axi_lite_ch2_rdata,
+            s_axi_rresp      => s_axi_lite_ch2_rresp,
+            s_axi_rvalid     => s_axi_lite_ch2_rvalid,
+            cap_req           => cap_req_int(1),  
+            cap_rel           => cap_rel_int(1),  
+            cap_gnt           => cap_gnt_int(1),  
+            icap_i            => icap_i_int_1,  
+            icap_o            => icap_o_int_1,  
+            icap_rdwrb        => icap_rdwrb_int(1),  
+            icap_csib         => icap_csib_int(1),  
+         <: if {$uc_family == 1} { :>
+             icap_avail       => icap_avail_int,
+         <: } :>
+         <: if {$startup == 1 && $shared_startup == 1} { :>	
+             clk              => clock, 
+         <: } :>
+            s_axi_rready     => s_axi_lite_ch2_rready
+            );
+
+<: } :>
+<: } :>
+
+DUT : <=: $ComponentName :>
+    PORT MAP (
+    ip2intc_irpt     => open,       
+    icap_clk         => clock_lite,
+    eos_in           => kick_off,  
+<: if {$enable_async} { :>
+    s_axi_aclk       => clock,
+    s_axi_aresetn    => reset_lock_full,
+<: } else { :>
+    s_axi_aclk       => clock_lite,
+    s_axi_aresetn    => reset_lock,
+<: } :>
+    s_axi_awaddr     => m_axi_lite_awaddr (8 downto 0),
+    s_axi_awvalid    => m_axi_lite_awvalid,
+    s_axi_awready    => m_axi_lite_awready,
+    s_axi_wdata      => m_axi_lite_wdata,
+    s_axi_wstrb      => four_vcc,
+    s_axi_wvalid     => m_axi_lite_wvalid,
+    s_axi_wready     => m_axi_lite_wready,
+    s_axi_bresp      => m_axi_lite_bresp,
+    s_axi_bvalid     => m_axi_lite_bvalid,
+    s_axi_bready     => m_axi_lite_bready,
+    s_axi_araddr     => s_axi_lite_araddr (8 downto 0),
+    s_axi_arvalid    => s_axi_lite_arvalid,
+    s_axi_arready    => s_axi_lite_arready,
+    s_axi_rdata      => s_axi_lite_rdata,
+    s_axi_rresp      => s_axi_lite_rresp,
+    s_axi_rvalid     => s_axi_lite_rvalid,
+<: if {$icap_ext == 1} { :>
+    cap_req           => cap_req_int(0),  
+    cap_rel           => cap_rel_int(0),  
+    cap_gnt           => cap_gnt_int(0),  
+    icap_i            => icap_i_int_0,  
+    icap_o            => icap_o_int_0,  
+    icap_rdwrb        => icap_rdwrb_int(0),  
+    icap_csib         => icap_csib_int(0),  
+<: if {$uc_family == 1} { :>
+    icap_avail       => icap_avail_int,
+<: } :>
+<: } :>
+<: if {$startup == 1 && $shared_startup == 1} { :>	
+    clk              => clock, 
+<: } :>
+    s_axi_rready     => s_axi_lite_rready
+    );
+
+ 
+
+<: if {$enable_async} { :>
+process (clock)
+begin
+    if (clock'event and clock = '1') then
+<: } else { :>
+process (clock_lite)
+begin
+    if (clock_lite'event and clock_lite = '1') then
+<: } :>
+        if (reset_lock = '0') then
+            done <= '0';
+        else
+            done <= atg_done;
+        end if;
+    end if;
+end process;
+
+status <= '1' when (atg_done = '1' and atg_status(1 downto 0) = "01") else '0';
+
+-- Following delay is needed to ensure that ICAPE2 is ready for use on FPGA
+-- after programming is completed
+-- In this case th exdes will run when counter reaches 3FFFFFF
+-- This has been disabled due to long simulation times
+process (clock_lite)
+begin
+    if (clock_lite'event and clock_lite = '1') then
+       if (reset_lock = '0') then
+          counter <= (others => '0');
+-- Please replace the x"0000002" with x"3FFFFFF" or more when trying to run it on FPGA
+       elsif (counter_sig < x"0000002") then
+          counter <= counter + 1;
+       end if;
+    end if;
+end process;
+
+counter_sig <= std_logic_vector (counter);
+
+-- Please replace the x"0000002" with x"3FFFFFF" or more when trying to run it on FPGA
+kick_off <= '1' when counter_sig = x"0000002" else '0';
+
+end impl;
+

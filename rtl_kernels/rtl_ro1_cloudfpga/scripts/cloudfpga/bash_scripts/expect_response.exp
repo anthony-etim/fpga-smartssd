@@ -1,0 +1,5 @@
+#!/usr/bin/expect
+spawn xbutil reset --device 0000:04:00.1
+expect "Are you sure you wish to proceed?"
+send -- "Y\r"
+expect eof

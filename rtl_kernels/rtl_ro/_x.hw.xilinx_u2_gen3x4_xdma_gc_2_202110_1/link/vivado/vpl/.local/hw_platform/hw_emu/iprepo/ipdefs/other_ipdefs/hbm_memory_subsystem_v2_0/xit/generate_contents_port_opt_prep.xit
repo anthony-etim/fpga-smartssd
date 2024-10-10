@@ -1,0 +1,221 @@
+###############################################################################
+##
+## (c) Copyright 2012-2013 Xilinx, Inc. All rights reserved.
+##
+## This file contains confidential and proprietary information
+## of Xilinx, Inc. and is protected under U.S. and
+## international copyright and other intellectual property
+## laws.
+##
+## DISCLAIMER
+## This disclaimer is not a license and does not grant any
+## rights to the materials distroibuted herewith. Except as
+## otherwise provided in a valid license issued to you by
+## Xilinx, and to the maximum extent permitted by applicable
+## law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+## WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+## AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+## BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+## INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+## (2) Xilinx shall not be liable (whether in contract or tort,
+## including negligence, or under any other theory of
+## liability) for any loss or damage of any kind or nature
+## related to, arising under or in connection with these
+## materials, including for any direct, or any indirect,
+## special, incidental, or consequential loss or damage
+## (including loss of data, profits, goodwill, or any type of
+## loss or damage suffered as a result of any action brought
+## by a third party) even if such damage or loss was
+## reasonably foreseeable or Xilinx had been advised of the
+## possibility of the same.
+##
+## CRITICAL APPLICATIONS
+## Xilinx products are not designed or intended to be fail-
+## safe, or for use in any application requiring fail-safe
+## performance, such as life-support or safety devices or
+## systems, Class III medical devices, nuclear facilities,
+## applications related to the deployment of airbags, or any
+## other applications that could lead to death, personal
+## injury, or severe property or environmental damage
+## (individually and collectively, "Critical
+## Applications"). Customer assumes the sole risk and
+## liability of any use of Xilinx products in Critical
+## Applications, subject only to applicable laws and
+## regulations governing limitations on product liability.
+##
+## THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+## PART OF THIS FILE AT ALL TIMES.
+##
+
+# ----------------------------------------------------------------------
+
+# ######################################################################
+# sum
+##
+#
+# @brief  Sum list
+#
+# @param  l list
+# @return total Sum of all values in list
+#
+#
+
+# THIS LOOKS NICE BUT IS SLOWER THAN A LOOP
+#proc sum {l} {
+#
+#    return [expr [join $l +]+0]
+#
+#}
+
+proc sum {l} {
+    set total 0
+    foreach nxt $l {
+        set total [expr $total + $nxt]
+    }
+    return $total
+}
+
+# ######################################################################
+# calc_single_ss_wt
+##
+#
+# @brief  Calculate the weighting for a kernel at each sub-switch
+#
+# @param  hbm_mem_txns List of memory region wts (W) per kernel
+# @return subswitch_txns List of subswitch weights (W/2) per kernel
+#
+#
+
+proc calc_single_ss_wt {hbm_mem_txns} {
+
+   # Initialise
+   set num_m [llength $hbm_mem_txns]
+   # Number of sub-switch is half the number of memory regions
+   set num_s [expr $num_m / 4]
+   # Setup array of size num_s
+   set subswitch_txns [lrepeat $num_s 0]
+   # Calculate total for normalising
+   set subswitch_total [sum $hbm_mem_txns]
+
+   # Sum mems per subswitch
+   for {set s 0} {$s < $num_s} {incr s} {
+      set current_mem_wt [expr ([lindex $hbm_mem_txns [expr $s*4]] + [lindex $hbm_mem_txns [expr $s*4+1]] + [lindex $hbm_mem_txns [expr $s*4+2]] + [lindex $hbm_mem_txns [expr $s*4+3]])]
+      # Awkward TCL-casting to float...
+      set current_mem_wt [expr (($current_mem_wt*1.0)/$subswitch_total)]
+      lset subswitch_txns $s $current_mem_wt
+   }
+
+   return $subswitch_txns
+}
+
+# ######################################################################
+# calc_all_ss_wt
+##
+#
+# @brief  Calculate the weighting for each kernel at each sub-switch
+#
+# @param  hbm_mem_txns 2-D list of memory region wts (W) per kernel (K) Note: K x W
+# @return subswitch_txns 2-D list of subswitch weights (W/2) per kernel (K)
+#
+#
+
+proc calc_all_ss_wt {hbm_mem_txns} {
+
+   # Initialise
+   set subswitch_txns {}
+   set num_k [llength $hbm_mem_txns]
+   
+   # For each kernel sum it's mems per sub-switch
+   for {set k 0} {$k < $num_k} {incr k} {
+      set current_k_ss_txns [calc_single_ss_wt [lindex $hbm_mem_txns $k]]
+      # Store
+      lappend subswitch_txns $current_k_ss_txns
+   }
+
+   return $subswitch_txns
+}
+
+# ######################################################################
+# calc_single_node_wt
+##
+#
+# @brief  Calculate the weighting for a kernel at each potential sub-switch location
+#
+# @param  subswitch_txns 1-D list of subswitch wts (W)
+# @return node_lateral_txns 3-D list of wts at each node (N) in each direction (D)
+#                           for each potential switch position (S)
+#                           S x D x N
+#
+#
+
+proc calc_single_node_wt {subswitch_txns} {
+
+   # Initialise
+   set num_s [llength $subswitch_txns]
+   # Number of nodes is the number of switches-1
+   set num_n [expr $num_s-1]
+   set num_dir 2
+   
+   # Initialise weighting array
+   set node_lateral_txns [lrepeat $num_s [lrepeat $num_dir [lrepeat $num_n 0]]]
+
+   # Loop through all potential switch positions
+   for {set s 0} {$s < $num_s} {incr s} {
+      # Loop through the nodes between switches
+      for {set n 0} {$n < $num_n} {incr n} {
+          # Have to figure out which direction to add to
+          # If kernel is placed at switch to the right of node then right to left calculation
+          # etc
+          
+          # Right-to-left (no contributions at first switch location)
+          if {$s > 0} {
+             if {$n < $s} {
+                set d 0
+                lset node_lateral_txns $s $d $n [sum [lrange $subswitch_txns 0 $n]]
+             }
+          }
+
+          # Left-to-right (no contributions at last switch location)
+          if {$s < [expr $num_s-1]} {
+             if {$n >= $s} {
+                set d 1
+                lset node_lateral_txns $s $d $n [sum [lrange $subswitch_txns [expr $n+1] end]]
+             }
+          }
+      }
+   }
+
+   return $node_lateral_txns
+
+}
+
+# ######################################################################
+# calc_all_node_wt
+##
+#
+# @brief  Calculate the weighting for each kernel at each potential sub-switch location
+#
+# @param  subswitch_txns 2-D list of subswitch wts (W) per kernel (K) Note: K x W
+# @return node_lateral_txns 4-D list of wts for at each node (N) in each direction (D)
+#                           for each potential switch position (S) for each kernel (K)
+#                           K x S x D x N
+#
+#
+
+proc calc_all_node_wt {subswitch_txns} {
+
+   # Initialise
+   set node_lateral_txns {}
+   set num_k [llength $subswitch_txns]
+
+   # Loop through the kernels calculating the weights for each one and add to the list
+   for {set k 0} {$k < $num_k} {incr k} {
+      # Calculate weights for all potential positions for this kernel
+      set current_k_node_lateral_txns [calc_single_node_wt [lindex $subswitch_txns $k]]
+      # Store
+      lappend node_lateral_txns $current_k_node_lateral_txns
+   }
+
+   return $node_lateral_txns
+
+}

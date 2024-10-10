@@ -1,0 +1,11 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_ooc"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileUsedIn {out_of_context synthesis implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+# ------------------------------------------------------------------------------
+# Additional timing constraints
+# ------------------------------------------------------------------------------
+create_clock -period 9.996 -name c0_sys_clk_p [get_ports c0_sys_clk_p]

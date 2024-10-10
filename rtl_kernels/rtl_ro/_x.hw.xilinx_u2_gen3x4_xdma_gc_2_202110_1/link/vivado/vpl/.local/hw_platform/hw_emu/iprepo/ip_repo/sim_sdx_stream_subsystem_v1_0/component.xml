@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>xilinx.com</spirit:vendor>
+  <spirit:library>ip</spirit:library>
+  <spirit:name>sdx_stream_subsystem</spirit:name>
+  <spirit:version>1.0</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>axis_slave_decl</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="BUSIF_ENABLEMENT.axis_slave_decl">false</xilinx:isEnabled>
+          </xilinx:enablement>
+          <xilinx:isDeclaration>true</xilinx:isDeclaration>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>axis_master_decl</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="BUSIF_ENABLEMENT.axis_master_decl">false</xilinx:isEnabled>
+          </xilinx:enablement>
+          <xilinx:isDeclaration>true</xilinx:isDeclaration>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_blockdiagram</spirit:name>
+        <spirit:displayName>Block Diagram</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:block.diagram</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_blockdiagram_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f4a769a3</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_elaboratebd</spirit:name>
+        <spirit:displayName>Elaborate BD</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:elaborate.bd</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_xilinx_com_ip_stma_1_0__ref_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaboratebd_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>6a5c409e</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_elaborateports</spirit:name>
+        <spirit:displayName>Elaborate Ports</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:elaborate.ports</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_elaborateports_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>9a44b9ed</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>27a38e0e</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_utilityxitfiles</spirit:name>
+        <spirit:displayName>Utility XIT/TTCL</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xit.util</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_utilityxitfiles_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>f27834c1</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogbehavioralsimulation</spirit:name>
+        <spirit:displayName>Verilog Simulation</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_systemcsimulation</spirit:name>
+        <spirit:displayName>SystemC Simulation</spirit:displayName>
+        <spirit:envIdentifier>systemCSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>systemc</spirit:language>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>sim_type</spirit:name>
+            <spirit:value>tlm</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+  </spirit:model>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_blockdiagram_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>bd/bd.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>bd/vpl_util.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/update_contents.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_elaboratebd_xilinx_com_ip_stma_1_0__ref_view_fileset</spirit:name>
+      <spirit:vendorExtensions>
+        <xilinx:subCoreRef>
+          <xilinx:componentRef xsi:type="xilinx:componentRefType" xilinx:vendor="xilinx.com" xilinx:library="xilinx" xilinx:name="sim_stma" xilinx:version="1.0" xilinx:coreRevision="0">
+            <xilinx:mode xilinx:name="create_mode"/>
+          </xilinx:componentRef>
+        </xilinx:subCoreRef>
+      </spirit:vendorExtensions>
+    </spirit:fileSet>
+     <spirit:fileSet>
+      <spirit:name>xilinx_elaborateports_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/update_ports.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/sdx_stream_subsystem_v1_0.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_utilityxitfiles_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xit/util.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/debug_util.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_boundary.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_axi4stream_vip_wrapper.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_contents.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>xit/generate_clock_associations.xit</spirit:name>
+        <spirit:userFileType>xit</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>SDx Stream Subsystem</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>NUM_SI</spirit:name>
+      <spirit:displayName>Number of Slave Interfaces</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_SI" spirit:order="2" spirit:minimum="0" spirit:maximum="16" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>NUM_MI</spirit:name>
+      <spirit:displayName>Number of Master Interfaces</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_MI" spirit:order="3" spirit:minimum="0" spirit:maximum="16" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>NUM_CLKS</spirit:name>
+      <spirit:displayName>Number of Clock Inputs</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_CLKS" spirit:order="4" spirit:minimum="1" spirit:maximum="33" spirit:rangeType="long">1</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOWID_PREFIX</spirit:name>
+      <spirit:displayName>Flow ID/ TID prefix value</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOWID_PREFIX" spirit:order="5" spirit:minimum="0" spirit:maximum="3" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ADVANCED_PROPERTIES</spirit:name>
+      <spirit:displayName>Advanced Properties</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.ADVANCED_PROPERTIES" spirit:order="6">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>HAS_CREDIT_CHANNEL</spirit:name>
+      <spirit:displayName>Enable Streaming Traffic Manager Credit channels</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.HAS_CREDIT_CHANNEL" spirit:order="7" spirit:minimum="0" spirit:maximum="1" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID00</spirit:name>
+      <spirit:displayName>Route ID #0</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID00" spirit:bitStringLength="32">0x00000000</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID00</spirit:name>
+      <spirit:displayName>Flow ID #0</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID00" spirit:bitStringLength="32">0x00000000</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID01</spirit:name>
+      <spirit:displayName>Route ID #1</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID01" spirit:bitStringLength="32">0x00000001</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID01</spirit:name>
+      <spirit:displayName>Flow ID #1</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID01" spirit:bitStringLength="32">0x00000001</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID02</spirit:name>
+      <spirit:displayName>Route ID #2</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID02" spirit:bitStringLength="32">0x00000002</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID02</spirit:name>
+      <spirit:displayName>Flow ID #2</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID02" spirit:bitStringLength="32">0x00000002</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID03</spirit:name>
+      <spirit:displayName>Route ID #3</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID03" spirit:bitStringLength="32">0x00000003</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID03</spirit:name>
+      <spirit:displayName>Flow ID #3</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID03" spirit:bitStringLength="32">0x00000003</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID04</spirit:name>
+      <spirit:displayName>Route ID #4</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID04" spirit:bitStringLength="32">0x00000004</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID04</spirit:name>
+      <spirit:displayName>Flow ID #4</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID04" spirit:bitStringLength="32">0x00000004</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID05</spirit:name>
+      <spirit:displayName>Route ID #5</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID05" spirit:bitStringLength="32">0x00000005</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID05</spirit:name>
+      <spirit:displayName>Flow ID #5</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID05" spirit:bitStringLength="32">0x00000005</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID06</spirit:name>
+      <spirit:displayName>Route ID #6</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID06" spirit:bitStringLength="32">0x00000006</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID06</spirit:name>
+      <spirit:displayName>Flow ID #6</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID06" spirit:bitStringLength="32">0x00000006</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID07</spirit:name>
+      <spirit:displayName>Route ID #7</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID07" spirit:bitStringLength="32">0x00000007</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID07</spirit:name>
+      <spirit:displayName>Flow ID #7</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID07" spirit:bitStringLength="32">0x00000007</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID08</spirit:name>
+      <spirit:displayName>Route ID #8</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID08" spirit:bitStringLength="32">0x00000008</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID08</spirit:name>
+      <spirit:displayName>Flow ID #8</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID08" spirit:bitStringLength="32">0x00000008</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID09</spirit:name>
+      <spirit:displayName>Route ID #9</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID09" spirit:bitStringLength="32">0x00000009</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID09</spirit:name>
+      <spirit:displayName>Flow ID #9</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID09" spirit:bitStringLength="32">0x00000009</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID10</spirit:name>
+      <spirit:displayName>Route ID #10</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID10" spirit:bitStringLength="32">0x0000000a</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID10</spirit:name>
+      <spirit:displayName>Flow ID #10</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID10" spirit:bitStringLength="32">0x0000000a</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID11</spirit:name>
+      <spirit:displayName>Route ID #11</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID11" spirit:bitStringLength="32">0x0000000b</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID11</spirit:name>
+      <spirit:displayName>Flow ID #11</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID11" spirit:bitStringLength="32">0x0000000b</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID12</spirit:name>
+      <spirit:displayName>Route ID #12</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID12" spirit:bitStringLength="32">0x0000000c</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID12</spirit:name>
+      <spirit:displayName>Flow ID #12</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID12" spirit:bitStringLength="32">0x0000000c</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID13</spirit:name>
+      <spirit:displayName>Route ID #13</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID13" spirit:bitStringLength="32">0x0000000d</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID13</spirit:name>
+      <spirit:displayName>Flow ID #13</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID13" spirit:bitStringLength="32">0x0000000d</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID14</spirit:name>
+      <spirit:displayName>Route ID #14</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID14" spirit:bitStringLength="32">0x0000000e</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID14</spirit:name>
+      <spirit:displayName>Flow ID #14</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID14" spirit:bitStringLength="32">0x0000000e</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>ROUTE_ID15</spirit:name>
+      <spirit:displayName>Route ID #15</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.ROUTE_ID15" spirit:bitStringLength="32">0x0000000f</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>FLOW_ID15</spirit:name>
+      <spirit:displayName>Flow ID #15</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FLOW_ID15" spirit:bitStringLength="32">0x0000000f</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">sdx_stream_subsystem_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>/AXI_Infrastructure</xilinx:taxonomy>
+        <xilinx:taxonomy>/Embedded_Processing/AXI_Infrastructure</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>Sim SDx Stream Subsystem</xilinx:displayName>
+      <xilinx:supportsDeferredElaboration>true</xilinx:supportsDeferredElaboration>
+      <xilinx:autoFamilySupportLevel>level_2</xilinx:autoFamilySupportLevel>
+      <xilinx:designToolContexts>
+        <xilinx:designToolContext>IPI</xilinx:designToolContext>
+      </xilinx:designToolContexts>
+      <xilinx:coreRevision>0</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2018-09-17T03:57:36Z</xilinx:coreCreationDateTime>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2018.3.0</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="8761b08c"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6307d8cf"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="1c89ae85"/>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>

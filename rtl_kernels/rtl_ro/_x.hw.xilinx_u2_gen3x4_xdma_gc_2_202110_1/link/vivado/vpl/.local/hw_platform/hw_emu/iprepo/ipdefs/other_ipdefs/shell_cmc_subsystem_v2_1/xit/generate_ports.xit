@@ -1,0 +1,188 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create interface ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set s_axi_ctrl_mgmt [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt ]
+set_property -dict [ list                                                                                                                   \
+    CONFIG.PROTOCOL                     {AXI4LITE}                                                                                          \
+    CONFIG.ADDR_WIDTH                   {32}                                                                                                \
+    CONFIG.DATA_WIDTH                   {32}                                                                                                \
+    CONFIG.MAX_BURST_LENGTH             {1}                                                                                                 \
+    CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                                 \
+    CONFIG.HAS_QOS                      {0}                                                                                            	    \
+    CONFIG.HAS_CACHE                    {0}                                                                                                 \
+    CONFIG.HAS_BURST                    {0}                                                                                                 \
+    CONFIG.HAS_LOCK                     {0}   												                                                                      \
+    CONFIG.INSERT_VIP                   {1}                                                                                                 \
+] $s_axi_ctrl_mgmt
+
+if {$C_HAS_EXTERNAL_M_AXILITE == true} {
+
+    set m_axi_ctrl_cmc [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_cmc ]
+    set_property -dict [ list                                                                                                               \
+        CONFIG.PROTOCOL                     {AXI4LITE}                                                                                      \
+        CONFIG.ADDR_WIDTH                   {32}                                                                                            \
+        CONFIG.DATA_WIDTH                   {32}                                                                                            \
+        CONFIG.MAX_BURST_LENGTH             {1}                                                                                             \
+        CONFIG.SUPPORTS_NARROW_BURST        {0}                                                                                             \
+        CONFIG.INSERT_VIP                   {0}                                                                                             \
+    ] $m_axi_ctrl_cmc
+
+}
+
+set mdm_mbdebug [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:mbdebug_rtl:3.0 mdm_mbdebug ]
+set satellite_uart [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 satellite_uart ]
+
+if {$C_HAS_USB_UART == true} {
+
+    set usb_uart [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 usb_uart ]
+
+}
+
+if {$C_HAS_AXI_IIC == true} {
+
+    set iic [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 iic ]
+
+}
+
+if {$C_NUM_SATELLITE_GPIO > 0} {
+
+    set satellite_gpio [ create_bd_port -dir I -type intr -from [ expr $C_NUM_SATELLITE_GPIO - 1 ] -to 0 satellite_gpio ]
+
+}
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+# Clock
+
+set aclk_ctrl [ create_bd_port -dir I -type clk aclk_ctrl ]
+if {$C_HAS_EXTERNAL_M_AXILITE == true} {
+
+    set_property -dict [ list                                                                                                               \
+        CONFIG.ASSOCIATED_RESET         {aresetn_ctrl}                                                                                      \
+        CONFIG.ASSOCIATED_BUSIF         {s_axi_ctrl_mgmt:m_axi_ctrl_cmc}                                                                    \
+        CONFIG.FREQ_HZ                  {50000000}                                                                                          \
+        CONFIG.FREQ_HZ.VALUE_SRC        {PROPAGATED}                                                                                        \
+        CONFIG.INSERT_VIP               {0}                                                                                                 \
+    ] $aclk_ctrl
+
+} else {
+
+    set_property -dict [ list                                                                                                               \
+        CONFIG.ASSOCIATED_RESET         {aresetn_ctrl}                                                                                      \
+        CONFIG.ASSOCIATED_BUSIF         {s_axi_ctrl_mgmt}                                                                                   \
+        CONFIG.FREQ_HZ                  {50000000}                                                                                          \
+        CONFIG.FREQ_HZ.VALUE_SRC        {PROPAGATED}                                                                                        \
+        CONFIG.INSERT_VIP               {0}                                                                                                 \
+    ] $aclk_ctrl
+
+}
+
+# Reset
+
+set aresetn_ctrl [ create_bd_port -dir I -type rst aresetn_ctrl ]
+set_property -dict [ list                                                                                                                   \
+    CONFIG.INSERT_VIP                   {0}                                                                                                 \
+] $aresetn_ctrl
+
+# MDM Debug interface
+
+set mdm_debug_sys_rst [ create_bd_port -dir I -type rst mdm_debug_sys_rst ]
+set_property -dict [ list                                                                                                                   \
+    CONFIG.POLARITY                     {ACTIVE_HIGH}                                                                                       \
+    CONFIG.INSERT_VIP                   {0}                                                                                                 \
+] $mdm_debug_sys_rst
+
+# HBM CATTRIP interrupt input and temperature values
+
+set interrupt_hbm_cattrip               [ create_bd_port -dir I -from 0 -to 0 interrupt_hbm_cattrip ]
+set hbm_temp_1                          [ create_bd_port -dir I -from 6 -to 0 hbm_temp_1 ]
+set hbm_temp_2                          [ create_bd_port -dir I -from 6 -to 0 hbm_temp_2 ]
+
+# Interrupt sent to host from microblaze
+
+set interrupt_host                      [ create_bd_port -dir O -type intr interrupt_host ]
+
+if {$C_HAS_AXI_IIC == true} {
+
+    set iic_reset_n                     [ create_bd_port -dir O iic_reset_n ]
+
+}
+
+if {$C_HAS_QSFP_GPIO == true} {
+
+    # Create input/output ports for each QSFP
+
+    # Input ports
+
+    set qsfp0_modprs_l                  [ create_bd_port -dir I -from 0 -to 0 qsfp0_modprs_l ]
+    set qsfp1_modprs_l                  [ create_bd_port -dir I -from 0 -to 0 qsfp1_modprs_l ]
+
+    set qsfp0_int_l                     [ create_bd_port -dir I -from 0 -to 0 qsfp0_int_l ]
+    set qsfp1_int_l                     [ create_bd_port -dir I -from 0 -to 0 qsfp1_int_l ]
+
+    # Output ports
+
+    set qsfp0_lpmode                    [ create_bd_port -dir O -from 0 -to 0 qsfp0_lpmode ]
+    set qsfp1_lpmode                    [ create_bd_port -dir O -from 0 -to 0 qsfp1_lpmode ]
+
+    set qsfp0_modsel_l                  [ create_bd_port -dir O -from 0 -to 0 qsfp0_modsel_l ]
+    set qsfp1_modsel_l                  [ create_bd_port -dir O -from 0 -to 0 qsfp1_modsel_l ]
+
+    set qsfp0_reset_l                   [ create_bd_port -dir O -from 0 -to 0 qsfp0_reset_l ]
+    set qsfp1_reset_l                   [ create_bd_port -dir O -from 0 -to 0 qsfp1_reset_l ]
+
+}

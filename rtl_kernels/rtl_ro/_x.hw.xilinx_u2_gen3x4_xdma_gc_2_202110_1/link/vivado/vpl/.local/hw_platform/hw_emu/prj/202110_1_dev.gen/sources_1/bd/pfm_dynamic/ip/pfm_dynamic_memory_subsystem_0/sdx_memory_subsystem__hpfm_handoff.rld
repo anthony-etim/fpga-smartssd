@@ -1,0 +1,1 @@
+DDR4_MEM00 {size 4G data_width 512 peak_memory_bandwidth 18310 slr SLR0 max_masters 15} PLRAM_MEM00 {size 128K data_width 512 peak_memory_bandwidth 18310 slr SLR0 max_masters 15}

@@ -1,0 +1,122 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create interface ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+  set io_uart_cmc_00 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 io_uart_cmc_00 ]
+  set io_gt_pcie_01 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie_7x_mgt_rtl:1.0 io_gt_pcie_01 ]
+  set iic [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 iic ]
+  set io_gt_pcie_00 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:pcie_7x_mgt_rtl:1.0 io_gt_pcie_00 ]
+  set ref_clk_ds [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 ref_clk_ds ]
+  set spi_1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:spi_rtl:1.0 spi_1 ]
+  set c1_sys [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 c1_sys ]
+  set_property -dict [ list \
+   CONFIG.FREQ_HZ {100000000} \
+   ] $c1_sys
+  set ref_clk [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 ref_clk ]
+  set_property -dict [ list \
+   CONFIG.FREQ_HZ {100000000} \
+   ] $ref_clk
+
+  set m0_bscan [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:bscan_rtl:1.0 m0_bscan ]
+  set regslice_control_M_AXI_slr1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 regslice_control_M_AXI_slr1 ]  
+  set_property -dict [ list \
+    CONFIG.PROTOCOL {AXI4LITE} \
+  ] $regslice_control_M_AXI_slr1
+  set regslice_control_periph_M_AXI_slr1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 regslice_control_periph_M_AXI_slr1 ]
+  set_property -dict [ list \
+    CONFIG.PROTOCOL {AXI4LITE} \
+  ] $regslice_control_periph_M_AXI_slr1
+  set regslice_control_userpf_M_AXI_slr1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 regslice_control_userpf_M_AXI_slr1 ]
+  set_property -dict [ list \
+    CONFIG.PROTOCOL {AXI4LITE} \
+  ] $regslice_control_userpf_M_AXI_slr1
+  set regslice_data_periph_M_AXI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 regslice_data_periph_M_AXI ]
+  set regslice_data_static_M_AXI_slr1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 regslice_data_static_M_AXI_slr1 ]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create ports
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+  set FPGA_LED1 [ create_bd_port -dir O  FPGA_LED1 ]
+  set FPGA_LED2 [ create_bd_port -dir O  FPGA_LED2 ]
+  set FPGA_LED3 [ create_bd_port -dir O  FPGA_LED3 ]
+  set FPGA_LED4 [ create_bd_port -dir O  FPGA_LED4 ]
+  set activity_out [ create_bd_port -dir O -from 0 -to 0 -type clk activity_out ]
+  set board_rev_pins_0 [ create_bd_port -dir I -from 2 -to 0 board_rev_pins_0 ]
+  set i2c_sclk_0 [ create_bd_port -dir IO i2c_sclk_0 ]
+  set i2c_sda_0 [ create_bd_port -dir IO i2c_sda_0 ]
+  set iic_reset_n [ create_bd_port -dir O  iic_reset_n ]
+  set m2_perst_n_0_0 [ create_bd_port -dir O  m2_perst_n_0_0 ]
+  set ssd_act_in [ create_bd_port -dir I  -type clk ssd_act_in ]
+  set sys_reset_o_0 [ create_bd_port -dir O -from 0 -to 0 -type rst sys_reset_o_0 ]
+  set s_aresetn_ctrl_00 [ create_bd_port -dir O -from 0 -to 0 -type rst s_aresetn_ctrl_00 ]
+  set vauxn0_0 [ create_bd_port -dir I vauxn0_0 ]
+  set vauxn1_0 [ create_bd_port -dir I vauxn1_0 ]
+  set vauxp0_0 [ create_bd_port -dir I vauxp0_0 ]
+  set vauxp1_0 [ create_bd_port -dir I vauxp1_0 ]
+  set perst_n [ create_bd_port -dir I -type rst perst_n ]
+  set_property -dict [ list \
+   CONFIG.POLARITY {ACTIVE_LOW} \
+ ] $perst_n
+
+  set logic_ddrcalib_op_Res [ create_bd_port -dir I logic_ddrcalib_op_Res ]
+  set xlconcat_interrupt_dout [ create_bd_port -dir I -from 127 -to 0 xlconcat_interrupt_dout ]
+  set clkwiz_sysclks_clk_out2 [ create_bd_port -dir O -type clk clkwiz_sysclks_clk_out2 ]
+  set clkwiz_kernel_clk_out1 [ create_bd_port -dir O -type clk clkwiz_kernel_clk_out1 ]
+  set clkwiz_kernel2_clk_out1 [ create_bd_port -dir O -type clk clkwiz_kernel2_clk_out1 ]
+  set clkwiz_kernel2_locked_slr1 [ create_bd_port -dir O clkwiz_kernel2_locked_slr1 ]
+  set clkwiz_kernel_locked_slr1 [ create_bd_port -dir O clkwiz_kernel_locked_slr1 ]
+  set clkwiz_sysclks_locked_slr1 [ create_bd_port -dir O clkwiz_sysclks_locked_slr1 ]
+  set dma_pcie_axi_aclk  [ create_bd_port -dir O -type clk dma_pcie_axi_aclk ]
+  set iob_static_perst_n_out [ create_bd_port -dir O iob_static_perst_n_out ]
+  set slice_reset_kernel_pr_Dout_slr1 [ create_bd_port -dir O  slice_reset_kernel_pr_Dout_slr1 ]
+  set dma_pcie_user_lnk_up_slr1 [ create_bd_port -dir O dma_pcie_user_lnk_up_slr1 ]

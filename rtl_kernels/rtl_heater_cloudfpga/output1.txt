@@ -1,0 +1,64 @@
+Autocomplete enabled for the xbutil command
+Autocomplete enabled for the xbmgmt command
+XILINX_XRT        : /opt/xilinx/xrt
+PATH              : /opt/xilinx/xrt/bin:/opt/xilinx/xrt/bin:/home/ubuntu/.vscode-server/bin/f80445acd5a3dadef24aa209168452a3d97cc326/bin/remote-cli:/opt/xilinx/xrt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+LD_LIBRARY_PATH   : /opt/xilinx/xrt/lib:/opt/xilinx/xrt/lib:/opt/xilinx/xrt/lib:
+PYTHONPATH        : /opt/xilinx/xrt/python:/opt/xilinx/xrt/python:/opt/xilinx/xrt/python:
+fiotest: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=posixaio, iodepth=1
+fio-3.1
+Starting 1 process
+
+fiotest: (groupid=0, jobs=1): err= 0: pid=4900: Mon Dec  5 06:28:08 2022
+  write: IOPS=57.4k, BW=224MiB/s (235MB/s)(13.3GiB/60941msec)
+    slat (nsec): min=1041, max=200656, avg=3433.23, stdev=426.57
+    clat (nsec): min=421, max=3392.5k, avg=12695.89, stdev=3299.73
+     lat (usec): min=9, max=3396, avg=16.13, stdev= 3.34
+    clat percentiles (usec):
+     |  1.00th=[   11],  5.00th=[   12], 10.00th=[   12], 20.00th=[   13],
+     | 30.00th=[   13], 40.00th=[   13], 50.00th=[   13], 60.00th=[   13],
+     | 70.00th=[   13], 80.00th=[   14], 90.00th=[   14], 95.00th=[   15],
+     | 99.00th=[   18], 99.50th=[   19], 99.90th=[   24], 99.95th=[   27],
+     | 99.99th=[  128]
+   bw (  KiB/s): min=219416, max=242144, per=100.00%, avg=233432.94, stdev=5672.78, samples=119
+   iops        : min=54854, max=60536, avg=58358.22, stdev=1418.19, samples=119
+  lat (nsec)   : 500=0.01%, 750=0.01%, 1000=0.01%
+  lat (usec)   : 2=0.01%, 4=0.01%, 10=0.33%, 20=99.37%, 50=0.29%
+  lat (usec)   : 100=0.01%, 250=0.01%, 500=0.01%, 750=0.01%, 1000=0.01%
+  lat (msec)   : 2=0.01%, 4=0.01%
+  cpu          : usr=10.64%, sys=37.42%, ctx=3501533, majf=0, minf=41
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=0,3499573,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=224MiB/s (235MB/s), 224MiB/s-224MiB/s (235MB/s-235MB/s), io=13.3GiB (14.3GB), run=60941-60941msec
+
+Disk stats (read/write):
+  nvme0n1: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%
+Smart Log for NVME device:nvme0n1 namespace-id:ffffffff
+critical_warning                    : 0
+temperature                         : 47 C
+available_spare                     : 100%
+available_spare_threshold           : 10%
+percentage_used                     : 0%
+data_units_read                     : 474428
+data_units_written                  : 8658262
+host_read_commands                  : 2502734
+host_write_commands                 : 165725714
+controller_busy_time                : 5
+power_cycles                        : 71
+power_on_hours                      : 4973
+unsafe_shutdowns                    : 26
+media_errors                        : 0
+num_err_log_entries                 : 0
+Warning Temperature Time            : 0
+Critical Composite Temperature Time : 0
+Temperature Sensor 1                : 44 C
+Temperature Sensor 2                : 42 C
+Temperature Sensor 3                : 47 C
+Thermal Management T1 Trans Count   : 0
+Thermal Management T2 Trans Count   : 0
+Thermal Management T1 Total Time    : 0
+Thermal Management T2 Total Time    : 0

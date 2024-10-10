@@ -1,0 +1,237 @@
+<#: ttcl/utils/common.ttcl :>
+<: setFileName [ttcl_string_concat $CompName "_impl_early"] :>
+<: setFileExtension ".xdc" :>
+<: setOutputDirectory "synth" :>
+<: setFileProcessingOrder early :>
+<: setFileUsedIn {implementation} :>
+<: set comment "##" :>
+<#: ttcl/utils/disclaimer.ttcl :>
+#
+# *************************************************************************
+# Configuration
+# ------------------------------------------------------------------------------
+set_property CONFIG_VOLTAGE 1.8                        [current_design]
+set_property BITSTREAM.CONFIG.CONFIGFALLBACK Enable    [current_design]
+set_property BITSTREAM.GENERAL.COMPRESS TRUE           [current_design]
+set_property CONFIG_MODE SPIx8                         [current_design]
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 8           [current_design]
+set_property BITSTREAM.CONFIG.EXTMASTERCCLK_EN disable [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 85.0         [current_design]
+set_property BITSTREAM.CONFIG.SPI_FALL_EDGE YES        [current_design]
+
+
+# ------------------------------------------------------------------------------
+# IO constraints
+# ------------------------------------------------------------------------------
+# ref_clk
+set_property PACKAGE_PIN AF6 [get_ports {ref_clk_clk_p[0]}]
+set_property PACKAGE_PIN AF5 [get_ports {ref_clk_clk_n[0]}]
+set_property PACKAGE_PIN V5  [get_ports {ref_clk_ds_clk_n[0]}]
+set_property PACKAGE_PIN V6  [get_ports {ref_clk_ds_clk_p[0]}]
+
+# local ref_clk
+set_property PACKAGE_PIN N24             [get_ports c1_sys_clk_p]
+set_property IOSTANDARD DIFF_SSTL18_I    [get_ports c1_sys_clk_p]
+set_property PACKAGE_PIN M24             [get_ports c1_sys_clk_n]
+set_property IOSTANDARD DIFF_SSTL18_I    [get_ports c1_sys_clk_n]
+
+# perst_n
+set_property PACKAGE_PIN H26     [get_ports perst_n]
+set_property IOSTANDARD LVCMOS18 [get_ports perst_n]
+
+set_property PACKAGE_PIN AN17    [get_ports m2_perst_n_0_0]
+set_property IOSTANDARD LVCMOS18 [get_ports m2_perst_n_0_0]
+
+# QSPI pins
+set_property PACKAGE_PIN M20    [get_ports spi_1_io0_io]
+set_property IOSTANDARD LVCMOS18 [get_ports spi_1_io0_io]
+set_property PACKAGE_PIN L20    [get_ports spi_1_io1_io]
+set_property IOSTANDARD LVCMOS18 [get_ports spi_1_io1_io]
+set_property PACKAGE_PIN R21    [get_ports spi_1_io2_io]
+set_property IOSTANDARD LVCMOS18 [get_ports spi_1_io2_io]
+set_property PACKAGE_PIN  R22   [get_ports spi_1_io3_io]
+set_property IOSTANDARD LVCMOS18 [get_ports spi_1_io3_io]
+set_property PACKAGE_PIN G26   [get_ports spi_1_ss_io]
+set_property IOSTANDARD LVCMOS18 [get_ports spi_1_ss_io]
+
+
+# ------------------------------------------------------------------------------
+# PCIe GT LOC Constraints
+# ------------------------------------------------------------------------------
+set_property PACKAGE_PIN AF2 [get_ports {pcie_7x_mgt_rxp[3]}]
+set_property PACKAGE_PIN AF1 [get_ports {pcie_7x_mgt_rxn[3]}]
+set_property PACKAGE_PIN AG4 [get_ports {pcie_7x_mgt_txp[3]}]
+set_property PACKAGE_PIN AG3 [get_ports {pcie_7x_mgt_txn[3]}]
+
+set_property PACKAGE_PIN AH2 [get_ports {pcie_7x_mgt_rxp[2]}]
+set_property PACKAGE_PIN AH1 [get_ports {pcie_7x_mgt_rxn[2]}]
+set_property PACKAGE_PIN AH6 [get_ports {pcie_7x_mgt_txp[2]}]
+set_property PACKAGE_PIN AH5 [get_ports {pcie_7x_mgt_txn[2]}]
+
+set_property PACKAGE_PIN AM2 [get_ports {pcie_7x_mgt_rxp[1]}]
+set_property PACKAGE_PIN AM1 [get_ports {pcie_7x_mgt_rxn[1]}]
+set_property PACKAGE_PIN AM6 [get_ports {pcie_7x_mgt_txp[1]}]
+set_property PACKAGE_PIN AM5 [get_ports {pcie_7x_mgt_txn[1]}]
+
+set_property PACKAGE_PIN AP2 [get_ports {pcie_7x_mgt_rxp[0]}]
+set_property PACKAGE_PIN AP1 [get_ports {pcie_7x_mgt_rxn[0]}]
+set_property PACKAGE_PIN AN4 [get_ports {pcie_7x_mgt_txp[0]}]
+set_property PACKAGE_PIN AN3 [get_ports {pcie_7x_mgt_txn[0]}]
+
+set_property PACKAGE_PIN P2 [get_ports ds_pcie4_mgt_0_rxp[3]]
+set_property PACKAGE_PIN P1 [get_ports ds_pcie4_mgt_0_rxn[3]]
+set_property PACKAGE_PIN R4 [get_ports ds_pcie4_mgt_0_txp[3]]
+set_property PACKAGE_PIN R3 [get_ports ds_pcie4_mgt_0_txn[3]]
+
+set_property PACKAGE_PIN T2 [get_ports ds_pcie4_mgt_0_rxp[2]]
+set_property PACKAGE_PIN T1 [get_ports ds_pcie4_mgt_0_rxn[2]]
+set_property PACKAGE_PIN U4 [get_ports ds_pcie4_mgt_0_txp[2]]
+set_property PACKAGE_PIN U3 [get_ports ds_pcie4_mgt_0_txn[2]]
+
+set_property PACKAGE_PIN V2 [get_ports ds_pcie4_mgt_0_rxp[1]]
+set_property PACKAGE_PIN V1 [get_ports ds_pcie4_mgt_0_rxn[1]]
+set_property PACKAGE_PIN W4 [get_ports ds_pcie4_mgt_0_txp[1]]
+set_property PACKAGE_PIN W3 [get_ports ds_pcie4_mgt_0_txn[1]]
+
+set_property PACKAGE_PIN Y2 [get_ports ds_pcie4_mgt_0_rxp[0]]
+set_property PACKAGE_PIN Y1 [get_ports ds_pcie4_mgt_0_rxn[0]]
+set_property PACKAGE_PIN AA4 [get_ports ds_pcie4_mgt_0_txp[0]]
+set_property PACKAGE_PIN AA3 [get_ports ds_pcie4_mgt_0_txn[0]]
+
+# ------------------------------------------------------------------------------
+#PCIe Lane Reversal Feature DISABLE
+# ------------------------------------------------------------------------------
+set_property PL_DISABLE_LANE_REVERSAL "FALSE" [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ *ADVANCED.PCIE.* }]  
+
+# ------------------------------------------------------------------------------
+# Clock domain priority
+# ------------------------------------------------------------------------------
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/base_clocking/clkwiz_sysclks/clk_out2]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/base_clocking/clkwiz_scheduler/clk_out1]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/base_clocking/clk_wiz_0/clk_out1]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/pcie_3port_switch_0/axi_aclk]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/pcie_3port_switch_0/inst/downstream_port_i/ds_port_pcie.p4usp_dp_i/inst/gt_top_i/diablo_gt.diablo_gt_phy_wrapper/phy_clk_i/CLK_TXOUTCLK]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/pcie_3port_switch_0/inst/upstream_port_i/us_port_pcie.p4usp_up_i/inst/gt_top_i/diablo_gt.diablo_gt_phy_wrapper/phy_clk_i/CLK_TXOUTCLK]
+set_property HIGH_PRIORITY true [get_nets pfm_top_i/static_region/slr1/memc/ddr1_clk_bufg/BUFG_O[0]]
+
+# ------------------------------------------------------------------------------
+# Additional timing constraints
+# ------------------------------------------------------------------------------
+#create_clock -period 10.0 -name ref_clk [get_ports ref_clk_clk_p[0]]
+#create_clock -period 10.000 -name c1_sys_clk_p [get_ports c1_sys_clk_p]
+#create_clock -period 10.000 -name pcie_rp0_refclk -waveform {0.000 5.000} [get_ports ref_clk_ds_clk_p[0]]
+
+# ------------------------------------------------------------------------------
+# Use backbone for DDR clock
+# ------------------------------------------------------------------------------
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets pfm_top_i/static_region/slr1/memc/ddr1_clk_bufg/U0/BUFG_O[0]]
+
+
+# ------------------------------------------------------------------------------
+# Debug contraints
+# ------------------------------------------------------------------------------
+connect_debug_cores -master [get_cells pfm_top_i/static_region/slr1/mgmt_debug_hub] -slaves [list [get_cells pfm_top_i/static_region/slr1/jtag_axi_xdma]]
+connect_debug_cores -master [get_cells pfm_top_i/static_region/slr1/user_debug_hub] -slaves [get_cells pfm_top_i/dynamic_region/ddrmem_1]
+
+# ------------------------------------------------------------------------------
+# SDx Feature ROM identification
+# ------------------------------------------------------------------------------
+create_property -type bool -default_value false SDX_FEATURE_ROM cell
+set_property SDX_FEATURE_ROM true [get_cells -hierarchical -filter {PRIMITIVE_TYPE =~ BLOCKRAM.BRAM.* && NAME =~ *static_region*feature_rom*}]
+
+# ------------------------------------------------------------------------------
+# Floorplanning
+# ------------------------------------------------------------------------------
+set_property DONT_TOUCH true 		[get_cells pfm_top_i/dynamic_region]
+set_property HD.RECONFIGURABLE true 	[get_cells pfm_top_i/dynamic_region]
+
+# ------------------------------------------------------------------------------
+# Dynamic region pblock
+# ------------------------------------------------------------------------------
+create_pblock pblock_dynamic_region
+add_cells_to_pblock [get_pblocks pblock_dynamic_region] [get_cells [list pfm_top_i/dynamic_region]]
+resize_pblock 	    [get_pblocks pblock_dynamic_region] -add {CLOCKREGION_X0Y4:CLOCKREGION_X3Y10}
+set_property CONTAIN_ROUTING 1   [get_pblocks pblock_dynamic_region]
+set_property EXCLUDE_PLACEMENT 1 [get_pblocks pblock_dynamic_region]
+set_property SNAPPING_MODE ON    [get_pblocks pblock_dynamic_region]
+
+# ------------------------------------------------------------------------------
+# Static region pblock
+# ------------------------------------------------------------------------------
+create_pblock pblock_static_region
+add_cells_to_pblock [get_pblocks pblock_static_region] [get_cells [list pfm_top_i/static_region/slr1]]
+resize_pblock [get_pblocks pblock_static_region] -add {CLOCKREGION_X0Y0:CLOCKREGION_X3Y3}
+
+# ------------------------------------------------------------------------------
+## I2C Ports
+# ------------------------------------------------------------------------------
+set_property PACKAGE_PIN N21 [get_ports i2c_sclk_0]
+set_property PACKAGE_PIN M21 [get_ports i2c_sda_0]
+
+set_property IOSTANDARD LVCMOS18 [get_ports i2c_sclk_0]
+set_property IOSTANDARD LVCMOS18 [get_ports i2c_sda_0]
+
+# ------------------------------------------------------------------------------
+# User Generated physical constraints 
+# ------------------------------------------------------------------------------
+#set_property PACKAGE_PIN AH16 [get_ports {BMC_GPIO_tri_io[3]}]
+#set_property PACKAGE_PIN AH17 [get_ports {BMC_GPIO_tri_io[2]}]
+#set_property PACKAGE_PIN AD15 [get_ports {BMC_GPIO_tri_io[1]}]
+#set_property PACKAGE_PIN AD16 [get_ports {BMC_GPIO_tri_io[0]}]
+
+# ------------------------------------------------------------------------------
+# User Generated IO constraints - Unused 
+# ------------------------------------------------------------------------------
+set_property PACKAGE_PIN AG16 	 [get_ports BMC_UART_rxd]
+set_property PACKAGE_PIN AG17 	 [get_ports BMC_UART_txd]
+set_property PACKAGE_PIN AN19 	 [get_ports iic_scl_io]
+set_property PACKAGE_PIN AP18 	 [get_ports iic_sda_io]
+set_property PACKAGE_PIN AJ14 	 [get_ports {iic_reset_n[0]}]
+set_property PACKAGE_PIN AN18 	 [get_ports {sys_reset_o_0}]
+#set_property IOSTANDARD LVCMOS18 [get_ports {BMC_GPIO_tri_io[3]}]
+#set_property IOSTANDARD LVCMOS18 [get_ports {BMC_GPIO_tri_io[2]}]
+#set_property IOSTANDARD LVCMOS18 [get_ports {BMC_GPIO_tri_io[1]}]
+#set_property IOSTANDARD LVCMOS18 [get_ports {BMC_GPIO_tri_io[0]}]
+set_property IOSTANDARD LVCMOS18 [get_ports BMC_UART_rxd]
+set_property IOSTANDARD LVCMOS18 [get_ports BMC_UART_txd]
+set_property IOSTANDARD LVCMOS18 [get_ports iic_scl_io]
+set_property IOSTANDARD LVCMOS18 [get_ports iic_sda_io]
+set_property IOSTANDARD LVCMOS18 [get_ports {iic_reset_n[0]}]
+set_property IOSTANDARD LVCMOS18 [get_ports {sys_reset_o_0}]
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+## LED Ports
+set_property PACKAGE_PIN J25 	 [get_ports activity_out]
+set_property PACKAGE_PIN K26 	 [get_ports ssd_act_in]
+set_property IOSTANDARD LVCMOS18 [get_ports activity_out]
+set_property IOSTANDARD LVCMOS18 [get_ports ssd_act_in]
+
+set_property PACKAGE_PIN AE15 	 [get_ports FPGA_LED_1]
+set_property PACKAGE_PIN AE16 	 [get_ports FPGA_LED_2]
+set_property PACKAGE_PIN AD18 	 [get_ports FPGA_LED_3]
+set_property PACKAGE_PIN AD19 	 [get_ports FPGA_LED_4]
+set_property IOSTANDARD LVCMOS18 [get_ports [list {FPGA_LED_1} {FPGA_LED_2} {FPGA_LED_3} {FPGA_LED_4} ]]
+set_property is_loc_fixed true   [get_ports [list {FPGA_LED_1} {FPGA_LED_2} {FPGA_LED_3} {FPGA_LED_4} ]]
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+## Board Rev pins
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+set_property PACKAGE_PIN P23 	 [get_ports board_rev_pins_0[2]]
+set_property PACKAGE_PIN R23 	 [get_ports board_rev_pins_0[1]]
+set_property PACKAGE_PIN R26 	 [get_ports board_rev_pins_0[0]]
+set_property IOSTANDARD LVCMOS18 [get_ports [list {board_rev_pins_0[2]} {board_rev_pins_0[1]} {board_rev_pins_0[0]}]]
+set_property PULLTYPE PULLUP 	 [get_ports [list {board_rev_pins_0[2]} {board_rev_pins_0[1]} {board_rev_pins_0[0]}]]
+set_property is_loc_fixed true   [get_ports [list {board_rev_pins_0[2]} {board_rev_pins_0[1]} {board_rev_pins_0[0]}]]
+
+# ------------------------------------------------------------------------------
+# USB UART
+# ------------------------------------------------------------------------------
+#set_property -dict {IOSTANDARD LVCMOS18} [get_ports USB_UART_rxd]
+#set_property PACKAGE_PIN P21             [get_ports USB_UART_rxd]
+#set_property PACKAGE_PIN P20             [get_ports USB_UART_txd]
+#set_property -dict {IOSTANDARD LVCMOS18} [get_ports USB_UART_txd]
+
+#set_false_path -from [get_ports perst_n]

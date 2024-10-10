@@ -1,0 +1,73 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+# IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+# Start of session at: Fri Dec 31 12:00:04 2021
+# Process ID: 28803
+# Current directory: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro
+# Command line: vivado -mode batch -source src/krnl_ro/gen_xo.tcl -tclargs ./_x.hw.xilinx_u2_gen3x4_xdma_gc_2_202110_1/ro.xo hw xilinx_u2_gen3x4_xdma_gc_2_202110_1 xilinx_u2_gen3x4_xdma_gc_2_202110_1
+# Log file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/vivado.log
+# Journal file: /home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/vivado.jou
+#-----------------------------------------------------------
+source src/krnl_ro/gen_xo.tcl
+# if { $::argc != 4 } {
+#     puts "ERROR: Program \"$::argv0\" requires 4 arguments!\n"
+#     puts "Usage: $::argv0 <xoname> <target> <xpfm_path> <device>\n"
+#     exit
+# }
+# set xoname  [lindex $::argv 0]
+# set target    [lindex $::argv 1]
+# set xpfm_path [lindex $::argv 2]
+# set device    [lindex $::argv 3]
+# set suffix "ro_${target}_${device}"
+# source -notrace ./src/krnl_ro/package_kernel.tcl
+WARNING: [IP_Flow 19-3833] Unreferenced file from the top module is not packaged: '/home/aee38/Documents/vitis_accel_examples/rtl_kernels/rtl_ro/src/krnl_ro/hdl/krnl_ro_rtl.v'.
+WARNING: [IP_Flow 19-5101] Packaging a component with a SystemVerilog top file is not fully supported. Please refer to UG1118 'Creating and Packaging Custom IP'.
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_LENGTH_WIDTH' by 32 for port or parameter 'length_r'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_LENGTH_WIDTH' by 32 for port or parameter 'wm_ctrl_length'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_READ_CHANNELS' by 4 for port or parameter 'rd_tvalid'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_READ_CHANNELS' by 4 for port or parameter 'rd_tready_n'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_READ_CHANNELS' by 4 for port or parameter 'ctrl_rd_fifo_prog_full'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_READ_CHANNELS' by 4 for port or parameter 'rd_fifo_tvalid_n'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_READ_CHANNELS' by 4 for port or parameter 'rd_fifo_tready'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_WRITE_CHANNELS' by 2 for port or parameter 'adder_tvalid'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_WRITE_CHANNELS' by 2 for port or parameter 'adder_tready_n'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_WRITE_CHANNELS' by 2 for port or parameter 'wr_fifo_tvalid_n'
+INFO: [IP_Flow 19-1976] HDL Parser: Replacing 'LP_NUM_WRITE_CHANNELS' by 2 for port or parameter 'wr_fifo_tready'
+INFO: [IP_Flow 19-1842] HDL Parser: Found include file "src/ro_defines.sv" from the top-level HDL file.
+INFO: [IP_Flow 19-1842] HDL Parser: Found include file "src/address.sv" from the top-level HDL file.
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2021.1/data/ip'.
+INFO: [IP_Flow 19-5107] Inferred bus interface 'm_axi_gmem' of definition 'xilinx.com:interface:aximm:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-5107] Inferred bus interface 's_axi_control' of definition 'xilinx.com:interface:aximm:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-5107] Inferred bus interface 'ap_rst_n' of definition 'xilinx.com:signal:reset:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-5107] Inferred bus interface 'ap_clk' of definition 'xilinx.com:signal:clock:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-5107] Inferred bus interface 'interrupt' of definition 'xilinx.com:signal:interrupt:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-4728] Bus Interface 'ap_rst_n': Added interface parameter 'POLARITY' with value 'ACTIVE_LOW'.
+INFO: [IP_Flow 19-4728] Bus Interface 'interrupt': Added interface parameter 'SENSITIVITY' with value 'LEVEL_HIGH'.
+INFO: [IP_Flow 19-4728] Bus Interface 'ap_clk': Added interface parameter 'ASSOCIATED_RESET' with value 'ap_rst_n'.
+WARNING: [IP_Flow 19-3158] Bus Interface 'm_axi_gmem': FREQ_HZ bus parameter missing from AXI interface when interface is not associated to a clock.
+WARNING: [IP_Flow 19-3158] Bus Interface 's_axi_control': FREQ_HZ bus parameter missing from AXI interface when interface is not associated to a clock.
+WARNING: [IP_Flow 19-3157] Bus Interface 'ap_rst_n': Bus parameter POLARITY is ACTIVE_LOW but port 'ap_rst_n' is not *resetn - please double check the POLARITY setting.
+WARNING: [IP_Flow 19-5661] Bus Interface 'ap_clk' does not have any bus interfaces associated with it.
+INFO: [IP_Flow 19-2181] Payment Required is not set for this core.
+INFO: [IP_Flow 19-2187] The Product Guide file is missing.
+INFO: [IP_Flow 19-795] Syncing license key meta-data
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2021.1/data/ip'.
+INFO: [IP_Flow 19-4728] Bus Interface 'ap_clk': Added interface parameter 'ASSOCIATED_BUSIF' with value 'm_axi_gmem'.
+WARNING: [IP_Flow 19-3157] Bus Interface 'ap_rst_n': Bus parameter POLARITY is ACTIVE_LOW but port 'ap_rst_n' is not *resetn - please double check the POLARITY setting.
+INFO: [IP_Flow 19-2181] Payment Required is not set for this core.
+INFO: [IP_Flow 19-2187] The Product Guide file is missing.
+INFO: [Ipptcl 7-1486] check_integrity: Integrity check passed.
+# if {[file exists "${xoname}"]} {
+#     file delete -force "${xoname}"
+# }
+# package_xo -xo_path ${xoname} -kernel_name krnl_ro_rtl -ip_directory ./packaged_kernel_${suffix} -kernel_files src/krnl_ro/vmul_cmodel.cpp
+WARNING: [IP_Flow 19-3157] Bus Interface 'ap_rst_n': Bus parameter POLARITY is ACTIVE_LOW but port 'ap_rst_n' is not *resetn - please double check the POLARITY setting.
+INFO: [IP_Flow 19-2181] Payment Required is not set for this core.
+INFO: [IP_Flow 19-2187] The Product Guide file is missing.
+INFO: [Ipptcl 7-1486] check_integrity: Integrity check passed.
+INFO: [Common 17-206] Exiting Vivado at Fri Dec 31 12:00:16 2021...

@@ -1,0 +1,2621 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+#==========================================================================================================================================#
+# (0) Define hierarchy(s)
+#==========================================================================================================================================#
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: streaming_pr_isolation
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_streaming_pr_isolation { parentCell nameHier C_NUM_ISOLATED_STREAM isolated_stream_regslice_settings } {
+
+    dbg_puts "Creating hierarchy streaming_pr_isolation"
+    dbg_puts "- $C_NUM_ISOLATED_STREAM Isolated streams being generated"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:display_qdma:s_axis_c2h_rtl:1.0 m_axis_c2h
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:display_qdma:s_axis_c2h_cmpt_rtl:1.0 m_axis_c2h_cmpt
+
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:display_qdma:dsc_crdt_in_rtl:1.0 m_qdma_dsc_crdt_in
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:display_qdma:tm_dsc_sts_rtl:1.0 s_qdma_tm_dsc_sts
+
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:display_qdma:h2c_byp_in_st_rtl:1.0 m_qdma_h2c_byp_in
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:display_qdma:h2c_byp_out_rtl:1.0 s_qdma_h2c_byp_out
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:display_qdma:h2c_byp_out_rtl:1.0 s_qdma_c2h_byp_out
+
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:display_qdma:m_axis_h2c_rtl:1.0 s_axis_h2c
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_h2c_b_$isolated_stream_index
+        create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_c2h_a_$isolated_stream_index
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_h2c_a_$isolated_stream_index
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_c2h_b_$isolated_stream_index
+
+        incr isolated_stream_index
+
+    }
+
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -type clk qdma_stm_usr_irq_ack
+    create_bd_pin -dir O -type clk stm_qdma_usr_irq_req
+
+    # Clock
+    create_bd_pin -dir I -type clk aclk_pcie
+
+    # Reset
+    create_bd_pin -dir I -type rst aresetn_pcie
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        dbg_puts "- Isolated Stream $isolated_stream_index regval is [dict get $isolated_stream_regslice_settings $isolated_stream_index regval]"
+        dbg_puts "- Isolated Stream $isolated_stream_index num_slr_crossings is [dict get $isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings]"
+        dbg_puts "- Isolated Stream $isolated_stream_index pipelines_middle is [dict get $isolated_stream_regslice_settings $isolated_stream_index pipelines_middle]"
+
+        set regslice_h2c_b_si_instance regslice_h2c_${isolated_stream_index}b_si
+        set regslice_c2h_a_si_instance regslice_c2h_${isolated_stream_index}a_si
+
+        set regslice_h2c_a_mi_instance regslice_h2c_${isolated_stream_index}a_mi
+        set regslice_c2h_b_mi_instance regslice_c2h_${isolated_stream_index}b_mi
+
+        # Create instance: $regslice_h2c_b_si_instance, and set properties
+        set $regslice_h2c_b_si_instance [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params       \
+        [ list                                                                                                                  \
+            CONFIG.HAS_TLAST {1}                                                                                                \
+            CONFIG.TDATA_NUM_BYTES {4}                                                                                          \
+            CONFIG.TDEST_WIDTH {16}                                                                                             \
+            CONFIG.TID_WIDTH {6}                                                                                                \
+            CONFIG.TUSER_WIDTH {1}                                                                                              \
+            CONFIG.REG_CONFIG [dict get $isolated_stream_regslice_settings $isolated_stream_index regval]                       \
+            CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings]     \
+            CONFIG.PIPELINES_MIDDLE [dict get $isolated_stream_regslice_settings $isolated_stream_index pipelines_middle]       \
+        ] $regslice_h2c_b_si_instance ]
+
+        # Create instance: $regslice_c2h_a_si_instance, and set properties
+        set $regslice_c2h_a_si_instance [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params       \
+        [ list                                                                                                                  \
+            CONFIG.HAS_TLAST {1}                                                                                                \
+            CONFIG.TDATA_NUM_BYTES {64}                                                                                         \
+            CONFIG.TDEST_WIDTH {16}                                                                                             \
+            CONFIG.TID_WIDTH {6}                                                                                                \
+            CONFIG.TUSER_WIDTH {1}                                                                                              \
+            CONFIG.REG_CONFIG [dict get $isolated_stream_regslice_settings $isolated_stream_index regval]                       \
+            CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings]     \
+            CONFIG.PIPELINES_MIDDLE [dict get $isolated_stream_regslice_settings $isolated_stream_index pipelines_middle]       \
+        ] $regslice_c2h_a_si_instance ]
+
+        # Create instance: $regslice_h2c_a_mi_instance, and set properties
+        set $regslice_h2c_a_mi_instance [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params       \
+        [ list                                                                                                                  \
+            CONFIG.HAS_TLAST {1}                                                                                                \
+            CONFIG.TDATA_NUM_BYTES {64}                                                                                         \
+            CONFIG.TDEST_WIDTH {16}                                                                                             \
+            CONFIG.TID_WIDTH {6}                                                                                                \
+            CONFIG.TUSER_WIDTH {1}                                                                                              \
+            CONFIG.REG_CONFIG [dict get $isolated_stream_regslice_settings $isolated_stream_index regval]                       \
+            CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings]     \
+            CONFIG.PIPELINES_MIDDLE [dict get $isolated_stream_regslice_settings $isolated_stream_index pipelines_middle]       \
+        ] $regslice_h2c_a_mi_instance ]
+
+        # Create instance: $regslice_c2h_b_mi_instance, and set properties
+        set $regslice_c2h_b_mi_instance [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params       \
+        [ list                                                                                                                  \
+            CONFIG.HAS_TLAST {1}                                                                                                \
+            CONFIG.TDATA_NUM_BYTES {4}                                                                                          \
+            CONFIG.TDEST_WIDTH {16}                                                                                             \
+            CONFIG.TID_WIDTH {6}                                                                                                \
+            CONFIG.TUSER_WIDTH {1}                                                                                              \
+            CONFIG.REG_CONFIG [dict get $isolated_stream_regslice_settings $isolated_stream_index regval]                       \
+            CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_stream_regslice_settings $isolated_stream_index num_slr_crossings]     \
+            CONFIG.PIPELINES_MIDDLE [dict get $isolated_stream_regslice_settings $isolated_stream_index pipelines_middle]       \
+        ] $regslice_c2h_b_mi_instance ]
+        incr isolated_stream_index
+
+    }
+
+    # Create instance: stm, and set properties
+    set stm [ create_bd_cell -type ip -vlnv xilinx.com:ip:stm:2.* stm ]
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt       [get_bd_intf_pins s_axi_ctrl_mgmt] [get_bd_intf_pins stm/S_AXI_LITE]
+    connect_bd_intf_net -intf_net s_qdma_h2c_byp_out    [get_bd_intf_pins s_qdma_h2c_byp_out] [get_bd_intf_pins stm/H2C_BYP_OUT]
+    connect_bd_intf_net -intf_net s_qdma_c2h_byp_out    [get_bd_intf_pins s_qdma_c2h_byp_out] [get_bd_intf_pins stm/C2H_BYP_OUT]
+    connect_bd_intf_net -intf_net s_axis_h2c            [get_bd_intf_pins s_axis_h2c] [get_bd_intf_pins stm/S_AXIS_H2C]
+    connect_bd_intf_net -intf_net s_qdma_tm_dsc_sts     [get_bd_intf_pins s_qdma_tm_dsc_sts] [get_bd_intf_pins stm/TM_DSC_STS]
+    connect_bd_intf_net -intf_net m_qdma_dsc_crdt_in    [get_bd_intf_pins m_qdma_dsc_crdt_in] [get_bd_intf_pins stm/DSC_CRDT_IN]
+    connect_bd_intf_net -intf_net m_qdma_h2c_byp_in     [get_bd_intf_pins m_qdma_h2c_byp_in] [get_bd_intf_pins stm/H2C_BYP_IN]
+    connect_bd_intf_net -intf_net m_axis_c2h            [get_bd_intf_pins m_axis_c2h] [get_bd_intf_pins stm/M_AXIS_C2H]
+    connect_bd_intf_net -intf_net m_axis_c2h_cmpt       [get_bd_intf_pins m_axis_c2h_cmpt] [get_bd_intf_pins stm/M_AXIS_C2H_CMPT]
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        # STM Slave Ports ----------------------------------
+
+        # Connect s_axis_h2c_b port to regslice
+        connect_bd_intf_net -intf_net s_axis_h2c_b_${isolated_stream_index} [get_bd_intf_pins s_axis_h2c_b_${isolated_stream_index}] [get_bd_intf_pins regslice_h2c_${isolated_stream_index}b_si/S_AXIS]
+        # Connect regslice to STM.H2C_B port
+        connect_bd_intf_net -intf_net regslice_h2c_${isolated_stream_index}b_mi_M_AXIS [get_bd_intf_pins regslice_h2c_${isolated_stream_index}b_si/M_AXIS] [get_bd_intf_pins stm/S_STMA_H2C_*${isolated_stream_index}]
+
+        # Connect s_axis_c2h_a port to regslice
+        connect_bd_intf_net -intf_net s_axis_c2h_a_${isolated_stream_index} [get_bd_intf_pins s_axis_c2h_a_${isolated_stream_index}] [get_bd_intf_pins regslice_c2h_${isolated_stream_index}a_si/S_AXIS]
+        # Connect regslice to STM.C2H_A port
+        connect_bd_intf_net -intf_net regslice_c2h_${isolated_stream_index}a_si_M_AXIS [get_bd_intf_pins regslice_c2h_${isolated_stream_index}a_si/M_AXIS] [get_bd_intf_pins stm/S_STMA_C2H_*${isolated_stream_index}]
+
+        # STM Master Ports ---------------------------------
+
+        # Connect STM.H2C_A port to regslice
+        connect_bd_intf_net -intf_net stm_M_STMA_H2C_${isolated_stream_index} [get_bd_intf_pins stm/M_STMA_H2C_*${isolated_stream_index}] [get_bd_intf_pins regslice_h2c_${isolated_stream_index}a_mi/S_AXIS]
+        # Connect regslice to m_axis_h2c_a port
+        connect_bd_intf_net -intf_net regslice_h2c_${isolated_stream_index}a_mi_M_AXIS [get_bd_intf_pins regslice_h2c_${isolated_stream_index}a_mi/M_AXIS] [get_bd_intf_pins m_axis_h2c_a_${isolated_stream_index}]
+
+        # Connect STM.C2H_B port to regslice
+        connect_bd_intf_net -intf_net stm_M_STMA_C2H_${isolated_stream_index} [get_bd_intf_pins stm/M_STMA_C2H_*${isolated_stream_index}] [get_bd_intf_pins regslice_c2h_${isolated_stream_index}b_mi/S_AXIS]
+        # Connect regslice to m_axis_c2h_b port
+        connect_bd_intf_net -intf_net regslice_c2h_${isolated_stream_index}b_si_M_AXIS  [get_bd_intf_pins regslice_c2h_${isolated_stream_index}b_mi/M_AXIS] [get_bd_intf_pins m_axis_c2h_b_${isolated_stream_index}]
+
+        incr isolated_stream_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    connect_bd_net -net qdma_stm_usr_irq_ack            [get_bd_pins qdma_stm_usr_irq_ack] [get_bd_pins stm/qdma_stm_usr_irq_ack]
+    connect_bd_net -net stm_qdma_usr_irq_req            [get_bd_pins stm_qdma_usr_irq_req] [get_bd_pins stm/stm_qdma_usr_irq_req]
+
+    connect_bd_net -net aclk_pcie                       [get_bd_pins aclk_pcie] [get_bd_pins regslice_*/aclk] [get_bd_pins stm/clk]
+    connect_bd_net -net aresetn_pcie                    [get_bd_pins aresetn_pcie] [get_bd_pins regslice_*/aresetn] [get_bd_pins stm/rst_n]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: s_axi_data_fanout
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_s_axi_data_fanout { parentCell nameHier C_ENABLE_M2M C_ENABLE_P2P datapath_regslice_settings pcie_link_width } {
+
+    dbg_puts "Creating hierarchy s_axi_data_fanout"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    # Slave AXI Data Firewall Control Interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_fw_ctrl
+
+    # AXI Data Interface
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_m2m_fw_ctrl
+
+        create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_m2m
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_m2m
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_p2p_fw_ctrl
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_p2p
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_p2p
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    # Clock
+    create_bd_pin -dir I -type clk aclk_pcie
+
+    # Reset
+    create_bd_pin -dir I -type rst aresetn_pcie
+    create_bd_pin -dir I -type rst aresetn_pcie_ulp
+
+    # Interrupts
+    create_bd_pin -dir O -type intr interrupt_firewall
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: axi_firewall_data, and set properties
+    set axi_firewall_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* -set_params [list \
+        CONFIG.ADDR_WIDTH {64} \
+        CONFIG.NUM_READ_OUTSTANDING {16} \
+        CONFIG.NUM_READ_THREADS {2} \
+        CONFIG.NUM_WRITE_OUTSTANDING {16} \
+        CONFIG.NUM_WRITE_THREADS {2} \
+        ] \
+    axi_firewall_data ]
+
+    # Create instance: intr_fw_data_or, and set properties
+    set intr_fw_data_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params     \
+    [ list                                                                                                 \
+        CONFIG.C_SIZE {1}                                                                                  \
+        CONFIG.C_OPERATION {or}                                                                            \
+    ] intr_fw_data_or ]
+
+    set num_data_interrupts 1
+
+    if {$C_ENABLE_M2M == true} {
+
+        # Create instance: axi_firewall_data_m2m, and set properties
+        set axi_firewall_data_m2m [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* -set_params [list \
+            CONFIG.ADDR_WIDTH {64} \
+            CONFIG.NUM_READ_OUTSTANDING {16} \
+            CONFIG.NUM_READ_THREADS {2} \
+            CONFIG.NUM_WRITE_OUTSTANDING {16} \
+            CONFIG.NUM_WRITE_THREADS {2} \
+            ] \
+        axi_firewall_data_m2m ]
+
+        # Create instance: intr_fw_data_m2m_or, and set properties
+        set intr_fw_data_m2m_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params \
+        [ list                                                                                                 \
+            CONFIG.C_SIZE {1}                                                                                  \
+            CONFIG.C_OPERATION {or}                                                                            \
+        ] intr_fw_data_m2m_or ]
+
+        set num_data_interrupts [expr ${num_data_interrupts} + 1]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        # Create instance: axi_firewall_data_p2p, and set properties
+        set axi_firewall_data_p2p [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* -set_params [list \
+            CONFIG.ADDR_WIDTH {64} \
+            CONFIG.NUM_READ_OUTSTANDING {16} \
+            CONFIG.NUM_READ_THREADS {2} \
+            CONFIG.NUM_WRITE_OUTSTANDING {16} \
+            CONFIG.NUM_WRITE_THREADS {2} \
+            ] \
+        axi_firewall_data_p2p ]
+
+        # Create instance: intr_fw_data_p2p_or, and set properties
+        set intr_fw_data_p2p_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params \
+        [ list                                                                                                 \
+            CONFIG.C_SIZE {1}                                                                                  \
+            CONFIG.C_OPERATION {or}                                                                            \
+        ] intr_fw_data_p2p_or ]
+
+        set num_data_interrupts [expr ${num_data_interrupts} + 1]
+
+    }
+
+    if {$num_data_interrupts > 1} {
+
+        # Create instance: intr_fw_data_concat, and set properties
+        set intr_fw_data_concat [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params         \
+        [ list                                                                                                 \
+            CONFIG.NUM_PORTS ${num_data_interrupts}                                                            \
+        ] intr_fw_data_concat ]
+
+        # Create instance: intr_fw_data_comb, and set properties
+        set intr_fw_data_comb [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_reduced_logic:2.* -set_params \
+        [ list                                                                                                 \
+            CONFIG.C_SIZE ${num_data_interrupts}                                                               \
+            CONFIG.C_OPERATION {or}                                                                            \
+        ] intr_fw_data_comb ]
+
+   }
+
+    # Create instance: regslice_data, and set properties
+    set regslice_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params      \
+    [ list                                                                                                  \
+        CONFIG.ADDR_WIDTH {39}                                                                              \
+        CONFIG.DATA_WIDTH $pcie_link_width                                                                  \
+        CONFIG.PROTOCOL {AXI4}                                                                              \
+        CONFIG.READ_WRITE_MODE {READ_WRITE}                                                                 \
+        CONFIG.REG_AR              [dict get $datapath_regslice_settings DMA regval]                        \
+        CONFIG.REG_AW              [dict get $datapath_regslice_settings DMA regval]                        \
+        CONFIG.REG_B               [dict get $datapath_regslice_settings DMA regval]                        \
+        CONFIG.REG_R               [dict get $datapath_regslice_settings DMA regval]                        \
+        CONFIG.REG_W               [dict get $datapath_regslice_settings DMA regval]                        \
+        CONFIG.NUM_SLR_CROSSINGS   [dict get $datapath_regslice_settings DMA num_slr_crossings]             \
+        CONFIG.PIPELINES_MIDDLE_AR [dict get $datapath_regslice_settings DMA pipelines_middle]              \
+        CONFIG.PIPELINES_MIDDLE_AW [dict get $datapath_regslice_settings DMA pipelines_middle]              \
+        CONFIG.PIPELINES_MIDDLE_B  [dict get $datapath_regslice_settings DMA pipelines_middle]              \
+        CONFIG.PIPELINES_MIDDLE_R  [dict get $datapath_regslice_settings DMA pipelines_middle]              \
+        CONFIG.PIPELINES_MIDDLE_W  [dict get $datapath_regslice_settings DMA pipelines_middle]              \
+    ] regslice_data ]
+
+    if {$C_ENABLE_M2M == true} {
+
+        # Create instance: regslice_data_m2m, and set properties
+        set regslice_data_m2m [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params  \
+        [ list                                                                                                  \
+            CONFIG.ADDR_WIDTH {39}                                                                              \
+            CONFIG.DATA_WIDTH $pcie_link_width                                                                  \
+            CONFIG.PROTOCOL {AXI4}                                                                              \
+            CONFIG.READ_WRITE_MODE {READ_WRITE}                                                                 \
+            CONFIG.REG_AR              [dict get $datapath_regslice_settings M2M regval]                        \
+            CONFIG.REG_AW              [dict get $datapath_regslice_settings M2M regval]                        \
+            CONFIG.REG_B               [dict get $datapath_regslice_settings M2M regval]                        \
+            CONFIG.REG_R               [dict get $datapath_regslice_settings M2M regval]                        \
+            CONFIG.REG_W               [dict get $datapath_regslice_settings M2M regval]                        \
+            CONFIG.NUM_SLR_CROSSINGS   [dict get $datapath_regslice_settings M2M num_slr_crossings]             \
+            CONFIG.PIPELINES_MIDDLE_AR [dict get $datapath_regslice_settings M2M pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_AW [dict get $datapath_regslice_settings M2M pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_B  [dict get $datapath_regslice_settings M2M pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_R  [dict get $datapath_regslice_settings M2M pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_W  [dict get $datapath_regslice_settings M2M pipelines_middle]              \
+        ] regslice_data_m2m ]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        # Create instance: regslice_data_p2p, and set properties
+        set regslice_data_p2p [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params  \
+        [ list                                                                                                  \
+            CONFIG.ADDR_WIDTH {39}                                                                              \
+            CONFIG.DATA_WIDTH $pcie_link_width                                                                  \
+            CONFIG.PROTOCOL {AXI4}                                                                              \
+            CONFIG.READ_WRITE_MODE {READ_WRITE}                                                                 \
+            CONFIG.REG_AR              [dict get $datapath_regslice_settings P2P regval]                        \
+            CONFIG.REG_AW              [dict get $datapath_regslice_settings P2P regval]                        \
+            CONFIG.REG_B               [dict get $datapath_regslice_settings P2P regval]                        \
+            CONFIG.REG_R               [dict get $datapath_regslice_settings P2P regval]                        \
+            CONFIG.REG_W               [dict get $datapath_regslice_settings P2P regval]                        \
+            CONFIG.NUM_SLR_CROSSINGS   [dict get $datapath_regslice_settings P2P num_slr_crossings]             \
+            CONFIG.PIPELINES_MIDDLE_AR [dict get $datapath_regslice_settings P2P pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_AW [dict get $datapath_regslice_settings P2P pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_B  [dict get $datapath_regslice_settings P2P pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_R  [dict get $datapath_regslice_settings P2P pipelines_middle]              \
+            CONFIG.PIPELINES_MIDDLE_W  [dict get $datapath_regslice_settings P2P pipelines_middle]              \
+        ] regslice_data_p2p ]
+
+    }
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    # AXI Slaves, interconnect and firewall
+
+    connect_bd_intf_net -intf_net s_axi_data_fw_ctrl      [get_bd_intf_pins s_axi_data_fw_ctrl]      [get_bd_intf_pins axi_firewall_data/S_AXI_CTL]
+    connect_bd_intf_net -intf_net s_axi_data              [get_bd_intf_pins s_axi_data]              [get_bd_intf_pins axi_firewall_data/S_AXI]
+    connect_bd_intf_net -intf_net axi_firewall_data_M_AXI [get_bd_intf_pins axi_firewall_data/M_AXI] [get_bd_intf_pins regslice_data/S_AXI]
+    connect_bd_intf_net -intf_net m_axi_data              [get_bd_intf_pins regslice_data/M_AXI]     [get_bd_intf_pins m_axi_data]
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_m2m_fw_ctrl      [get_bd_intf_pins s_axi_data_m2m_fw_ctrl]      [get_bd_intf_pins axi_firewall_data_m2m/S_AXI_CTL]
+        connect_bd_intf_net -intf_net s_axi_data_m2m              [get_bd_intf_pins s_axi_data_m2m]              [get_bd_intf_pins axi_firewall_data_m2m/S_AXI]
+        connect_bd_intf_net -intf_net axi_firewall_data_m2m_M_AXI [get_bd_intf_pins axi_firewall_data_m2m/M_AXI] [get_bd_intf_pins regslice_data_m2m/S_AXI]
+        connect_bd_intf_net -intf_net m_axi_data_m2m              [get_bd_intf_pins regslice_data_m2m/M_AXI]     [get_bd_intf_pins m_axi_data_m2m]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_p2p_fw_ctrl      [get_bd_intf_pins s_axi_data_p2p_fw_ctrl]      [get_bd_intf_pins axi_firewall_data_p2p/S_AXI_CTL]
+        connect_bd_intf_net -intf_net s_axi_data_p2p              [get_bd_intf_pins s_axi_data_p2p]              [get_bd_intf_pins axi_firewall_data_p2p/S_AXI]
+        connect_bd_intf_net -intf_net axi_firewall_data_p2p_M_AXI [get_bd_intf_pins axi_firewall_data_p2p/M_AXI] [get_bd_intf_pins regslice_data_p2p/S_AXI]
+        connect_bd_intf_net -intf_net m_axi_data_p2p              [get_bd_intf_pins regslice_data_p2p/M_AXI]     [get_bd_intf_pins m_axi_data_p2p]
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # Clock & Reset
+
+    connect_bd_net -net aclk_pcie                          [get_bd_pins aclk_pcie]                               \
+                                                           [get_bd_pins axi_firewall_data/aclk]                  \
+                                                           [get_bd_pins regslice_data/aclk]
+
+
+    connect_bd_net -net aresetn_pcie                       [get_bd_pins aresetn_pcie]                            \
+                                                           [get_bd_pins axi_firewall_data/aresetn]
+
+    connect_bd_net -net aresetn_pcie_ulp                   [get_bd_pins aresetn_pcie_ulp]                        \
+                                                           [get_bd_pins regslice_data/aresetn]
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]        [get_bd_pins axi_firewall_data_m2m/aclk]              \
+                                                           [get_bd_pins regslice_data_m2m/aclk]
+
+        connect_bd_net -net [get_bd_nets aresetn_pcie]     [get_bd_pins axi_firewall_data_m2m/aresetn]
+        connect_bd_net -net [get_bd_nets aresetn_pcie_ulp] [get_bd_pins regslice_data_m2m/aresetn]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]        [get_bd_pins axi_firewall_data_p2p/aclk]              \
+                                                           [get_bd_pins regslice_data_p2p/aclk]
+
+        connect_bd_net -net [get_bd_nets aresetn_pcie]     [get_bd_pins axi_firewall_data_p2p/aresetn]
+        connect_bd_net -net [get_bd_nets aresetn_pcie_ulp] [get_bd_pins regslice_data_p2p/aresetn]
+
+    }
+
+    # Interrupts
+    connect_bd_net -net data_mi_w_error     [get_bd_pins axi_firewall_data/mi_w_error] [get_bd_pins intr_fw_data_or/Op1]
+    connect_bd_net -net data_mi_r_error     [get_bd_pins axi_firewall_data/mi_r_error] [get_bd_pins intr_fw_data_or/Op2]
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_net -net data_m2m_mi_w_error [get_bd_pins axi_firewall_data_m2m/mi_w_error] [get_bd_pins intr_fw_data_m2m_or/Op1]
+        connect_bd_net -net data_m2m_mi_r_error [get_bd_pins axi_firewall_data_m2m/mi_r_error] [get_bd_pins intr_fw_data_m2m_or/Op2]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_net -net data_p2p_mi_w_error [get_bd_pins axi_firewall_data_p2p/mi_w_error] [get_bd_pins intr_fw_data_p2p_or/Op1]
+        connect_bd_net -net data_p2p_mi_r_error [get_bd_pins axi_firewall_data_p2p/mi_r_error] [get_bd_pins intr_fw_data_p2p_or/Op2]
+
+    }
+
+    if {$num_data_interrupts > 1} {
+
+
+        connect_bd_net -net intr_fw_data_concat_In0 [get_bd_pins intr_fw_data_or/Res] [get_bd_pins intr_fw_data_concat/In0]
+
+        set int_i 1
+
+        if {$C_ENABLE_M2M == true} {
+
+            connect_bd_net -net intr_fw_data_concat_In1 [get_bd_pins intr_fw_data_m2m_or/Res] [get_bd_pins intr_fw_data_concat/In1]
+
+            set int_i [expr ${int_i} + 1]
+
+        }
+
+        if {$C_ENABLE_P2P == true} {
+
+            connect_bd_net -net intr_fw_data_concat_In${int_i} [get_bd_pins intr_fw_data_p2p_or/Res] [get_bd_pins intr_fw_data_concat/In${int_i}]
+
+        }
+
+        connect_bd_net -net intr_fw_data_concat_dout [get_bd_pins intr_fw_data_concat/dout] [get_bd_pins intr_fw_data_comb/Op1]
+
+        connect_bd_net -net interrupt_firewall  [get_bd_pins intr_fw_data_comb/Res] [get_bd_pins interrupt_firewall]
+
+    } else {
+
+        connect_bd_net -net interrupt_firewall  [get_bd_pins intr_fw_data_or/Res] [get_bd_pins interrupt_firewall]
+
+    }
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: s_axi_ctrl_mgmt_fanout
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_s_axi_ctrl_mgmt_fanout { parentCell nameHier C_NUM_SLR isolated_ctrl_regslice_settings } {
+
+    dbg_puts "Creating hierarchy s_axi_ctrl_mgmt_fanout"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    # Slave AXI Ctrl MGMT Interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt
+
+    # Slave AXI Ctrl MGMT Firewall Control Interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt_fw_ctrl
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    dbg_puts "- Generating $C_NUM_SLR MGMT control interfaces"
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        # Master AXI Ctrl MGMT Interfaces
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_mgmt_${num_slr_index}
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    # Clock
+    create_bd_pin -dir I -type clk aclk_ctrl
+
+    # Reset
+    create_bd_pin -dir I -type rst aresetn_ctrl
+    create_bd_pin -dir I -type rst aresetn_ctrl_ulp
+
+    # Interrupts
+    create_bd_pin -dir O -type intr interrupt_firewall
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+
+    # Create instance: axi_firewall_ctrl_mgmt, and set properties
+    set axi_firewall_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* axi_firewall_ctrl_mgmt ]
+
+    # Create instance: intr_fw_mgmt_or, and set properties
+    set intr_fw_mgmt_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params  \
+    [ list                                                                                              \
+        CONFIG.C_SIZE {1}                                                                               \
+        CONFIG.C_OPERATION {or}                                                                         \
+    ] intr_fw_mgmt_or ]
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    if {$C_NUM_SLR > 1} {
+
+        # Create instance: axi_ic_ctrl_mgmt_fanout, and set properties
+        set axi_ic_ctrl_mgmt_fanout [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params  \
+        [ list                                                                                                      \
+            CONFIG.S00_HAS_REGSLICE {4}                                                                             \
+            CONFIG.NUM_MI $C_NUM_SLR                                                                                \
+        ] axi_ic_ctrl_mgmt_fanout ]
+
+    }
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        set regslice_index 0
+        set regslice_num [dict get $isolated_ctrl_regslice_settings $num_slr_index num_isolated_ctrl_regslice]
+
+        while {$regslice_index < $regslice_num} {
+
+            # Generate a single   regslice when SLR distance = 0 (Si0)
+            # Generate 1 pair  of regslice when SLR distance = 1 (Si0/Mi0)
+            # Generate 2 pairs of regslice when SLR distance = 2 (Si0/Mi0) (Si1/Mi1)
+            # Generate 3 pairs of regslice when SLR distance = 3 (Si0/Mi0) (Si1/Mi1) (Si2/Mi2)
+            if {$regslice_index == 0} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Si0
+            } elseif {$regslice_index == 1} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Mi0
+            } elseif {$regslice_index == 2} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Si1
+            } elseif {$regslice_index == 3} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Mi1
+            } elseif {$regslice_index == 4} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Si2
+            } elseif {$regslice_index == 5} {
+                set instance_name regslice_ctrl_mgmt_${num_slr_index}_Mi2
+            }
+
+            # Create instance: regslice_ctrl_mgmt_${num_slr_index}_?i?, and set properties
+            set $instance_name [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params         \
+            [ list                                                                                                      \
+                CONFIG.ADDR_WIDTH {26}                                                                                  \
+                CONFIG.DATA_WIDTH {32}                                                                                  \
+                CONFIG.PROTOCOL {AXI4LITE}                                                                              \
+                CONFIG.READ_WRITE_MODE {READ_WRITE}                                                                     \
+                CONFIG.REG_AR [dict get $isolated_ctrl_regslice_settings $num_slr_index regval]                         \
+                CONFIG.REG_AW [dict get $isolated_ctrl_regslice_settings $num_slr_index regval]                         \
+                CONFIG.REG_B [dict get $isolated_ctrl_regslice_settings $num_slr_index regval]                          \
+                CONFIG.REG_R [dict get $isolated_ctrl_regslice_settings $num_slr_index regval]                          \
+                CONFIG.REG_W [dict get $isolated_ctrl_regslice_settings $num_slr_index regval]                          \
+                CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_ctrl_regslice_settings $num_slr_index num_slr_crossings]   \
+                CONFIG.PIPELINES_MIDDLE_AR [dict get $isolated_ctrl_regslice_settings $num_slr_index pipelines_middle]  \
+                CONFIG.PIPELINES_MIDDLE_AW [dict get $isolated_ctrl_regslice_settings $num_slr_index pipelines_middle]  \
+                CONFIG.PIPELINES_MIDDLE_B [dict get $isolated_ctrl_regslice_settings $num_slr_index pipelines_middle]   \
+                CONFIG.PIPELINES_MIDDLE_R [dict get $isolated_ctrl_regslice_settings $num_slr_index pipelines_middle]   \
+                CONFIG.PIPELINES_MIDDLE_W [dict get $isolated_ctrl_regslice_settings $num_slr_index pipelines_middle]   \
+            ] $instance_name ]
+
+            incr regslice_index
+
+        }
+
+        # Rename regslice *_Reg when dist SLR = 0
+
+        if {$regslice_num == 1} {
+
+            set_property name regslice_ctrl_mgmt_${num_slr_index}_Reg [get_bd_cells regslice_ctrl_mgmt_${num_slr_index}_Si0]
+
+        }
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    # Ports to Firewall
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt         [get_bd_intf_pins s_axi_ctrl_mgmt]         [get_bd_intf_pins axi_firewall_ctrl_mgmt/S_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_fw_ctrl [get_bd_intf_pins s_axi_ctrl_mgmt_fw_ctrl] [get_bd_intf_pins axi_firewall_ctrl_mgmt/S_AXI_CTL]
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    if {$C_NUM_SLR > 1} {
+
+        # Firewall to AXI Interconnect
+
+        connect_bd_intf_net -intf_net axi_firewall_ctrl_mgmt_M_AXI [get_bd_intf_pins axi_firewall_ctrl_mgmt/M_AXI] [get_bd_intf_pins axi_ic_ctrl_mgmt_fanout/S00_AXI]
+
+    }
+
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        set regslice_num [dict get $isolated_ctrl_regslice_settings $num_slr_index num_isolated_ctrl_regslice]
+
+        if {$C_NUM_SLR > 1} {
+
+            set regslice_input axi_ic_ctrl_mgmt_fanout/M0${num_slr_index}_AXI
+
+        } else {
+
+            set regslice_input axi_firewall_ctrl_mgmt/M_AXI
+
+        }
+
+        #-----------------------------------------------
+        # Case1 SLR Distance = 0, num_regslice = 1
+        #-----------------------------------------------
+
+        if {$regslice_num == 1} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_mgmt_${num_slr_index}_Reg_S_AXI [get_bd_intf_pins ${regslice_input}]                                  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Reg/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index}              [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Reg/M_AXI]      [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}]
+
+        }
+
+        #-----------------------------------------------
+        # Case2 SLR Distance = 1, num_regslice = 2
+        #-----------------------------------------------
+
+        if {$regslice_num == 2} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_mgmt_${num_slr_index}_Mi0_S_AXI [get_bd_intf_pins ${regslice_input}]                                  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_1  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index}              [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/M_AXI]      [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}]
+
+        }
+
+        #-----------------------------------------------
+        # Case3 SLR Distance = 2, num_regslice = 4
+        #-----------------------------------------------
+
+        if {$regslice_num == 4} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_mgmt_${num_slr_index}_Mi1_S_AXI [get_bd_intf_pins ${regslice_input}]                                  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi1/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_1  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi1/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_2  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si1/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_3  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index}              [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/M_AXI]      [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}]
+
+        }
+
+        #-----------------------------------------------
+        # Case4 SLR Distance = 3, num_regslice = 6
+        #-----------------------------------------------
+
+        if {$regslice_num == 6} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_mgmt_${num_slr_index}_Mi2_S_AXI [get_bd_intf_pins ${regslice_input}]                                  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi2/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_1  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi2/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si2/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_2  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si2/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_3  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi1/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_4  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si1/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${num_slr_index}_5  [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index}              [get_bd_intf_pins regslice_ctrl_mgmt_${num_slr_index}_Si0/M_AXI]      [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}]
+
+        }
+
+        incr num_slr_index
+
+    }
+
+
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # Clock
+    connect_bd_net -net aclk_ctrl                   [get_bd_pins aclk_ctrl] [get_bd_pins axi_firewall_ctrl_mgmt/aclk]
+
+    # Reset
+    connect_bd_net -net aresetn_ctrl                [get_bd_pins aresetn_ctrl] [get_bd_pins axi_firewall_ctrl_mgmt/aresetn]
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        connect_bd_net -net [get_bd_nets aclk_ctrl]           [get_bd_pins regslice_ctrl_mgmt_${num_slr_index}_*/aclk]
+
+        connect_bd_net -net aresetn_ctrl_ulp                  [get_bd_pins aresetn_ctrl_ulp]                                    \
+                                                              [get_bd_pins regslice_ctrl_mgmt_${num_slr_index}_*/aresetn]
+
+        incr num_slr_index
+
+    }
+
+    if {$C_NUM_SLR > 1} {
+
+        connect_bd_net -net [get_bd_nets aclk_ctrl]            [get_bd_pins axi_ic_ctrl_mgmt_fanout/ACLK]                       \
+                                                               [get_bd_pins axi_ic_ctrl_mgmt_fanout/S00_ACLK]
+
+        connect_bd_net -net [get_bd_nets aresetn_ctrl_ulp]     [get_bd_pins axi_ic_ctrl_mgmt_fanout/ARESETN]                    \
+                                                               [get_bd_pins axi_ic_ctrl_mgmt_fanout/S00_ARESETN]
+
+        set num_slr_index 0
+
+        while {$num_slr_index < $C_NUM_SLR} {
+
+            connect_bd_net -net [get_bd_nets aclk_ctrl]        [get_bd_pins axi_ic_ctrl_mgmt_fanout/M0${num_slr_index}_ACLK]
+            connect_bd_net -net [get_bd_nets aresetn_ctrl_ulp] [get_bd_pins axi_ic_ctrl_mgmt_fanout/M0${num_slr_index}_ARESETN]
+
+            incr num_slr_index
+
+        }
+    }
+
+    # Interrupts
+    connect_bd_net -net mgmt_mi_w_error     [get_bd_pins axi_firewall_ctrl_mgmt/mi_w_error] [get_bd_pins intr_fw_mgmt_or/Op1]
+    connect_bd_net -net mgmt_mi_r_error     [get_bd_pins axi_firewall_ctrl_mgmt/mi_r_error] [get_bd_pins intr_fw_mgmt_or/Op2]
+
+    connect_bd_net -net interrupt_firewall  [get_bd_pins intr_fw_mgmt_or/Res] [get_bd_pins interrupt_firewall]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: s_axi_ctrl_user_fanout
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_s_axi_ctrl_user_fanout { parentCell nameHier C_NUM_SLR isolated_ctrl_regslice_settings } {
+
+    dbg_puts "Creating hierarchy s_axi_ctrl_user_fanout"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    # Slave AXI Ctrl User interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user
+
+    # Slave AXI Ctrl User Firewall Control Interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_fw_ctrl
+
+    # Slave AXI Ctrl User Debug Firewall Control Interface
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_dbg_fw_ctrl
+
+    # Master AXI Ctrl User Debug Interface
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_debug
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    dbg_puts "- Generating $C_NUM_SLR USER control interfaces"
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        # Master AXI Ctrl User Interfaces
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_${num_slr_index}
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    # Clock
+    create_bd_pin -dir I -type clk aclk
+
+    # Reset
+    create_bd_pin -dir I -type rst aresetn
+    create_bd_pin -dir I -type rst aresetn_ulp
+
+    # Interrupts
+    create_bd_pin -dir O -type intr interrupt_firewall
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: axi_firewall_ctrl_user, and set properties
+    set axi_firewall_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* axi_firewall_ctrl_user ]
+
+    # Create instance: axi_firewall_ctrl_user_dbg, and set properties
+    set axi_firewall_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.* axi_firewall_ctrl_user_dbg ]
+
+    # Create instance: intr_fw_user_or, and set properties
+    set intr_fw_user_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params     \
+    [ list                                                                                                 \
+        CONFIG.C_SIZE {1}                                                                                  \
+        CONFIG.C_OPERATION {or}                                                                            \
+    ] intr_fw_user_or ]
+
+    # Create instance: intr_fw_user_dbg_or, and set properties
+    set intr_fw_user_dbg_or [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params \
+    [ list                                                                                                 \
+        CONFIG.C_SIZE {1}                                                                                  \
+        CONFIG.C_OPERATION {or}                                                                            \
+    ] intr_fw_user_dbg_or ]
+
+    # Create instance: intr_fw_user_comb, and set properties
+    set intr_fw_user_comb [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params   \
+    [ list                                                                                                 \
+        CONFIG.C_SIZE {1}                                                                                  \
+        CONFIG.C_OPERATION {or}                                                                            \
+    ] intr_fw_user_comb ]
+
+    # Create instance: axi_ic_ctrl_user_debug, and set properties
+    set axi_ic_ctrl_user_debug [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params   \
+    [ list                                                                                                      \
+        CONFIG.NUM_MI {2}                                                                                       \
+    ] axi_ic_ctrl_user_debug ]
+
+    if {$C_NUM_SLR > 1} {
+
+        # Create instance: axi_ic_ctrl_user_fanout, and set properties
+        set axi_ic_ctrl_user_fanout [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params  \
+        [ list                                                                                                      \
+            CONFIG.S00_HAS_REGSLICE {4}                                                                             \
+            CONFIG.NUM_MI $C_NUM_SLR                                                                                \
+        ] axi_ic_ctrl_user_fanout ]
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR+1} {
+
+        set slr_suffix ${num_slr_index}
+
+        if {$num_slr_index == $C_NUM_SLR} {
+
+            set slr_suffix debug
+
+        }
+
+        set regslice_num [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] num_isolated_ctrl_regslice]
+
+        set regslice_index 0
+
+        while {$regslice_index < $regslice_num} {
+
+            # Generate a single   regslice when SLR distance = 0 (Si0)
+            # Generate 1 pair  of regslice when SLR distance = 1 (Si0/Mi0)
+            # Generate 2 pairs of regslice when SLR distance = 2 (Si0/Mi0) (Si1/Mi1)
+            # Generate 3 pairs of regslice when SLR distance = 3 (Si0/Mi0) (Si1/Mi1) (Si2/Mi2)
+            if {$regslice_index == 0} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Si0
+            } elseif {$regslice_index == 1} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Mi0
+            } elseif {$regslice_index == 2} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Si1
+            } elseif {$regslice_index == 3} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Mi1
+            } elseif {$regslice_index == 4} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Si2
+            } elseif {$regslice_index == 5} {
+                set instance_name regslice_ctrl_user_${slr_suffix}_Mi2
+            }
+
+            # Create instance: regslice_ctrl_user_${slr_suffix}_?i?, and set properties
+            set $instance_name [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.* -set_params                                \
+            [ list                                                                                                                             \
+                CONFIG.ADDR_WIDTH {26}                                                                                                         \
+                CONFIG.DATA_WIDTH {32}                                                                                                         \
+                CONFIG.PROTOCOL {AXI4LITE}                                                                                                     \
+                CONFIG.READ_WRITE_MODE {READ_WRITE}                                                                                            \
+                CONFIG.REG_AR [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] regval]                                \
+                CONFIG.REG_AW [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] regval]                                \
+                CONFIG.REG_B [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] regval]                                 \
+                CONFIG.REG_R [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] regval]                                 \
+                CONFIG.REG_W [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] regval]                                 \
+                CONFIG.NUM_SLR_CROSSINGS [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] num_slr_crossings]          \
+                CONFIG.PIPELINES_MIDDLE_AR [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] pipelines_middle]         \
+                CONFIG.PIPELINES_MIDDLE_AW [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] pipelines_middle]         \
+                CONFIG.PIPELINES_MIDDLE_B [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] pipelines_middle]          \
+                CONFIG.PIPELINES_MIDDLE_R [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] pipelines_middle]          \
+                CONFIG.PIPELINES_MIDDLE_W [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] pipelines_middle]          \
+            ] $instance_name ]
+
+            incr regslice_index
+
+        }
+
+        # Rename regslice *_Reg when dist SLR = 0
+
+        if {$regslice_num == 1} {
+
+            set_property name regslice_ctrl_user_${slr_suffix}_Reg [get_bd_cells regslice_ctrl_user_${slr_suffix}_Si0]
+
+        }
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    # Ports to Firewalls
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_fw_ctrl     [get_bd_intf_pins s_axi_ctrl_user_fw_ctrl]     [get_bd_intf_pins axi_firewall_ctrl_user/S_AXI_CTL]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_dbg_fw_ctrl [get_bd_intf_pins s_axi_ctrl_user_dbg_fw_ctrl] [get_bd_intf_pins axi_firewall_ctrl_user_dbg/S_AXI_CTL]
+
+    # Port to User Debug AXI Interconnect Split
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_user [get_bd_intf_pins s_axi_ctrl_user] [get_bd_intf_pins axi_ic_ctrl_user_debug/S00_AXI]
+
+    #  AXI Interconnect Split to Firewalls
+
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_debug_M00_AXI [get_bd_intf_pins axi_ic_ctrl_user_debug/M00_AXI] [get_bd_intf_pins axi_firewall_ctrl_user/S_AXI]
+    connect_bd_intf_net -intf_net axi_ic_ctrl_user_debug_M01_AXI [get_bd_intf_pins axi_ic_ctrl_user_debug/M01_AXI] [get_bd_intf_pins axi_firewall_ctrl_user_dbg/S_AXI]
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    if {$C_NUM_SLR > 1} {
+
+        # User Firewall to AXI Interconnect
+
+        connect_bd_intf_net -intf_net axi_firewall_ctrl_user_M_AXI [get_bd_intf_pins axi_firewall_ctrl_user/M_AXI] [get_bd_intf_pins axi_ic_ctrl_user_fanout/S00_AXI]
+
+    }
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR+1} {
+
+        set slr_suffix ${num_slr_index}
+
+        if {$num_slr_index == $C_NUM_SLR} {
+
+            set slr_suffix debug
+
+        }
+
+        set regslice_num [dict get $isolated_ctrl_regslice_settings [string toupper ${slr_suffix}] num_isolated_ctrl_regslice]
+
+        if {$num_slr_index < $C_NUM_SLR} {
+
+            if {$C_NUM_SLR > 1} {
+
+                set regslice_input axi_ic_ctrl_user_fanout/M0${num_slr_index}_AXI
+                set output_port     m_axi_ctrl_user_${slr_suffix}
+
+            } else {
+
+                set regslice_input axi_firewall_ctrl_user/M_AXI
+                set output_port     m_axi_ctrl_user_${slr_suffix}
+
+            }
+
+        } else {
+
+            set regslice_input axi_firewall_ctrl_user_dbg/M_AXI
+            set output_port     m_axi_ctrl_user_debug
+
+        }
+
+        #-----------------------------------------------
+        # Case1 SLR Distance = 0, num_regslice = 1
+        #-----------------------------------------------
+
+        if {$regslice_num == 1} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_user_${slr_suffix}_Reg_S_AXI [get_bd_intf_pins ${regslice_input}]   [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Reg/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net ${output_port}                             [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Reg/M_AXI]      [get_bd_intf_pins ${output_port}]
+
+        }
+
+        #-----------------------------------------------
+        # Case2 SLR Distance = 1, num_regslice = 2
+        #-----------------------------------------------
+
+        if {$regslice_num == 2} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_user_${slr_suffix}_Mi0_S_AXI [get_bd_intf_pins ${regslice_input}]   [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_1  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net ${output_port}                             [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/M_AXI]      [get_bd_intf_pins ${output_port}]
+
+        }
+
+        #-----------------------------------------------
+        # Case3 SLR Distance = 2, num_regslice = 4
+        #-----------------------------------------------
+
+        if {$regslice_num == 4} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_user_${slr_suffix}_Mi1_S_AXI [get_bd_intf_pins ${regslice_input}]   [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi1/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_1  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi1/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_2  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si1/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_3  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net ${output_port}                             [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/M_AXI]      [get_bd_intf_pins ${output_port}]
+
+        }
+
+        #-----------------------------------------------
+        # Case4 SLR Distance = 3, num_regslice = 6
+        #-----------------------------------------------
+
+        if {$regslice_num == 6} {
+
+            # AXI Interconnect/Firewall to Regslice
+
+            connect_bd_intf_net -intf_net regslice_ctrl_user_${slr_suffix}_Mi2_S_AXI [get_bd_intf_pins ${regslice_input}]   [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi2/S_AXI]
+
+            # Regslice to Regslice
+
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_1  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi2/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si2/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_2  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si2/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_3  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi1/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si1/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_4  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si1/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/S_AXI]
+            connect_bd_intf_net -intf_net regslice_to_regslice_M0${slr_suffix}_5  [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Mi0/M_AXI]      [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/S_AXI]
+
+            # Regslice to Port
+
+            connect_bd_intf_net -intf_net ${output_port}                             [get_bd_intf_pins regslice_ctrl_user_${slr_suffix}_Si0/M_AXI]      [get_bd_intf_pins ${output_port}]
+
+        }
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # Clock
+    connect_bd_net -net aclk                        [get_bd_pins aclk]                                                    \
+                                                    [get_bd_pins axi_firewall_ctrl_user/aclk]                             \
+                                                    [get_bd_pins axi_firewall_ctrl_user_dbg/aclk]                         \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/ACLK]                             \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/S00_ACLK]                         \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/M00_ACLK]                         \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/M01_ACLK]                         \
+                                                    [get_bd_pins regslice_ctrl_user_debug_*/aclk]
+
+    # Reset
+    connect_bd_net -net aresetn                     [get_bd_pins aresetn]                                                 \
+                                                    [get_bd_pins axi_firewall_ctrl_user/aresetn]                          \
+                                                    [get_bd_pins axi_firewall_ctrl_user_dbg/aresetn]                      \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/ARESETN]                          \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/S00_ARESETN]                      \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/M00_ARESETN]                      \
+                                                    [get_bd_pins axi_ic_ctrl_user_debug/M01_ARESETN]
+
+    connect_bd_net -net aresetn_ulp                 [get_bd_pins aresetn_ulp]                                             \
+                                                    [get_bd_pins regslice_ctrl_user_debug_*/aresetn]
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    if {$C_NUM_SLR > 1} {
+
+        connect_bd_net -net [get_bd_nets aclk]                [get_bd_pins axi_ic_ctrl_user_fanout/ACLK]                  \
+                                                              [get_bd_pins axi_ic_ctrl_user_fanout/S00_ACLK]
+
+        connect_bd_net -net [get_bd_nets aresetn_ulp]         [get_bd_pins axi_ic_ctrl_user_fanout/ARESETN]               \
+                                                              [get_bd_pins axi_ic_ctrl_user_fanout/S00_ARESETN]
+
+        set num_slr_index 0
+
+        while {$num_slr_index < $C_NUM_SLR} {
+
+            connect_bd_net -net [get_bd_nets aclk]            [get_bd_pins axi_ic_ctrl_user_fanout/M0${num_slr_index}_ACLK]
+            connect_bd_net -net [get_bd_nets aresetn_ulp]     [get_bd_pins axi_ic_ctrl_user_fanout/M0${num_slr_index}_ARESETN]
+
+            incr num_slr_index
+
+        }
+
+    }
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        connect_bd_net -net [get_bd_nets aclk]                [get_bd_pins regslice_ctrl_user_${num_slr_index}_*/aclk]
+        connect_bd_net -net [get_bd_nets aresetn_ulp]         [get_bd_pins regslice_ctrl_user_${num_slr_index}_*/aresetn]
+
+        incr num_slr_index
+
+    }
+
+    # Interrupts
+    connect_bd_net -net user_mi_w_error     [get_bd_pins axi_firewall_ctrl_user/mi_w_error] [get_bd_pins intr_fw_user_or/Op1]
+    connect_bd_net -net user_mi_r_error     [get_bd_pins axi_firewall_ctrl_user/mi_r_error] [get_bd_pins intr_fw_user_or/Op2]
+
+    connect_bd_net -net user_dbg_mi_w_error [get_bd_pins axi_firewall_ctrl_user_dbg/mi_w_error] [get_bd_pins intr_fw_user_dbg_or/Op1]
+    connect_bd_net -net user_dbg_mi_r_error [get_bd_pins axi_firewall_ctrl_user_dbg/mi_r_error] [get_bd_pins intr_fw_user_dbg_or/Op2]
+
+    connect_bd_net -net user_mi_error       [get_bd_pins intr_fw_user_or/Res]     [get_bd_pins intr_fw_user_comb/Op1]
+    connect_bd_net -net user_dbg_mi_error   [get_bd_pins intr_fw_user_dbg_or/Res] [get_bd_pins intr_fw_user_comb/Op2]
+
+    connect_bd_net -net interrupt_firewall  [get_bd_pins intr_fw_user_comb/Res] [get_bd_pins interrupt_firewall]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: isolation_control
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_isolation_control { parentCell nameHier } {
+
+    dbg_puts "Creating hierarchy isolation_control"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -type clk aclk_ctrl
+    create_bd_pin -dir I -type clk aclk_pcie
+    create_bd_pin -dir I -type rst aresetn_ctrl
+    create_bd_pin -dir I -type rst aresetn_pcie
+    create_bd_pin -dir O -type rst aresetn_ctrl_ulp
+    create_bd_pin -dir O -type rst aresetn_pcie_ulp
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: gate_pr, and set properties
+    set gate_pr [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.* -set_params               \
+    [ list                                                                                           \
+        CONFIG.C_ALL_INPUTS_2 {1}                                                                    \
+        CONFIG.C_ALL_OUTPUTS {1}                                                                     \
+        CONFIG.C_DOUT_DEFAULT {0x00000000}                                                           \
+        CONFIG.C_GPIO2_WIDTH {1}                                                                     \
+        CONFIG.C_GPIO_WIDTH {1}                                                                      \
+        CONFIG.C_IS_DUAL {1}                                                                         \
+    ] gate_pr ]
+
+    # Create instance: pr_aresetn_ctrl, and set properties
+    set pr_aresetn_ctrl [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params \
+    [ list                                                                                           \
+        CONFIG.C_AUX_RST_WIDTH {1}                                                                   \
+        CONFIG.C_EXT_RST_WIDTH {1}                                                                   \
+    ] pr_aresetn_ctrl ]
+
+    # Create instance: pr_aresetn_pcie, and set properties
+    set pr_aresetn_pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.* -set_params \
+    [ list                                                                                           \
+        CONFIG.C_AUX_RST_WIDTH {1}                                                                   \
+        CONFIG.C_EXT_RST_WIDTH {1}                                                                   \
+    ] pr_aresetn_pcie ]
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt [get_bd_intf_pins s_axi_ctrl_mgmt] [get_bd_intf_pins gate_pr/S_AXI]
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    connect_bd_net -net aclk_ctrl               [get_bd_pins aclk_ctrl] [get_bd_pins pr_aresetn_ctrl/slowest_sync_clk] [get_bd_pins gate_pr/s_axi_aclk]
+    connect_bd_net -net aclk_pcie               [get_bd_pins aclk_pcie] [get_bd_pins pr_aresetn_pcie/slowest_sync_clk]
+
+    connect_bd_net -net aresetn_ctrl            [get_bd_pins aresetn_ctrl] [get_bd_pins pr_aresetn_ctrl/ext_reset_in] [get_bd_pins gate_pr/s_axi_aresetn]
+    connect_bd_net -net aresetn_pcie            [get_bd_pins aresetn_pcie] [get_bd_pins pr_aresetn_pcie/ext_reset_in]
+
+    connect_bd_net -net gate_pr                 [get_bd_pins gate_pr/gpio_io_o] [get_bd_pins gate_pr/gpio2_io_i] [get_bd_pins pr_aresetn_ctrl/aux_reset_in] [get_bd_pins pr_aresetn_pcie/aux_reset_in]
+
+    connect_bd_net -net aresetn_ctrl_ulp        [get_bd_pins aresetn_ctrl_ulp] [get_bd_pins pr_aresetn_ctrl/interconnect_aresetn]
+    connect_bd_net -net aresetn_pcie_ulp        [get_bd_pins aresetn_pcie_ulp] [get_bd_pins pr_aresetn_pcie/interconnect_aresetn]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: fanout
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_fanout { parentCell nameHier C_ENABLE_M2M C_ENABLE_P2P C_NUM_SLR user_clk user_rst datapath_regslice_settings isolated_ctrl_regslice_settings pcie_link_width } {
+
+    dbg_puts "Creating hierarchy fanout"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt_fanout_in
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_fanout_in
+    create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_debug
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_m2m
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_m2m
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        create_bd_intf_pin -mode Slave  -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_p2p
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_p2p
+
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    dbg_puts "- Generating $C_NUM_SLR MGMT control interfaces"
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_mgmt_${num_slr_index}
+        incr num_slr_index
+
+    }
+
+    set num_slr_index 0
+
+    dbg_puts "- Generating $C_NUM_SLR USER control interfaces"
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_${num_slr_index}
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    # Clocks
+    create_bd_pin -dir I -type clk aclk_ctrl
+    create_bd_pin -dir I -type clk aclk_pcie
+
+    # Resets
+    create_bd_pin -dir I -type rst aresetn_ctrl
+    create_bd_pin -dir I -type rst aresetn_pcie
+    create_bd_pin -dir I -type rst aresetn_ctrl_ulp
+    create_bd_pin -dir I -type rst aresetn_pcie_ulp
+
+    # Interrupts
+    create_bd_pin -dir O -type intr interrupt_firewall
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: s_axi_ctrl_user_fanout
+    create_hier_cell_s_axi_ctrl_user_fanout $hier_obj s_axi_ctrl_user_fanout $C_NUM_SLR $isolated_ctrl_regslice_settings
+
+    # Create instance: s_axi_ctrl_mgmt_fanout
+    create_hier_cell_s_axi_ctrl_mgmt_fanout $hier_obj s_axi_ctrl_mgmt_fanout $C_NUM_SLR $isolated_ctrl_regslice_settings
+
+    # Create instance: s_axi_data_fanout
+    create_hier_cell_s_axi_data_fanout $hier_obj s_axi_data_fanout $C_ENABLE_M2M $C_ENABLE_P2P $datapath_regslice_settings $pcie_link_width
+
+    # Create instance: intr_fw_concat, and set properties
+    set intr_fw_concat [create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params               \
+    [ list                                                                                                 \
+        CONFIG.NUM_PORTS {3}                                                                               \
+    ] intr_fw_concat ]
+
+
+    # Create instance: intr_fw_or_reduce, and set properties
+    set intr_fw_or_reduce [create_bd_cell -type ip -vlnv xilinx.com:ip:util_reduced_logic:2.* -set_params  \
+    [ list                                                                                                 \
+        CONFIG.C_SIZE {3}                                                                                  \
+        CONFIG.C_OPERATION {or}                                                                            \
+    ] intr_fw_or_reduce ]
+
+
+    set axi_ic_ctrl_mgmt_fw_num_mi {4}
+
+    if {$C_ENABLE_M2M == true} {
+
+        set axi_ic_ctrl_mgmt_fw_num_mi [expr ${axi_ic_ctrl_mgmt_fw_num_mi} + 1]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        set axi_ic_ctrl_mgmt_fw_num_mi [expr ${axi_ic_ctrl_mgmt_fw_num_mi} + 1]
+
+    }
+
+    # Create instance: axi_ic_ctrl_mgmt_fw, and set properties
+    set axi_ic_ctrl_mgmt_fw [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params     \
+    [ list                                                                                                     \
+        CONFIG.NUM_MI ${axi_ic_ctrl_mgmt_fw_num_mi}                                                            \
+    ] axi_ic_ctrl_mgmt_fw ]
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    # Wire axi lite fw control interfaces
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt             [get_bd_intf_pins s_axi_ctrl_mgmt]             [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/S00_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_fw_ctrl     [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M00_AXI] [get_bd_intf_pins s_axi_ctrl_mgmt_fanout/s_axi_ctrl_mgmt_fw_ctrl]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_fw_ctrl     [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M01_AXI] [get_bd_intf_pins s_axi_ctrl_user_fanout/s_axi_ctrl_user_fw_ctrl]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_dbg_fw_ctrl [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M02_AXI] [get_bd_intf_pins s_axi_ctrl_user_fanout/s_axi_ctrl_user_dbg_fw_ctrl]
+    connect_bd_intf_net -intf_net s_axi_data_fw_ctrl          [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M03_AXI] [get_bd_intf_pins s_axi_data_fanout/s_axi_data_fw_ctrl]
+
+    set m_i {4}
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_m2m_fw_ctrl      [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M04_AXI] [get_bd_intf_pins s_axi_data_fanout/s_axi_data_m2m_fw_ctrl]
+        set m_i [expr ${m_i} + 1]
+
+    }
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_p2p_fw_ctrl      [get_bd_intf_pins axi_ic_ctrl_mgmt_fw/M0${m_i}_AXI] [get_bd_intf_pins s_axi_data_fanout/s_axi_data_p2p_fw_ctrl]
+
+    }
+
+    # Wire axi fanout interfaces
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_fanout_in   [get_bd_intf_pins s_axi_ctrl_mgmt_fanout_in]   [get_bd_intf_pins s_axi_ctrl_mgmt_fanout/s_axi_ctrl_mgmt]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_fanout_in   [get_bd_intf_pins s_axi_ctrl_user_fanout_in]   [get_bd_intf_pins s_axi_ctrl_user_fanout/s_axi_ctrl_user]
+    connect_bd_intf_net -intf_net s_axi_data                  [get_bd_intf_pins s_axi_data]                  [get_bd_intf_pins s_axi_data_fanout/s_axi_data]
+    connect_bd_intf_net -intf_net m_axi_data                  [get_bd_intf_pins m_axi_data]                  [get_bd_intf_pins s_axi_data_fanout/m_axi_data]
+
+    connect_bd_intf_net -intf_net m_axi_ctrl_user_debug       [get_bd_intf_pins m_axi_ctrl_user_debug]       [get_bd_intf_pins s_axi_ctrl_user_fanout/m_axi_ctrl_user_debug]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_m2m              [get_bd_intf_pins s_axi_data_m2m]          [get_bd_intf_pins s_axi_data_fanout/s_axi_data_m2m]
+        connect_bd_intf_net -intf_net m_axi_data_m2m              [get_bd_intf_pins m_axi_data_m2m]          [get_bd_intf_pins s_axi_data_fanout/m_axi_data_m2m]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_p2p              [get_bd_intf_pins s_axi_data_p2p]          [get_bd_intf_pins s_axi_data_fanout/s_axi_data_p2p]
+        connect_bd_intf_net -intf_net m_axi_data_p2p              [get_bd_intf_pins m_axi_data_p2p]          [get_bd_intf_pins s_axi_data_fanout/m_axi_data_p2p]
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        # AXI Lite Master(s) (MGMT)
+        connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index} [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}] [get_bd_intf_pins s_axi_ctrl_mgmt_fanout/m_axi_ctrl_mgmt_${num_slr_index}]
+
+        # AXI Lite Master(s) (USER)
+        connect_bd_intf_net -intf_net m_axi_ctrl_user_${num_slr_index} [get_bd_intf_pins m_axi_ctrl_user_${num_slr_index}] [get_bd_intf_pins s_axi_ctrl_user_fanout/m_axi_ctrl_user_${num_slr_index}]
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    # Clocks
+    connect_bd_net -net aclk_pcie                               [get_bd_pins aclk_pcie]                                     \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M03_ACLK]                  \
+                                                                [get_bd_pins s_axi_data_fanout/aclk_pcie]
+
+    connect_bd_net -net aclk_ctrl                               [get_bd_pins aclk_ctrl]                                     \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/ACLK]                      \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/S00_ACLK]                  \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M00_ACLK]                  \
+                                                                [get_bd_pins s_axi_ctrl_mgmt_fanout/aclk_ctrl]
+
+    # Resets
+    connect_bd_net -net aresetn_pcie                            [get_bd_pins aresetn_pcie]                                  \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M03_ARESETN]               \
+                                                                [get_bd_pins s_axi_data_fanout/aresetn_pcie]
+
+    connect_bd_net -net aresetn_ctrl                            [get_bd_pins aresetn_ctrl]                                  \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/ARESETN]                   \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/S00_ARESETN]               \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M00_ARESETN]               \
+                                                                [get_bd_pins s_axi_ctrl_mgmt_fanout/aresetn_ctrl]
+
+    connect_bd_net -net aresetn_pcie_ulp                        [get_bd_pins aresetn_pcie_ulp]                              \
+                                                                [get_bd_pins s_axi_data_fanout/aresetn_pcie_ulp]
+
+    connect_bd_net -net aresetn_ctrl_ulp                        [get_bd_pins aresetn_ctrl_ulp]                              \
+                                                                [get_bd_pins s_axi_ctrl_mgmt_fanout/aresetn_ctrl_ulp]
+
+    connect_bd_net -net [get_bd_nets ${user_clk}]               [get_bd_pins axi_ic_ctrl_mgmt_fw/M01_ACLK]                  \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M02_ACLK]                  \
+                                                                [get_bd_pins s_axi_ctrl_user_fanout/aclk]
+
+    connect_bd_net -net [get_bd_nets ${user_rst}]               [get_bd_pins axi_ic_ctrl_mgmt_fw/M01_ARESETN]               \
+                                                                [get_bd_pins axi_ic_ctrl_mgmt_fw/M02_ARESETN]               \
+                                                                [get_bd_pins s_axi_ctrl_user_fanout/aresetn]
+
+    connect_bd_net -net [get_bd_nets ${user_rst}_ulp]           [get_bd_pins s_axi_ctrl_user_fanout/aresetn_ulp]
+
+    connect_bd_net -net user_ctrl_fanout_interrupt_firewall     [get_bd_pins s_axi_ctrl_user_fanout/interrupt_firewall] [get_bd_pins intr_fw_concat/In0]
+    connect_bd_net -net mgmt_ctrl_fanout_interrupt_firewall     [get_bd_pins s_axi_ctrl_mgmt_fanout/interrupt_firewall] [get_bd_pins intr_fw_concat/In1]
+    connect_bd_net -net data_fanout_interrupt_firewall          [get_bd_pins s_axi_data_fanout/interrupt_firewall]      [get_bd_pins intr_fw_concat/In2]
+
+    connect_bd_net -net fanout_interrupt_firewall_concat        [get_bd_pins intr_fw_concat/dout] [get_bd_pins intr_fw_or_reduce/Op1]
+    connect_bd_net -net interrupt_firewall                      [get_bd_pins intr_fw_or_reduce/Res] [get_bd_pins interrupt_firewall]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    set m_i {4}
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]    [get_bd_pins axi_ic_ctrl_mgmt_fw/M04_ACLK]
+        connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axi_ic_ctrl_mgmt_fw/M04_ARESETN]
+        set m_i [expr ${m_i} + 1]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]    [get_bd_pins axi_ic_ctrl_mgmt_fw/M0${m_i}_ACLK]
+        connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axi_ic_ctrl_mgmt_fw/M0${m_i}_ARESETN]
+
+    }
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: mi_axi_vip
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_mi_axi_vip { parentCell nameHier C_ENABLE_M2M C_ENABLE_P2P C_NUM_SLR user_clk user_rst} {
+
+    dbg_puts "Creating hierarchy mi_axi_vip"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_debug
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_debug
+
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_m2m
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_m2m
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_p2p
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_p2p
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_$num_slr_index
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt_$num_slr_index
+
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_$num_slr_index
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_mgmt_$num_slr_index
+
+        incr num_slr_index
+
+    }
+
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -type clk aclk_ctrl
+    create_bd_pin -dir I -type rst aresetn_ctrl_ulp
+
+    create_bd_pin -dir I -type clk aclk_pcie
+    create_bd_pin -dir I -type rst aresetn_pcie_ulp
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: axi_vip_ctrl_user_debug_mi, and set properties
+    set axi_vip_ctrl_user_debug_mi [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_user_debug_mi ]
+
+     # Create instance: axi_vip_data_mi, and set properties
+    set axi_vip_data_mi [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_mi ]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        # Create instance: axi_vip_data_m2m_mi, and set properties
+        set axi_vip_data_m2m_mi [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_m2m_mi ]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        # Create instance: axi_vip_data_p2p_mi, and set properties
+        set axi_vip_data_p2p_mi [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_p2p_mi ]
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        # Create instance: axi_vip_ctrl_user_mi, and set properties
+        set axi_vip_ctrl_user_mi$num_slr_index [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_user_mi$num_slr_index ]
+
+        # Create instance: axi_vip_ctrl_mgmt_mi, and set properties
+        set axi_vip_ctrl_mgmt_mi$num_slr_index [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_mgmt_mi$num_slr_index ]
+
+        incr num_slr_index
+
+    }
+
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    connect_bd_intf_net -intf_net m_axi_ctrl_user_debug [get_bd_intf_pins m_axi_ctrl_user_debug] [get_bd_intf_pins axi_vip_ctrl_user_debug_mi/M_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_debug [get_bd_intf_pins s_axi_ctrl_user_debug] [get_bd_intf_pins axi_vip_ctrl_user_debug_mi/S_AXI]
+
+    connect_bd_intf_net -intf_net s_axi_data [get_bd_intf_pins s_axi_data] [get_bd_intf_pins axi_vip_data_mi/S_AXI]
+    connect_bd_intf_net -intf_net m_axi_data [get_bd_intf_pins m_axi_data] [get_bd_intf_pins axi_vip_data_mi/M_AXI]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_m2m [get_bd_intf_pins s_axi_data_m2m] [get_bd_intf_pins axi_vip_data_m2m_mi/S_AXI]
+        connect_bd_intf_net -intf_net m_axi_data_m2m [get_bd_intf_pins m_axi_data_m2m] [get_bd_intf_pins axi_vip_data_m2m_mi/M_AXI]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_intf_net -intf_net s_axi_data_p2p [get_bd_intf_pins s_axi_data_p2p] [get_bd_intf_pins axi_vip_data_p2p_mi/S_AXI]
+        connect_bd_intf_net -intf_net m_axi_data_p2p [get_bd_intf_pins m_axi_data_p2p] [get_bd_intf_pins axi_vip_data_p2p_mi/M_AXI]
+
+    }
+
+    #-----------#
+    # C_NUM_SLR #
+    #-----------#
+
+    set num_slr_index 0
+
+    while {$num_slr_index < $C_NUM_SLR} {
+
+        connect_bd_intf_net -intf_net axi_vip_ctrl_user_mi${num_slr_index} [get_bd_intf_pins m_axi_ctrl_user_${num_slr_index}] [get_bd_intf_pins axi_vip_ctrl_user_mi${num_slr_index}/M_AXI]
+        connect_bd_intf_net -intf_net m_axi_ctrl_user${num_slr_index} [get_bd_intf_pins s_axi_ctrl_user_${num_slr_index}] [get_bd_intf_pins axi_vip_ctrl_user_mi${num_slr_index}/S_AXI]
+
+        connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_mi${num_slr_index} [get_bd_intf_pins m_axi_ctrl_mgmt_${num_slr_index}] [get_bd_intf_pins axi_vip_ctrl_mgmt_mi${num_slr_index}/M_AXI]
+        connect_bd_intf_net -intf_net m_axi_ctrl_mgmt${num_slr_index} [get_bd_intf_pins s_axi_ctrl_mgmt_${num_slr_index}] [get_bd_intf_pins axi_vip_ctrl_mgmt_mi${num_slr_index}/S_AXI]
+
+        incr num_slr_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    connect_bd_net -net aclk_ctrl        [get_bd_pins aclk_ctrl]        [get_bd_pins axi_vip_ctrl_mgmt_mi*/aclk]
+    connect_bd_net -net aresetn_ctrl_ulp [get_bd_pins aresetn_ctrl_ulp] [get_bd_pins axi_vip_ctrl_mgmt_mi*/aresetn]
+
+    connect_bd_net -net aclk_pcie        [get_bd_pins aclk_pcie]        [get_bd_pins axi_vip_data_mi*/aclk]
+    connect_bd_net -net aresetn_pcie_ulp [get_bd_pins aresetn_pcie_ulp] [get_bd_pins axi_vip_data_mi*/aresetn]
+
+    connect_bd_net -net [get_bd_nets ${user_clk}]     [get_bd_pins axi_vip_ctrl_user_mi*/aclk]    [get_bd_pins axi_vip_ctrl_user_debug_mi/aclk]
+    connect_bd_net -net [get_bd_nets ${user_rst}_ulp] [get_bd_pins axi_vip_ctrl_user_mi*/aresetn] [get_bd_pins axi_vip_ctrl_user_debug_mi/aresetn]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]        [get_bd_pins axi_vip_data_m2m_mi/aclk]
+        connect_bd_net -net [get_bd_nets aresetn_pcie_ulp] [get_bd_pins axi_vip_data_m2m_mi/aresetn]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]        [get_bd_pins axi_vip_data_p2p_mi/aclk]
+        connect_bd_net -net [get_bd_nets aresetn_pcie_ulp] [get_bd_pins axi_vip_data_p2p_mi/aresetn]
+
+    }
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: mi_stream_axi_vip
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_mi_stream_axi_vip { parentCell nameHier C_NUM_ISOLATED_STREAM } {
+
+    dbg_puts "Creating hierarchy mi_stream_axi_vip"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_h2c_a_$isolated_stream_index
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_c2h_b_$isolated_stream_index
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_h2c_a_$isolated_stream_index
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_c2h_b_$isolated_stream_index
+
+        incr isolated_stream_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -type clk aclk_pcie
+    create_bd_pin -dir I -type rst aresetn_pcie
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        # Create instance: axi_vip_h2c_a_mi, and set properties
+        set axi_vip_h2c_a_mi$isolated_stream_index [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi4stream_vip axi_vip_h2c_a_mi$isolated_stream_index ]
+
+        # Create instance: axi_vip_c2h_b_mi, and set properties
+        set axi_vip_c2h_b_mi$isolated_stream_index [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi4stream_vip axi_vip_c2h_b_mi$isolated_stream_index ]
+
+        incr isolated_stream_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    #-----------------------#
+    # C_NUM_ISOLATED_STREAM #
+    #-----------------------#
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        # Connect h2c_a regslice input
+        connect_bd_intf_net -intf_net axi_vip_h2c_a_mi${isolated_stream_index} [get_bd_intf_pins s_axis_h2c_a_${isolated_stream_index}] [get_bd_intf_pins axi_vip_h2c_a_mi${isolated_stream_index}/S_AXIS]
+        # Connect h2c_a regslice output
+        connect_bd_intf_net -intf_net m_axi_stream_a_${isolated_stream_index}  [get_bd_intf_pins axi_vip_h2c_a_mi${isolated_stream_index}/M_AXIS] [get_bd_intf_pins m_axis_h2c_a_${isolated_stream_index}]
+
+        # Connect c2h_b regslice input
+        connect_bd_intf_net -intf_net axi_vip_c2h_b_mi${isolated_stream_index} [get_bd_intf_pins s_axis_c2h_b_${isolated_stream_index}] [get_bd_intf_pins axi_vip_c2h_b_mi${isolated_stream_index}/S_AXIS]
+        # Connect c2h_b regslice output
+        connect_bd_intf_net -intf_net m_axi_stream_b_${isolated_stream_index}  [get_bd_intf_pins axi_vip_c2h_b_mi${isolated_stream_index}/M_AXIS] [get_bd_intf_pins m_axis_c2h_b_${isolated_stream_index}]
+
+        incr isolated_stream_index
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    connect_bd_net -net aclk_pcie [get_bd_pins aclk_pcie] [get_bd_pins axi_vip_h2c_a_mi*/aclk] [get_bd_pins axi_vip_c2h_b_mi*/aclk]
+    connect_bd_net -net aresetn_pcie [get_bd_pins aresetn_pcie] [get_bd_pins axi_vip_h2c_a_mi*/aresetn] [get_bd_pins axi_vip_c2h_b_mi*/aresetn]
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+# Hierarchical cell: si_axi_vip
+#==========================================================================================================================================#
+#==========================================================================================================================================#
+
+proc create_hier_cell_si_axi_vip { parentCell nameHier  C_ENABLE_M2M C_ENABLE_P2P user_clk user_rst } {
+
+    dbg_puts "Creating hierarchy si_axi_vip"
+
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+
+    #======================================================================================================================================#
+    # Create interface pins
+    #======================================================================================================================================#
+
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_mgmt
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_mgmt_fanout_in
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_ctrl_user_fanout_in
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_mgmt_fanout_in
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_ctrl_user_fanout_in
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_m2m
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_m2m
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 m_axi_data_p2p
+        create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 s_axi_data_p2p
+
+    }
+
+    #======================================================================================================================================#
+    # Create pins
+    #======================================================================================================================================#
+
+    create_bd_pin -dir I -type clk aclk_ctrl
+    create_bd_pin -dir I -type clk aclk_pcie
+    create_bd_pin -dir I -type rst aresetn_ctrl
+    create_bd_pin -dir I -type rst aresetn_pcie
+
+    #======================================================================================================================================#
+    # Create instances
+    #======================================================================================================================================#
+
+    # Create instance: axi_vip_ctrl_mgmt_fanout_in_si, and set properties
+    set axi_vip_ctrl_mgmt_fanout_in_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_mgmt_fanout_in_si ]
+
+    # Create instance: axi_vip_ctrl_mgmt_si, and set properties
+    set axi_vip_ctrl_mgmt_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_mgmt_si ]
+
+    # Create instance: axi_vip_data_si, and set properties
+    set axi_vip_data_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_si ]
+
+    # Create instance: axi_vip_ctrl_user_fanout_in_si, and set properties
+    set axi_vip_ctrl_user_fanout_in_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_ctrl_user_fanout_in_si ]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        # Create instance: axi_vip_data_m2m_si, and set properties
+        set axi_vip_data_m2m_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_m2m_si ]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        # Create instance: axi_vip_data_p2p_si, and set properties
+        set axi_vip_data_p2p_si [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_data_p2p_si ]
+
+    }
+
+    #======================================================================================================================================#
+    # Create interface connections
+    #======================================================================================================================================#
+
+    connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_fanout_in [get_bd_intf_pins m_axi_ctrl_mgmt_fanout_in] [get_bd_intf_pins axi_vip_ctrl_mgmt_fanout_in_si/M_AXI]
+    connect_bd_intf_net -intf_net m_axi_ctrl_mgmt           [get_bd_intf_pins m_axi_ctrl_mgmt]           [get_bd_intf_pins axi_vip_ctrl_mgmt_si/M_AXI]
+    connect_bd_intf_net -intf_net m_axi_data                [get_bd_intf_pins m_axi_data]                [get_bd_intf_pins axi_vip_data_si/M_AXI]
+    connect_bd_intf_net -intf_net m_axi_ctrl_user_fanout_in [get_bd_intf_pins m_axi_ctrl_user_fanout_in] [get_bd_intf_pins axi_vip_ctrl_user_fanout_in_si/M_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_fanout_in [get_bd_intf_pins s_axi_ctrl_mgmt_fanout_in] [get_bd_intf_pins axi_vip_ctrl_mgmt_fanout_in_si/S_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_mgmt           [get_bd_intf_pins s_axi_ctrl_mgmt]           [get_bd_intf_pins axi_vip_ctrl_mgmt_si/S_AXI]
+    connect_bd_intf_net -intf_net s_axi_ctrl_user_fanout_in [get_bd_intf_pins s_axi_ctrl_user_fanout_in] [get_bd_intf_pins axi_vip_ctrl_user_fanout_in_si/S_AXI]
+    connect_bd_intf_net -intf_net s_axi_data                [get_bd_intf_pins s_axi_data]                [get_bd_intf_pins axi_vip_data_si/S_AXI]
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_intf_net -intf_net m_axi_data_m2m [get_bd_intf_pins m_axi_data_m2m] [get_bd_intf_pins axi_vip_data_m2m_si/M_AXI]
+        connect_bd_intf_net -intf_net s_axi_data_m2m [get_bd_intf_pins s_axi_data_m2m] [get_bd_intf_pins axi_vip_data_m2m_si/S_AXI]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_intf_net -intf_net m_axi_data_p2p [get_bd_intf_pins m_axi_data_p2p] [get_bd_intf_pins axi_vip_data_p2p_si/M_AXI]
+        connect_bd_intf_net -intf_net s_axi_data_p2p [get_bd_intf_pins s_axi_data_p2p] [get_bd_intf_pins axi_vip_data_p2p_si/S_AXI]
+
+    }
+
+    #======================================================================================================================================#
+    # Create port connections
+    #======================================================================================================================================#
+
+    connect_bd_net -net aclk_ctrl    [get_bd_pins aclk_ctrl]                                              \
+                                     [get_bd_pins axi_vip_ctrl_mgmt_fanout_in_si/aclk]                    \
+                                     [get_bd_pins axi_vip_ctrl_mgmt_si/aclk]
+
+    connect_bd_net -net aclk_pcie    [get_bd_pins aclk_pcie] [get_bd_pins axi_vip_data_si/aclk]
+
+    connect_bd_net -net aresetn_ctrl [get_bd_pins aresetn_ctrl]                                           \
+                                     [get_bd_pins axi_vip_ctrl_mgmt_fanout_in_si/aresetn]                 \
+                                     [get_bd_pins axi_vip_ctrl_mgmt_si/aresetn]
+
+    connect_bd_net -net aresetn_pcie [get_bd_pins aresetn_pcie] [get_bd_pins axi_vip_data_si/aresetn]
+
+    connect_bd_net -net [get_bd_nets ${user_clk}] [get_bd_pins axi_vip_ctrl_user_fanout_in_si/aclk]
+    connect_bd_net -net [get_bd_nets ${user_rst}] [get_bd_pins axi_vip_ctrl_user_fanout_in_si/aresetn]
+
+
+    #----------------------#
+    # C_ENABLE_M2M         #
+    #----------------------#
+
+    if {$C_ENABLE_M2M == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]    [get_bd_pins axi_vip_data_m2m_si/aclk]
+        connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axi_vip_data_m2m_si/aresetn]
+
+    }
+
+    #----------------------#
+    # C_ENABLE_P2P         #
+    #----------------------#
+
+    if {$C_ENABLE_P2P == true} {
+
+        connect_bd_net -net [get_bd_nets aclk_pcie]    [get_bd_pins axi_vip_data_p2p_si/aclk]
+        connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axi_vip_data_p2p_si/aresetn]
+
+    }
+
+    # Restore current instance
+    current_bd_instance $oldCurInst
+
+}
+
+#==========================================================================================================================================#
+# (1) Create instance(s)
+#==========================================================================================================================================#
+
+set num_ctrl_mgmt_masters 3
+
+if {$C_NUM_ISOLATED_STREAM > 0} {
+
+    set num_ctrl_mgmt_masters 4
+
+}
+
+# Create instance: axi_ic_ctrl_mgmt, and set properties
+set axi_ic_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.* -set_params     \
+[ list                                                                                                  \
+    CONFIG.NUM_MI $num_ctrl_mgmt_masters                                                                \
+] axi_ic_ctrl_mgmt ]
+
+# Create instance: build_info, and set properties
+set build_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params     \
+[list                                                                                                   \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID                                                             \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION                                                               \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION                                                           \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION                                                           \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION                                                           \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION                                                         \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL                                                               \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG                                                             \
+] build_info ]
+
+# Create instance: isolation_control
+create_hier_cell_isolation_control [current_bd_instance .] isolation_control
+
+# Create instance: fanout
+create_hier_cell_fanout [current_bd_instance .] fanout $C_ENABLE_M2M $C_ENABLE_P2P $C_NUM_SLR $user_clk $user_rst $datapath_regslice_settings $isolated_ctrl_regslice_settings $pcie_link_width
+
+# Create instance: si_axi_vip
+create_hier_cell_si_axi_vip [current_bd_instance .] si_axi_vip $C_ENABLE_M2M $C_ENABLE_P2P $user_clk $user_rst
+
+# Create instance: mi_axi_vip
+create_hier_cell_mi_axi_vip [current_bd_instance .] mi_axi_vip $C_ENABLE_M2M $C_ENABLE_P2P $C_NUM_SLR $user_clk $user_rst
+
+if {$C_NUM_ISOLATED_STREAM > 0} {
+
+    # Create instance: streaming_pr_isolation
+    create_hier_cell_streaming_pr_isolation [current_bd_instance .] streaming_pr_isolation  $C_NUM_ISOLATED_STREAM $isolated_stream_regslice_settings
+
+    # Create instance: mi_stream_axi_vip
+    create_hier_cell_mi_stream_axi_vip [current_bd_instance .] mi_stream_axi_vip $C_NUM_ISOLATED_STREAM
+
+}
+
+#==========================================================================================================================================#
+# (2) Create interface connections
+#==========================================================================================================================================#
+
+# Create interface connections
+
+# Connect AXI IC
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M00_AXI          [get_bd_intf_pins axi_ic_ctrl_mgmt/M00_AXI] [get_bd_intf_pins build_info/S_AXI]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M01_AXI          [get_bd_intf_pins axi_ic_ctrl_mgmt/M01_AXI] [get_bd_intf_pins fanout/s_axi_ctrl_mgmt]
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M02_AXI          [get_bd_intf_pins axi_ic_ctrl_mgmt/M02_AXI] [get_bd_intf_pins isolation_control/s_axi_ctrl_mgmt]
+
+# Si AXI VIP
+# Connect si AXI VIP hierarchy inputs
+connect_bd_intf_net -intf_net s_axi_ctrl_mgmt                   [get_bd_intf_ports s_axi_ctrl_mgmt]                     [get_bd_intf_pins si_axi_vip/s_axi_ctrl_mgmt]
+connect_bd_intf_net -intf_net s_axi_ctrl_mgmt_fanout_in         [get_bd_intf_ports s_axi_ctrl_mgmt_fanout_in]           [get_bd_intf_pins si_axi_vip/s_axi_ctrl_mgmt_fanout_in]
+connect_bd_intf_net -intf_net s_axi_ctrl_user_fanout_in         [get_bd_intf_ports s_axi_ctrl_user_fanout_in]           [get_bd_intf_pins si_axi_vip/s_axi_ctrl_user_fanout_in]
+connect_bd_intf_net -intf_net s_axi_data                        [get_bd_intf_ports s_axi_data]                          [get_bd_intf_pins si_axi_vip/s_axi_data]
+
+# Connect si AXI VIP hierarchy outputs
+connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_S00_AXI          [get_bd_intf_pins si_axi_vip/m_axi_ctrl_mgmt]           [get_bd_intf_pins axi_ic_ctrl_mgmt/S00_AXI]
+connect_bd_intf_net -intf_net fanout_s_axi_ctrl_mgmt_fanout_in  [get_bd_intf_pins si_axi_vip/m_axi_ctrl_mgmt_fanout_in] [get_bd_intf_pins fanout/s_axi_ctrl_mgmt_fanout_in]
+connect_bd_intf_net -intf_net fanout_s_axi_ctrl_user_fanout_in  [get_bd_intf_pins si_axi_vip/m_axi_ctrl_user_fanout_in] [get_bd_intf_pins fanout/s_axi_ctrl_user_fanout_in]
+connect_bd_intf_net -intf_net fanout_s_axi_data                 [get_bd_intf_pins si_axi_vip/m_axi_data]                [get_bd_intf_pins fanout/s_axi_data]
+
+# Wire mi_axi_vip AXI interfaces
+connect_bd_intf_net -intf_net fanout_m_axi_ctrl_user_debug      [get_bd_intf_pins fanout/m_axi_ctrl_user_debug]         [get_bd_intf_pins mi_axi_vip/s_axi_ctrl_user_debug]
+connect_bd_intf_net -intf_net m_axi_ctrl_user_debug             [get_bd_intf_pins mi_axi_vip/m_axi_ctrl_user_debug]     [get_bd_intf_ports m_axi_ctrl_user_debug]
+
+connect_bd_intf_net -intf_net fanout_m_axi_data                 [get_bd_intf_pins fanout/m_axi_data]                    [get_bd_intf_pins mi_axi_vip/s_axi_data]
+connect_bd_intf_net -intf_net m_axi_data                        [get_bd_intf_pins mi_axi_vip/m_axi_data]                [get_bd_intf_ports m_axi_data]
+
+#----------------------#
+# C_ENABLE_M2M         #
+#----------------------#
+
+if {$C_ENABLE_M2M == true} {
+
+    connect_bd_intf_net -intf_net s_axi_data_m2m        [get_bd_intf_ports s_axi_data_m2m] [get_bd_intf_pins si_axi_vip/s_axi_data_m2m]
+    connect_bd_intf_net -intf_net fanout_s_axi_data_m2m [get_bd_intf_pins si_axi_vip/m_axi_data_m2m] [get_bd_intf_pins fanout/s_axi_data_m2m]
+
+    connect_bd_intf_net -intf_net fanout_m_axi_data_m2m [get_bd_intf_pins fanout/m_axi_data_m2m] [get_bd_intf_pins mi_axi_vip/s_axi_data_m2m]
+    connect_bd_intf_net -intf_net m_axi_data_m2m        [get_bd_intf_pins mi_axi_vip/m_axi_data_m2m] [get_bd_intf_ports m_axi_data_m2m]
+
+}
+
+#----------------------#
+# C_ENABLE_P2P         #
+#----------------------#
+
+if {$C_ENABLE_P2P == true} {
+
+    connect_bd_intf_net -intf_net s_axi_data_p2p        [get_bd_intf_ports s_axi_data_p2p] [get_bd_intf_pins si_axi_vip/s_axi_data_p2p]
+    connect_bd_intf_net -intf_net fanout_s_axi_data_p2p [get_bd_intf_pins si_axi_vip/m_axi_data_p2p] [get_bd_intf_pins fanout/s_axi_data_p2p]
+
+    connect_bd_intf_net -intf_net fanout_m_axi_data_p2p [get_bd_intf_pins fanout/m_axi_data_p2p] [get_bd_intf_pins mi_axi_vip/s_axi_data_p2p]
+    connect_bd_intf_net -intf_net m_axi_data_p2p        [get_bd_intf_pins mi_axi_vip/m_axi_data_p2p] [get_bd_intf_ports m_axi_data_p2p]
+
+}
+
+#-----------#
+# C_NUM_SLR #
+#-----------#
+
+set num_slr_index 0
+
+while {$num_slr_index < $C_NUM_SLR} {
+
+
+    # Wire mi_axi_vip AXI interfaces (mgmt)
+    connect_bd_intf_net -intf_net fanout_m_axi_ctrl_mgmt_${num_slr_index} [get_bd_intf_pins fanout/m_axi_ctrl_mgmt_${num_slr_index}] [get_bd_intf_pins mi_axi_vip/s_axi_ctrl_mgmt_${num_slr_index}]
+    connect_bd_intf_net -intf_net m_axi_ctrl_mgmt_${num_slr_index}        [get_bd_intf_pins mi_axi_vip/m_axi_ctrl_mgmt_${num_slr_index}] [get_bd_intf_ports m_axi_ctrl_mgmt_${num_slr_index}]
+
+    # Wire mi_axi_vip AXI interfaces (user)
+    connect_bd_intf_net -intf_net fanout_m_axi_ctrl_user_${num_slr_index} [get_bd_intf_pins fanout/m_axi_ctrl_user_${num_slr_index}] [get_bd_intf_pins mi_axi_vip/s_axi_ctrl_user_${num_slr_index}]
+    connect_bd_intf_net -intf_net m_axi_ctrl_user_${num_slr_index}        [get_bd_intf_pins mi_axi_vip/m_axi_ctrl_user_${num_slr_index}] [get_bd_intf_ports m_axi_ctrl_user_${num_slr_index}]
+
+    incr num_slr_index
+
+}
+
+#-----------------------#
+# C_NUM_ISOLATED_STREAM #
+#-----------------------#
+
+if {$C_NUM_ISOLATED_STREAM > 0} {
+
+    connect_bd_intf_net -intf_net axi_ic_ctrl_mgmt_M03_AXI [get_bd_intf_pins axi_ic_ctrl_mgmt/M03_AXI] [get_bd_intf_pins streaming_pr_isolation/s_axi_ctrl_mgmt]
+
+    connect_bd_intf_net -intf_net s_qdma_h2c_byp_out [get_bd_intf_ports s_qdma_h2c_byp_out] [get_bd_intf_pins streaming_pr_isolation/s_qdma_h2c_byp_out]
+    connect_bd_intf_net -intf_net s_qdma_c2h_byp_out [get_bd_intf_ports s_qdma_c2h_byp_out] [get_bd_intf_pins streaming_pr_isolation/s_qdma_c2h_byp_out]
+    connect_bd_intf_net -intf_net s_axis_h2c [get_bd_intf_ports s_axis_h2c] [get_bd_intf_pins streaming_pr_isolation/s_axis_h2c]
+    connect_bd_intf_net -intf_net s_qdma_tm_dsc_sts [get_bd_intf_ports s_qdma_tm_dsc_sts] [get_bd_intf_pins streaming_pr_isolation/s_qdma_tm_dsc_sts]
+    connect_bd_intf_net -intf_net m_qdma_dsc_crdt_in [get_bd_intf_ports m_qdma_dsc_crdt_in] [get_bd_intf_pins streaming_pr_isolation/m_qdma_dsc_crdt_in]
+    connect_bd_intf_net -intf_net m_qdma_h2c_byp_in [get_bd_intf_ports m_qdma_h2c_byp_in] [get_bd_intf_pins streaming_pr_isolation/m_qdma_h2c_byp_in]
+    connect_bd_intf_net -intf_net m_axis_c2h [get_bd_intf_ports m_axis_c2h] [get_bd_intf_pins streaming_pr_isolation/m_axis_c2h]
+    connect_bd_intf_net -intf_net m_axis_c2h_cmpt [get_bd_intf_ports m_axis_c2h_cmpt] [get_bd_intf_pins streaming_pr_isolation/m_axis_c2h_cmpt]
+
+    set isolated_stream_index 0
+
+    while {$isolated_stream_index < $C_NUM_ISOLATED_STREAM} {
+
+        # AXI VIP
+        connect_bd_intf_net -intf_net streaming_pr_isolation_m_axis_h2c_a_${isolated_stream_index} [get_bd_intf_pins streaming_pr_isolation/m_axis_h2c_a_${isolated_stream_index}] [get_bd_intf_pins mi_stream_axi_vip/s_axis_h2c_a_${isolated_stream_index}]
+        connect_bd_intf_net -intf_net m_axis_h2c_a_${isolated_stream_index}                        [get_bd_intf_pins mi_stream_axi_vip/m_axis_h2c_a_${isolated_stream_index}] [get_bd_intf_ports m_axis_h2c_a_${isolated_stream_index}]
+
+        # AXI VIP
+        connect_bd_intf_net -intf_net streaming_pr_isolation_m_axis_c2h_b_${isolated_stream_index} [get_bd_intf_pins streaming_pr_isolation/m_axis_c2h_b_${isolated_stream_index}] [get_bd_intf_pins mi_stream_axi_vip/s_axis_c2h_b_${isolated_stream_index}]
+        connect_bd_intf_net -intf_net m_axis_c2h_b_${isolated_stream_index}                        [get_bd_intf_pins mi_stream_axi_vip/m_axis_c2h_b_${isolated_stream_index}] [get_bd_intf_ports m_axis_c2h_b_${isolated_stream_index}]
+
+        connect_bd_intf_net -intf_net s_axis_c2h_a_${isolated_stream_index}                        [get_bd_intf_ports s_axis_c2h_a_${isolated_stream_index}] [get_bd_intf_pins streaming_pr_isolation/s_axis_c2h_a_${isolated_stream_index}]
+        connect_bd_intf_net -intf_net s_axis_h2c_b_${isolated_stream_index}                        [get_bd_intf_ports s_axis_h2c_b_${isolated_stream_index}] [get_bd_intf_pins streaming_pr_isolation/s_axis_h2c_b_${isolated_stream_index}]
+
+        incr isolated_stream_index
+
+    }
+
+}
+
+#==========================================================================================================================================#
+# (3) Create port connections
+#==========================================================================================================================================#
+
+# Create port connections
+
+# Clocks
+connect_bd_net -net aclk_pcie                               [get_bd_ports aclk_pcie]                        \
+                                                            [get_bd_pins fanout/aclk_pcie]                  \
+                                                            [get_bd_pins isolation_control/aclk_pcie]       \
+                                                            [get_bd_pins mi_axi_vip/aclk_pcie]              \
+                                                            [get_bd_pins si_axi_vip/aclk_pcie]
+
+connect_bd_net -net aclk_ctrl                               [get_bd_ports aclk_ctrl]                        \
+                                                            [get_bd_pins build_info/S_AXI_ACLK]             \
+                                                            [get_bd_pins fanout/aclk_ctrl]                  \
+                                                            [get_bd_pins isolation_control/aclk_ctrl]       \
+                                                            [get_bd_pins si_axi_vip/aclk_ctrl]              \
+                                                            [get_bd_pins mi_axi_vip/aclk_ctrl]              \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/ACLK]             \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M00_ACLK]         \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M01_ACLK]         \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M02_ACLK]         \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/S00_ACLK]
+
+
+# Resets
+connect_bd_net -net aresetn_pcie                            [get_bd_ports aresetn_pcie]                     \
+                                                            [get_bd_pins fanout/aresetn_pcie]               \
+                                                            [get_bd_pins isolation_control/aresetn_pcie]    \
+                                                            [get_bd_pins si_axi_vip/aresetn_pcie]
+
+connect_bd_net -net aresetn_ctrl                            [get_bd_ports aresetn_ctrl]                     \
+                                                            [get_bd_pins build_info/S_AXI_ARESETN]          \
+                                                            [get_bd_pins si_axi_vip/aresetn_ctrl]           \
+                                                            [get_bd_pins isolation_control/aresetn_ctrl]    \
+                                                            [get_bd_pins fanout/aresetn_ctrl]               \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/ARESETN]          \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M00_ARESETN]      \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M01_ARESETN]      \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M02_ARESETN]      \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/S00_ARESETN]
+
+
+connect_bd_net -net aresetn_pcie_ulp                        [get_bd_ports aresetn_pcie_ulp]                  \
+                                                            [get_bd_pins isolation_control/aresetn_pcie_ulp] \
+                                                            [get_bd_pins mi_axi_vip/aresetn_pcie_ulp]        \
+                                                            [get_bd_pins fanout/aresetn_pcie_ulp]
+
+connect_bd_net -net aresetn_ctrl_ulp                        [get_bd_ports aresetn_ctrl_ulp]                  \
+                                                            [get_bd_pins isolation_control/aresetn_ctrl_ulp] \
+                                                            [get_bd_pins mi_axi_vip/aresetn_ctrl_ulp]        \
+                                                            [get_bd_pins fanout/aresetn_ctrl_ulp]
+
+#-----------------------#
+# C_NUM_ISOLATED_STREAM #
+#-----------------------#
+
+if {$C_NUM_ISOLATED_STREAM > 0} {
+
+    connect_bd_net -net qdma_stm_usr_irq_ack                [get_bd_ports qdma_stm_usr_irq_ack] [get_bd_pins streaming_pr_isolation/qdma_stm_usr_irq_ack]
+    connect_bd_net -net stm_qdma_usr_irq_req                [get_bd_ports stm_qdma_usr_irq_req] [get_bd_pins streaming_pr_isolation/stm_qdma_usr_irq_req]
+
+    connect_bd_net -net aclk_pcie                           [get_bd_pins streaming_pr_isolation/aclk_pcie]       \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M03_ACLK]              \
+                                                            [get_bd_pins mi_stream_axi_vip/aclk_pcie]
+    connect_bd_net -net aresetn_pcie                        [get_bd_pins streaming_pr_isolation/aresetn_pcie]    \
+                                                            [get_bd_pins axi_ic_ctrl_mgmt/M03_ARESETN]           \
+                                                            [get_bd_pins mi_stream_axi_vip/aresetn_pcie]
+
+}
+
+# Interrupts
+connect_bd_net -net interrupt_firewall                      [get_bd_ports interrupt_firewall] [get_bd_pins fanout/interrupt_firewall]
+
+
+#==========================================================================================================================================#
+# (4) Create address segments
+#==========================================================================================================================================#
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_mgmt
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address     -offset 0x00000000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins build_info/S_AXI]]
+assign_bd_address     -offset 0x00001000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins isolation_control/gate_pr/S_AXI]]
+assign_bd_address     -offset 0x00002000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_ctrl_mgmt_fanout/axi_firewall_ctrl_mgmt/S_AXI_CTL]]
+assign_bd_address     -offset 0x00003000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_ctrl_user_fanout/axi_firewall_ctrl_user/S_AXI_CTL]]
+assign_bd_address     -offset 0x00004000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_ctrl_user_fanout/axi_firewall_ctrl_user_dbg/S_AXI_CTL]]
+assign_bd_address     -offset 0x00005000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_data_fanout/axi_firewall_data/S_AXI_CTL]]
+
+if {$C_ENABLE_M2M == true} {
+
+    assign_bd_address -offset 0x00006000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_data_fanout/axi_firewall_data_m2m/S_AXI_CTL]]
+
+}
+
+if {$C_ENABLE_P2P == true} {
+
+    assign_bd_address -offset 0x00007000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins fanout/s_axi_data_fanout/axi_firewall_data_p2p/S_AXI_CTL]]
+
+}
+
+if {$C_NUM_ISOLATED_STREAM > 0} {
+
+    assign_bd_address -offset 0x00010000 -range 4k -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins streaming_pr_isolation/stm/S_AXI_LITE]]
+
+}
+
+assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE to MASTER Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_mgmt_fanout_in -> m_axi_ctrl_mgmt_<SLR>
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address     -offset $C_OFFSET_M_AXI_CTRL_MGMT_0_SEG -range $C_RANGE_M_AXI_CTRL_MGMT_0_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt_fanout_in] [get_bd_addr_segs m_axi_ctrl_mgmt_0/Reg]
+
+if {$C_NUM_SLR > 1} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_MGMT_1_SEG -range $C_RANGE_M_AXI_CTRL_MGMT_1_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt_fanout_in] [get_bd_addr_segs m_axi_ctrl_mgmt_1/Reg]
+
+}
+
+if {$C_NUM_SLR > 2} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_MGMT_2_SEG -range $C_RANGE_M_AXI_CTRL_MGMT_2_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt_fanout_in] [get_bd_addr_segs m_axi_ctrl_mgmt_2/Reg]
+
+}
+
+if {$C_NUM_SLR > 3} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_MGMT_3_SEG -range $C_RANGE_M_AXI_CTRL_MGMT_3_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_mgmt_fanout_in] [get_bd_addr_segs m_axi_ctrl_mgmt_3/Reg]
+
+}
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE to MASTER Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_ctrl_user_fanout_in -> m_axi_ctrl_user_<SLR>
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address     -offset $C_OFFSET_M_AXI_CTRL_USER_0_SEG -range $C_RANGE_M_AXI_CTRL_USER_0_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_fanout_in] [get_bd_addr_segs m_axi_ctrl_user_0/Reg]
+
+if {$C_NUM_SLR > 1} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_USER_1_SEG -range $C_RANGE_M_AXI_CTRL_USER_1_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_fanout_in] [get_bd_addr_segs m_axi_ctrl_user_1/Reg]
+
+}
+
+if {$C_NUM_SLR > 2} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_USER_2_SEG -range $C_RANGE_M_AXI_CTRL_USER_2_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_fanout_in] [get_bd_addr_segs m_axi_ctrl_user_2/Reg]
+
+}
+
+if {$C_NUM_SLR > 3} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_USER_3_SEG -range $C_RANGE_M_AXI_CTRL_USER_3_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_fanout_in] [get_bd_addr_segs m_axi_ctrl_user_3/Reg]
+
+}
+
+assign_bd_address -offset $C_OFFSET_M_AXI_CTRL_USER_DBG_SEG -range $C_RANGE_M_AXI_CTRL_USER_DBG_SEG -target_address_space [get_bd_addr_spaces s_axi_ctrl_user_fanout_in] [get_bd_addr_segs m_axi_ctrl_user_debug/Reg]
+
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# SLAVE to MASTER Interface
+#------------------------------------------------------------------------------------------------------------------------------------------#
+# s_axi_data_* -> m_axi_data_*
+#------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------------------------------#
+
+assign_bd_address     -offset $C_OFFSET_M_AXI_DATA_DMA_SEG -range $C_RANGE_M_AXI_DATA_DMA_SEG -target_address_space [get_bd_addr_spaces s_axi_data]     [get_bd_addr_segs m_axi_data/Reg]
+
+if {$C_ENABLE_M2M == true} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_DATA_M2M_SEG -range $C_RANGE_M_AXI_DATA_M2M_SEG -target_address_space [get_bd_addr_spaces s_axi_data_m2m] [get_bd_addr_segs m_axi_data_m2m/Reg]
+
+}
+
+if {$C_ENABLE_P2P == true} {
+
+    assign_bd_address -offset $C_OFFSET_M_AXI_DATA_P2P_SEG -range $C_RANGE_M_AXI_DATA_P2P_SEG -target_address_space [get_bd_addr_spaces s_axi_data_p2p] [get_bd_addr_segs m_axi_data_p2p/Reg]
+
+}
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore

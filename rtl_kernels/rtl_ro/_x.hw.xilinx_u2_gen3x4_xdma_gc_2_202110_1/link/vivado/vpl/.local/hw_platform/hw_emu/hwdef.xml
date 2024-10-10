@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Project Version="1" Minor="7" DIGEST="">
+	<TOOL_VERSION Version="2021.1"/>
+	<MODE Name="Pre-Synthesis"/>
+	<SYSTEMINFO BOARD="xilinx.com:u2:1.0" PART="xcku15p-ffva1156-2LV-e" ARCH="kintexuplus" PACKAGE="ffva1156" DEVICE="xcku15p" SPEED="-2LV"/>
+	<HIERARCHY Name="pfm_top_wrapper"/>
+	<File Type="HW_HANDOFF" Name="pfm_top.hwh" src_db="pfm_top.hwdef" DESIGN_HIERARCHY="pfm_top_i" BD_TYPE="DEFAULT_BD">
+	</File>
+	<File Type="BDA" Name="pfm_top.bda" src_db="pfm_top.hwdef">
+	</File>
+	<File Type="HW_HANDOFF" Name="pfm_dynamic_smartconn_data_0_0.hwh" src_db="pfm_dynamic_smartconn_data_0_0.hwdef" DESIGN_HIERARCHY="pfm_dynamic_smartconn_data_0_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="bd_d216_interconnect_S00_AXI_0.hwh" src_db="bd_d216_interconnect_S00_AXI_0.hwdef" DESIGN_HIERARCHY="bd_d216_interconnect_S00_AXI_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="bd_d216_interconnect_DDR4_MEM00_0.hwh" src_db="bd_d216_interconnect_DDR4_MEM00_0.hwdef" DESIGN_HIERARCHY="bd_d216_interconnect_DDR4_MEM00_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="bd_d216_interconnect_PLRAM_MEM00_0.hwh" src_db="bd_d216_interconnect_PLRAM_MEM00_0.hwdef" DESIGN_HIERARCHY="bd_d216_interconnect_PLRAM_MEM00_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="bd_d216_ddr4_mem00_0_microblaze_mcs.hwh" src_db="bd_d216_ddr4_mem00_0_microblaze_mcs.hwdef" DESIGN_HIERARCHY="bd_d216_ddr4_mem00_0_microblaze_mcs" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="pfm_dynamic_memory_subsystem_0.hwh" src_db="pfm_dynamic_memory_subsystem_0.hwdef" DESIGN_HIERARCHY="pfm_dynamic_memory_subsystem_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<File Type="HW_HANDOFF" Name="pfm_dynamic.hwh" src_db="pfm_dynamic.hwdef" DESIGN_HIERARCHY="pfm_dynamic" BD_TYPE="REFERENCE_BD">
+	</File>
+	<File Type="BDA" Name="pfm_dynamic.bda" src_db="pfm_dynamic.hwdef">
+	</File>
+	<File Type="HW_HANDOFF" Name="pfm_top_smartconnect_0_0.hwh" src_db="pfm_top_smartconnect_0_0.hwdef" DESIGN_HIERARCHY="pfm_top_smartconnect_0_0" BD_TYPE="SCOPED_BD">
+	</File>
+	<USEDRESOURCES/>
+</Project>
+

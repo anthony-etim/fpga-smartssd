@@ -1,0 +1,2 @@
+No monitor points found for BD automation.
+One or more timing paths failed timing targeting 300.000000 MHz for kernel clock 'blp_s_aclk_kernel_ref_clk_00'. The frequency is being automatically changed to 292.6 MHz to enable proper functionality

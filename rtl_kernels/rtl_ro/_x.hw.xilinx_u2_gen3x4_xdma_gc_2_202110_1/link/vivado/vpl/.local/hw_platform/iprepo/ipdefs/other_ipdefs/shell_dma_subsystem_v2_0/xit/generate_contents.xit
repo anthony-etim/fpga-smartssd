@@ -1,0 +1,654 @@
+############################################################################################################################################
+#
+# (c) Copyright 2019 Xilinx, Inc. All rights reserved.
+#
+# This file contains confidential and proprietary information
+# of Xilinx, Inc. and is protected under U.S. and
+# international copyright and other intellectual property
+# laws.
+#
+# DISCLAIMER
+# This disclaimer is not a license and does not grant any
+# rights to the materials distributed herewith. Except as
+# otherwise provided in a valid license issued to you by
+# Xilinx, and to the maximum extent permitted by applicable
+# law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+# WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
+# AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+# BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+# INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+# (2) Xilinx shall not be liable (whether in contract or tort,
+# including negligence, or under any other theory of
+# liability) for any loss or damage of any kind or nature
+# related to, arising under or in connection with these
+# materials, including for any direct, or any indirect,
+# special, incidental, or consequential loss or damage
+# (including loss of data, profits, goodwill, or any type of
+# loss or damage suffered as a result of any action brought
+# by a third party) even if such damage or loss was
+# reasonably foreseeable or Xilinx had been advised of the
+# possibility of the same.
+#
+# CRITICAL APPLICATIONS
+# Xilinx products are not designed or intended to be fail-
+# safe, or for use in any application requiring fail-safe
+# performance, such as life-support or safety devices or
+# systems, Class III medical devices, nuclear facilities,
+# applications related to the deployment of airbags, or any
+# other applications that could lead to death, personal
+# injury, or severe property or environmental damage
+# (individually and collectively, "Critical
+# Applications"). Customer assumes the sole risk and
+# liability of any use of Xilinx products in Critical
+# Applications, subject only to applicable laws and
+# regulations governing limitations on product liability.
+#
+# THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+# PART OF THIS FILE AT ALL TIMES.
+############################################################
+#
+############################################################################################################################################
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (1) Create instance(s)
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Create instance: axi_vip_data, and set properties
+  set axi_vip_data [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* -set_params [list \
+      CONFIG.HAS_SIZE {1} \
+      ] \
+  axi_vip_data ]
+
+  if {$C_SUPPORTS_P2P} {
+
+      # Create instance: axi_vip_data_p2p, and set properties
+      set axi_vip_data_p2p [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* -set_params [list \
+          CONFIG.HAS_SIZE {1} \
+          ] \
+      axi_vip_data_p2p ]
+
+  }
+
+  # Create instance: axi_vip_dma_debug, and set properties
+  set axi_vip_dma_debug [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_dma_debug ]
+
+  # Create instance: axi_vip_ctrl_mgmt, and set properties
+  set axi_vip_ctrl_mgmt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.* axi_vip_ctrl_mgmt ]
+
+  # Instatiate the build info IP and populate with the version parameters
+  set build_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:shell_utils_build_info:1.* -set_params [list \
+      CONFIG.C_SUBSYSTEM_ID $C_SUBSYSTEM_ID \
+      CONFIG.C_VIV_VERSION $C_VIV_VERSION \
+      CONFIG.C_MAJOR_VERSION $C_MAJOR_VERSION \
+      CONFIG.C_MINOR_VERSION $C_MINOR_VERSION \
+      CONFIG.C_CORE_REVISION $C_CORE_REVISION \
+      CONFIG.C_PATCH_REVISION $C_PATCH_REVISION \
+      CONFIG.C_PERFORCE_CL $C_PERFORCE_CL \
+      CONFIG.C_RESERVED_TAG $C_RESERVED_TAG \
+      ] \
+  build_info ]
+
+  # Create instance: not_gate_aresetn_pcie, and set properties
+  set not_gate_aresetn_pcie [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.* -set_params [list \
+      CONFIG.C_OPERATION {not} \
+      CONFIG.C_SIZE {1} \
+      CONFIG.LOGO_FILE {data/sym_notgate.png} \
+      ] \
+  not_gate_aresetn_pcie ]
+  
+  # Create 1-bit GND constant
+  set gnd [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+      CONFIG.CONST_VAL {0} \
+      ] \
+  gnd ]
+
+  # Include the TDM SLR Crossing Register Slices for the DMA/PCIe interfaces if enabled
+
+  if {$C_HAS_TDM_SLR_CROSSING} {
+
+      # Create instance: axis_register_slice_cc, and set properties
+      set axis_register_slice_cc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params [list \
+          CONFIG.REG_CONFIG {13} \
+          ] \
+      axis_register_slice_cc ]
+
+      # Create instance: axis_register_slice_cq, and set properties
+      set axis_register_slice_cq [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params [list \
+          CONFIG.REG_CONFIG {13} \
+          ] \
+      axis_register_slice_cq ]
+
+      # Create instance: axis_register_slice_rc, and set properties
+      set axis_register_slice_rc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params [list \
+          CONFIG.REG_CONFIG {13} \
+          ] \
+      axis_register_slice_rc ]
+
+      # Create instance: axis_register_slice_rq, and set properties
+      set axis_register_slice_rq [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_register_slice:1.* -set_params [list \
+          CONFIG.REG_CONFIG {13} \
+          ] \
+      axis_register_slice_rq ]
+
+  }
+
+  # Create concat IP and ground tie-off for management interrupts when less than the max supported
+  if {[expr $C_NUM_MGMT_IRQ_BITS < $C_MAX_NUM_MGMT_IRQS]} {
+
+      set mgmt_irq_gnd [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+          CONFIG.CONST_VAL {0} \
+          CONFIG.CONST_WIDTH [expr $C_MAX_NUM_MGMT_IRQS - $C_NUM_MGMT_IRQ_BITS] \
+          ] \
+      mgmt_irq_gnd ]
+      
+  }
+
+  # Calculate the number of ports required on the concat
+  if {[expr $C_NUM_MGMT_IRQS > 0]} {
+  
+      # Add a port on the concat for the GND tie-off when less than the max number of irqs implemented
+      if {[expr $C_NUM_MGMT_IRQ_BITS < $C_MAX_NUM_MGMT_IRQS]} {
+      
+          set mgmt_irq_concat_ports [expr $C_NUM_MGMT_IRQS + 1]
+          
+      } else {
+      
+          set mgmt_irq_concat_ports $C_NUM_MGMT_IRQS
+          
+      }
+      
+  } else {
+  
+      set mgmt_irq_concat_ports 1
+      
+  }
+
+  # Create the mgmt interrupt concat IP
+  set mgmt_irq_concat [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params [list \
+      CONFIG.NUM_PORTS $mgmt_irq_concat_ports \
+      ] \
+  mgmt_irq_concat ]
+
+  # Create concat IP and ground tie-off for user interrupts when less than the max supported
+  if {[expr $C_NUM_USER_IRQ_BITS < $C_MAX_NUM_USER_IRQS]} {
+
+      set user_irq_gnd [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+          CONFIG.CONST_VAL {0} \
+          CONFIG.CONST_WIDTH [expr $C_MAX_NUM_USER_IRQS - $C_NUM_USER_IRQ_BITS] \
+          ] \
+      user_irq_gnd ]
+      
+  }
+  
+  # Calculate the number of ports required on the concat
+  if {[expr $C_NUM_USER_IRQS > 0]} {
+  
+      # Add a port on the concat for the GND tie-off when less than the max number of irqs implemented
+      if {[expr $C_NUM_USER_IRQ_BITS < $C_MAX_NUM_USER_IRQS]} {
+      
+          set user_irq_concat_ports [expr $C_NUM_USER_IRQS + 1]
+          
+      } else {
+      
+          set user_irq_concat_ports $C_NUM_USER_IRQS
+          
+      }
+      
+  } else {
+  
+      set user_irq_concat_ports 1
+      
+  }
+
+  # Create the user interrupt concat IP
+  set user_irq_concat [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params [list \
+      CONFIG.NUM_PORTS $user_irq_concat_ports \
+      ] \
+  user_irq_concat ]
+
+  # Create concat IP to combine both the management and user interrupts for connection to the DMA
+  set interrupt_concat [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.* -set_params [list \
+      CONFIG.IN0_WIDTH.VALUE_SRC {USER} \
+      CONFIG.IN0_WIDTH $C_MAX_NUM_MGMT_IRQS \
+      CONFIG.IN1_WIDTH.VALUE_SRC {USER} \
+      CONFIG.IN1_WIDTH $C_MAX_NUM_USER_IRQS \
+      CONFIG.NUM_PORTS {2} \
+      ] \
+  interrupt_concat ]
+
+  # Create constant IP to set the interrupt function number - 2-bits per irq (0 = management, 1 = user)
+  set dma_usr_irq_func_num [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.* -set_params [list \
+      CONFIG.CONST_VAL {1431633920} \
+      CONFIG.CONST_WIDTH {32} \
+      ] \
+  dma_usr_irq_func_num ]
+
+  # Set the DMA configuration properties dependent on configured Max PCIe Link Width
+  if {$C_PCIE_LINK_CAP_MAX eq "Gen3x4"} {
+
+      set dma_axi_data_width 128_bit
+      set dma_coreclk_freq 250
+      set dma_pl_link_cap_max_link_width X4
+
+  } elseif {$C_PCIE_LINK_CAP_MAX eq "Gen3x8"} {
+
+      set dma_axi_data_width 256_bit
+      set dma_coreclk_freq 500
+      set dma_pl_link_cap_max_link_width X8
+
+      # Only 250MHz core clock supported on -2LV part
+      if {$C_SPEEDGRADE eq "-2LV"} {
+
+          set dma_coreclk_freq 250
+
+      } else {
+
+          set dma_coreclk_freq 500
+
+      }
+
+  } else {
+
+      set dma_axi_data_width 512_bit
+      set dma_coreclk_freq 500
+      set dma_pl_link_cap_max_link_width X16
+
+  }
+
+  # Instantiate either the XDMA or QDMA
+  if {$C_DMA_TYPE eq "XDMA"} {
+
+      # Create instance: xdma, and set properties
+      set dma [ create_bd_cell -type ip -vlnv xilinx.com:ip:xdma:4.* -set_params [list \
+          CONFIG.axi_bypass_64bit_en {true} \
+          CONFIG.axi_bypass_prefetchable {true} \
+          CONFIG.axi_data_width $dma_axi_data_width \
+          CONFIG.axi_id_width {2} \
+          CONFIG.axil_master_64bit_en {true} \
+          CONFIG.axil_master_prefetchable {true} \
+          CONFIG.axilite_master_en {true} \
+          CONFIG.axist_bypass_size {256} \
+          CONFIG.axilite_master_size {32} \
+          CONFIG.axist_bypass_en {true} \
+          CONFIG.barlite2 {2} \
+          CONFIG.c_m_axi_num_readq {4} \
+          CONFIG.cfg_mgmt_if {true} \
+          CONFIG.coreclk_freq $dma_coreclk_freq \
+          CONFIG.disable_bram_pipeline $C_DMA_REDUCE_RESOURCE \
+          CONFIG.disable_eq_synchronizer $C_DMA_REDUCE_RESOURCE \
+          CONFIG.dma_2rp {true} \
+          CONFIG.en_axi_slave_if $C_HAS_SLAVE_BRIDGE \
+          CONFIG.enable_code {4232} \
+          CONFIG.enable_resource_reduction $C_DMA_REDUCE_RESOURCE \
+          CONFIG.enable_jtag_dbg {true} \
+          CONFIG.mode_selection {Advanced} \
+          CONFIG.mult_pf_des {true} \
+          CONFIG.pcie_blk_locn $C_PCIE_BLK_LOCN \
+          CONFIG.pf0_bar0_64bit {true} \
+          CONFIG.pf0_bar0_prefetchable {true} \
+          CONFIG.pf0_bar0_scale {Megabytes} \
+          CONFIG.pf0_bar0_size {32} \
+          CONFIG.pf0_bar2_enabled {true} \
+          CONFIG.pf0_bar2_64bit {true} \
+          CONFIG.pf0_bar2_prefetchable {true} \
+          CONFIG.pf0_bar2_scale {Kilobytes} \
+          CONFIG.pf0_bar2_size {128} \
+          CONFIG.pf0_msi_enabled {false} \
+          CONFIG.pf0_msix_cap_pba_bir {BAR_3:2} \
+          CONFIG.pf0_msix_cap_pba_offset {14000} \
+          CONFIG.pf0_msix_cap_table_bir {BAR_3:2} \
+          CONFIG.pf0_msix_cap_table_offset {10000} \
+          CONFIG.pf0_msix_cap_table_size {1F} \
+          CONFIG.pf0_msix_enabled {true} \
+          CONFIG.pf0_subsystem_id {000E} \
+          CONFIG.pf1_bar0_scale {Megabytes} \
+          CONFIG.pf1_bar0_size {32} \
+          CONFIG.pf1_bar2_scale {Kilobytes} \
+          CONFIG.pf1_bar2_size {128} \
+          CONFIG.pf1_bar4_scale {Megabytes} \
+          CONFIG.pf1_bar4_size {256} \
+          CONFIG.pf1_msix_cap_pba_bir {BAR_3:2} \
+          CONFIG.pf1_msix_cap_pba_offset {14000} \
+          CONFIG.pf1_msix_cap_table_bir {BAR_3:2} \
+          CONFIG.pf1_msix_cap_table_offset {10000} \
+          CONFIG.pf1_msix_cap_table_size {1F} \
+          CONFIG.pf1_msix_enabled {true} \
+          CONFIG.pf_swap {true} \
+          CONFIG.pl_link_cap_max_link_speed {8.0_GT/s} \
+          CONFIG.pl_link_cap_max_link_width $dma_pl_link_cap_max_link_width \
+          CONFIG.plltype {QPLL1} \
+          CONFIG.rbar_enable $C_SUPPORTS_P2P \
+          CONFIG.pf1_rbar_num {1} \
+          CONFIG.pf1_bar0_index {4} \
+          CONFIG.pf1_rbar_cap_bar4 {0xFFF000} \
+          CONFIG.split_dma {true} \
+          CONFIG.tl_pf_enable_reg {2} \
+          CONFIG.use_standard_interfaces {true} \
+          CONFIG.xdma_axilite_slave {true} \
+          CONFIG.xdma_num_usr_irq {16} \
+          CONFIG.xdma_pcie_64bit_en {true} \
+          CONFIG.xdma_pcie_prefetchable {true} \
+          CONFIG.xdma_rnum_chnl {2} \
+          CONFIG.xdma_wnum_chnl {2} \
+          ] \
+      dma ]
+
+  } else {
+
+      # Create instance: qdma, and set properties
+      set dma [ create_bd_cell -type ip -vlnv xilinx.com:ip:qdma:3.* -set_params [list \
+          CONFIG.PF1_MSIX_CAP_PBA_BIR_qdma {BAR_3:2} \
+          CONFIG.PF1_MSIX_CAP_TABLE_BIR_qdma {BAR_3:2} \
+          CONFIG.PF1_MSIX_CAP_TABLE_SIZE_qdma {01F} \
+          CONFIG.PF0_MSIX_CAP_TABLE_SIZE_qdma {01F} \
+          CONFIG.acs_ext_cap_enable {true} \
+          CONFIG.axi_data_width $dma_axi_data_width \
+          CONFIG.axisten_freq {250} \
+          CONFIG.axist_bypass_en {true} \
+          CONFIG.cfg_mgmt_if {true} \
+          CONFIG.copy_pf0 {false} \
+          CONFIG.coreclk_freq $dma_coreclk_freq \
+          CONFIG.disable_bram_pipeline $C_DMA_REDUCE_RESOURCE \
+          CONFIG.disable_eq_synchronizer $C_DMA_REDUCE_RESOURCE \
+          CONFIG.dma_2rp {true} \
+          CONFIG.dsc_bypass_rd {true} \
+          CONFIG.dsc_bypass_wr {true} \
+          CONFIG.enable_resource_reduction $C_DMA_REDUCE_RESOURCE \
+          CONFIG.en_bridge_slv $C_HAS_SLAVE_BRIDGE \
+          CONFIG.ins_loss_profile {Chip-to-Chip} \
+          CONFIG.master_cal_only {true} \
+          CONFIG.mode_selection {Advanced} \
+          CONFIG.mult_pf_des {true} \
+          CONFIG.pcie_blk_locn $C_PCIE_BLK_LOCN \
+          CONFIG.pf0_bar0_type_qdma	{AXI_Lite_Master} \
+          CONFIG.pf0_bar0_scale_qdma {Megabytes} \
+          CONFIG.pf0_bar0_size_qdma {32} \
+          CONFIG.pf0_bar0_prefetchable_qdma {true} \
+          CONFIG.pf0_bar2_scale_qdma {Kilobytes} \
+          CONFIG.pf0_bar2_size_qdma {128} \
+          CONFIG.pf0_bar2_prefetchable_qdma {true} \
+          CONFIG.pf1_bar0_type_qdma	{AXI_Lite_Master} \
+          CONFIG.pf1_bar0_scale_qdma {Megabytes} \
+          CONFIG.pf1_bar0_size_qdma {32} \
+          CONFIG.pf1_bar0_prefetchable_qdma {true} \
+          CONFIG.pf1_bar2_scale_qdma {Kilobytes} \
+          CONFIG.pf1_bar2_size_qdma {128} \
+          CONFIG.pf1_bar2_prefetchable_qdma {true} \
+          CONFIG.pf1_bar4_enabled_qdma {true} \
+          CONFIG.pf1_bar4_64bit_qdma {true} \
+          CONFIG.pf1_bar4_scale_qdma {Megabytes} \
+          CONFIG.pf1_bar4_size_qdma {256} \
+          CONFIG.pf1_bar4_prefetchable_qdma {true} \
+          CONFIG.pl_link_cap_max_link_speed {8.0_GT/s} \
+          CONFIG.pl_link_cap_max_link_width $dma_pl_link_cap_max_link_width \
+          CONFIG.rbar_enable $C_SUPPORTS_P2P \
+          CONFIG.pf1_rbar_num {1} \
+          CONFIG.pf1_bar0_index {4} \
+          CONFIG.pf1_rbar_cap_bar4 {0xFFF000} \
+          CONFIG.split_dma {true} \
+          CONFIG.tl_pf_enable_reg {2} \
+          CONFIG.usr_irq_xdma_type_interface {true} \
+          CONFIG.xdma_axilite_slave {true} \
+          CONFIG.xdma_rnum_rids {64} \
+          CONFIG.xdma_wnum_rids {32} \
+          CONFIG.use_standard_interfaces {true} \
+          ] \
+      dma ]
+
+  }
+
+  #===================================================================================================================================#
+
+  # Create the common clock metadata adapter IPs
+
+  set dma_s_axi_lite_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_clk_metadata_adapter:1.* dma_s_axi_lite_clk_adapt ]
+
+  if {$C_SUPPORTS_P2P} {
+
+      set dma_m_axi_byp_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_clk_metadata_adapter:1.* dma_m_axi_byp_clk_adapt ]
+
+  }
+
+  set dma_m_axi_clk_adapt [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_clk_metadata_adapter:1.* dma_m_axi_clk_adapt ]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create interface connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Connect PCIe Configuration Interfaces
+  connect_bd_intf_net -intf_net s_pcie4_cfg_fc [get_bd_intf_ports s_pcie4_cfg_fc] [get_bd_intf_pins dma/pcie4_cfg_fc]
+  connect_bd_intf_net -intf_net s_pcie4_cfg_mesg_rcvd [get_bd_intf_ports s_pcie4_cfg_mesg_rcvd] [get_bd_intf_pins dma/pcie4_cfg_mesg_rcvd]
+  connect_bd_intf_net -intf_net pcie4_cfg_mesg_tx_0_1 [get_bd_intf_ports s_pcie4_cfg_mesg_tx] [get_bd_intf_pins dma/pcie4_cfg_mesg_tx]
+  connect_bd_intf_net -intf_net s_pcie4_cfg_mesg_tx [get_bd_intf_ports s_pcie4_cfg_status] [get_bd_intf_pins dma/pcie4_cfg_status_if]
+  connect_bd_intf_net -intf_net dma_ip_pcie4_cfg_control_if [get_bd_intf_pins dma/pcie4_cfg_control_if] [get_bd_intf_ports m_pcie4_cfg_control]
+  connect_bd_intf_net -intf_net dma_ip_pcie4_cfg_external_msix_without_msi_if [get_bd_intf_pins dma/pcie4_cfg_external_msix_without_msi_if] [get_bd_intf_ports m_pcie4_cfg_external_msix]
+  connect_bd_intf_net -intf_net dma_ip_pcie4_cfg_interrupt [get_bd_intf_pins dma/pcie4_cfg_interrupt] [get_bd_intf_ports m_pcie4_cfg_interrupt]
+  connect_bd_intf_net -intf_net dma_ip_pcie_cfg_mgmt_if [get_bd_intf_pins dma/pcie_cfg_mgmt_if] [get_bd_intf_ports m_pcie4_cfg_mgmt]
+
+  # Connect PCIe AXI-Stream Interfaces
+
+  if {$C_HAS_TDM_SLR_CROSSING} {
+
+      # Connect the PCIe/DMA TDM SLR Register Slices if enabled
+
+      # Connect the CQ Interface Reg Slice
+      connect_bd_intf_net -intf_net s_pcie_axis_cq [get_bd_intf_ports s_pcie_axis_cq] [get_bd_intf_pins axis_register_slice_cq/S_AXIS]
+      connect_bd_intf_net -intf_net axis_register_slice_cq_ip_m_axis [get_bd_intf_pins axis_register_slice_cq/M_AXIS] [get_bd_intf_pins dma/m_axis_cq]
+
+      # Connect the RC Interface Reg Slice
+      connect_bd_intf_net -intf_net s_pcie_axis_rc [get_bd_intf_ports s_pcie_axis_rc] [get_bd_intf_pins axis_register_slice_rc/S_AXIS]
+      connect_bd_intf_net -intf_net axis_register_slice_rc_ip_m_axis [get_bd_intf_pins axis_register_slice_rc/M_AXIS] [get_bd_intf_pins dma/m_axis_rc]
+
+      # Connect the CC Interface Reg Slice
+      connect_bd_intf_net -intf_net m_pcie_axis_cc [get_bd_intf_ports m_pcie_axis_cc] [get_bd_intf_pins axis_register_slice_cc/M_AXIS]
+      connect_bd_intf_net -intf_net dma_ip_s_axis_cc [get_bd_intf_pins dma/s_axis_cc] [get_bd_intf_pins axis_register_slice_cc/S_AXIS]
+
+      # Connect the RQ Interface Reg Slice
+      connect_bd_intf_net -intf_net m_pcie_axis_rq [get_bd_intf_ports m_pcie_axis_rq] [get_bd_intf_pins axis_register_slice_rq/M_AXIS]
+      connect_bd_intf_net -intf_net dma_ip_s_axis_rq [get_bd_intf_pins dma/s_axis_rq] [get_bd_intf_pins axis_register_slice_rq/S_AXIS]
+
+  } else {
+
+      # Connect the DMA directly to the interface ports
+      connect_bd_intf_net -intf_net s_pcie_axis_cq [get_bd_intf_ports s_pcie_axis_cq] [get_bd_intf_pins dma/m_axis_cq]
+      connect_bd_intf_net -intf_net s_pcie_axis_rc [get_bd_intf_ports s_pcie_axis_rc] [get_bd_intf_pins dma/m_axis_rc]
+      connect_bd_intf_net -intf_net dma_ip_s_axis_cc [get_bd_intf_pins dma/s_axis_cc] [get_bd_intf_ports m_pcie_axis_cc]
+      connect_bd_intf_net -intf_net dma_ip_s_axis_rq [get_bd_intf_pins dma/s_axis_rq] [get_bd_intf_ports m_pcie_axis_rq]
+
+  }
+
+  # AXI Datapath Interfaces
+  connect_bd_intf_net -intf_net dma_ip_m_axi [get_bd_intf_pins dma/M_AXI] [get_bd_intf_pins dma_m_axi_clk_adapt/S_AXI]
+  connect_bd_intf_net -intf_net dma_m_axi_clk_adapt_ip_m_axi [get_bd_intf_pins dma_m_axi_clk_adapt/M_AXI] [get_bd_intf_pins axi_vip_data/S_AXI]
+  connect_bd_intf_net -intf_net axi_vip_data_ip_m_axi [get_bd_intf_pins axi_vip_data/M_AXI] [get_bd_intf_ports m_axi_data]
+
+  # AXI Bypass (P2P) Interfaces
+  if {$C_SUPPORTS_P2P} {
+
+      if {$C_DMA_TYPE eq "XDMA"} {
+      
+          connect_bd_intf_net -intf_net dma_ip_m_axi_bypass [get_bd_intf_pins dma/M_AXI_BYPASS] [get_bd_intf_pins dma_m_axi_byp_clk_adapt/S_AXI]
+          
+      } else {
+      
+          connect_bd_intf_net -intf_net dma_ip_m_axi_bridge [get_bd_intf_pins dma/M_AXI_BRIDGE] [get_bd_intf_pins dma_m_axi_byp_clk_adapt/S_AXI]
+          
+      }
+      
+      connect_bd_intf_net -intf_net dma_m_axi_byp_clk_adapt_ip_m_axi [get_bd_intf_pins dma_m_axi_byp_clk_adapt/M_AXI] [get_bd_intf_pins axi_vip_data_p2p/S_AXI]
+      connect_bd_intf_net -intf_net axi_vip_data_p2p_ip_m_axi [get_bd_intf_pins axi_vip_data_p2p/M_AXI] [get_bd_intf_ports m_axi_data_p2p]
+
+  }
+
+  # AXI DMA Debug Interfaces
+  connect_bd_intf_net -intf_net s_axi_dma_debug [get_bd_intf_ports s_axi_dma_debug] [get_bd_intf_pins axi_vip_dma_debug/S_AXI]
+  connect_bd_intf_net -intf_net axi_vip_dma_debug_ip_m_axi [get_bd_intf_pins axi_vip_dma_debug/M_AXI] [get_bd_intf_pins dma_s_axi_lite_clk_adapt/S_AXI]
+  connect_bd_intf_net -intf_net dma_s_axi_lite_clk_adapt_ip_m_axi [get_bd_intf_pins dma_s_axi_lite_clk_adapt/M_AXI] [get_bd_intf_pins dma/S_AXI_LITE]
+
+  # AXI Management Control Interfaces
+  connect_bd_intf_net -intf_net s_axi_ctrl_mgmt [get_bd_intf_ports s_axi_ctrl_mgmt] [get_bd_intf_pins axi_vip_ctrl_mgmt/S_AXI]
+  connect_bd_intf_net -intf_net axi_vip_ctrl_mgmt_ip_m_axi [get_bd_intf_pins axi_vip_ctrl_mgmt/M_AXI] [get_bd_intf_pins build_info/S_AXI]
+
+  # QDMA Specific Interfaces
+  if {$C_DMA_TYPE eq "QDMA"} {
+
+      connect_bd_intf_net -intf_net s_axis_c2h [get_bd_intf_ports s_axis_c2h] [get_bd_intf_pins dma/s_axis_c2h]
+      connect_bd_intf_net -intf_net s_axis_c2h_cmpt [get_bd_intf_ports s_axis_c2h_cmpt] [get_bd_intf_pins dma/s_axis_c2h_cmpt]
+      connect_bd_intf_net -intf_net s_qdma_dsc_crdt_in [get_bd_intf_ports s_qdma_dsc_crdt_in] [get_bd_intf_pins dma/dsc_crdt_in]
+      connect_bd_intf_net -intf_net s_qdma_h2c_byp_in_st [get_bd_intf_ports s_qdma_h2c_byp_in_st] [get_bd_intf_pins dma/h2c_byp_in_st]
+      connect_bd_intf_net -intf_net dma_ip_m_axis_h2c [get_bd_intf_pins dma/m_axis_h2c] [get_bd_intf_ports m_axis_h2c]
+      connect_bd_intf_net -intf_net dma_ip_tm_dsc_sts [get_bd_intf_pins dma/tm_dsc_sts] [get_bd_intf_ports m_qdma_tm_dsc_sts]
+      connect_bd_intf_net -intf_net dma_ip_h2c_byp_out [get_bd_intf_pins dma/h2c_byp_out] [get_bd_intf_ports m_qdma_h2c_byp_out]
+      connect_bd_intf_net -intf_net dma_ip_c2h_byp_out [get_bd_intf_pins dma/c2h_byp_out] [get_bd_intf_ports m_qdma_c2h_byp_out]
+
+  }
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (2) Create port connections
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # Resets
+  connect_bd_net -net aresetn_ctrl [get_bd_ports aresetn_ctrl] [get_bd_pins axi_vip_ctrl_mgmt/aresetn] [get_bd_pins build_info/S_AXI_ARESETN]
+  connect_bd_net -net aresetn_pcie [get_bd_ports aresetn_pcie] [get_bd_pins not_gate_aresetn_pcie/Op1] [get_bd_pins dma/sys_rst_n] [get_bd_pins axi_vip_data/aresetn] [get_bd_pins axi_vip_dma_debug/aresetn]
+  connect_bd_net -net not_gate_aresetn_pcie_ip_Res [get_bd_pins not_gate_aresetn_pcie/Res] [get_bd_pins dma/user_reset_sd]
+
+  if {$C_HAS_TDM_SLR_CROSSING} {
+
+      connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axis_register_slice_cq/aresetn] [get_bd_pins axis_register_slice_cc/aresetn] [get_bd_pins axis_register_slice_rq/aresetn] [get_bd_pins axis_register_slice_rc/aresetn]
+
+  }
+
+  if {$C_SUPPORTS_P2P} {
+
+      connect_bd_net -net [get_bd_nets aresetn_pcie] [get_bd_pins axi_vip_data_p2p/aresetn]
+
+  }
+  
+  # Hot reset not present on interface, tie off to 0
+  connect_bd_net -net gnd_ip_dout [get_bd_pins gnd/dout] [get_bd_pins dma/cfg_hot_reset_out_sd]
+
+  # Clocks
+  connect_bd_net -net aclk_ctrl [get_bd_ports aclk_ctrl] [get_bd_pins axi_vip_ctrl_mgmt/aclk] [get_bd_pins build_info/S_AXI_ACLK]
+  connect_bd_net -net dma_ip_axi_aclk [get_bd_pins dma/axi_aclk] [get_bd_pins dma_s_axi_lite_clk_adapt/m_axi_aclk] [get_bd_pins dma_m_axi_clk_adapt/s_axi_aclk]
+  connect_bd_net -net aclk_pcie [get_bd_ports aclk_pcie] [get_bd_pins dma/user_clk_sd] [get_bd_pins dma_s_axi_lite_clk_adapt/s_axi_aclk] [get_bd_pins dma_m_axi_clk_adapt/m_axi_aclk] [get_bd_pins axi_vip_data/aclk] [get_bd_pins axi_vip_dma_debug/aclk]
+
+  if {$C_HAS_TDM_SLR_CROSSING} {
+
+      connect_bd_net -net [get_bd_nets aclk_pcie] [get_bd_pins axis_register_slice_cq/aclk] [get_bd_pins axis_register_slice_cc/aclk] [get_bd_pins axis_register_slice_rq/aclk] [get_bd_pins axis_register_slice_rc/aclk]
+      connect_bd_net -net aclk_pcie_2x [get_bd_ports aclk_pcie_2x] [get_bd_pins axis_register_slice_cq/aclk2x] [get_bd_pins axis_register_slice_cc/aclk2x] [get_bd_pins axis_register_slice_rq/aclk2x] [get_bd_pins axis_register_slice_rc/aclk2x]
+
+  }
+
+  if {$C_SUPPORTS_P2P} {
+
+      connect_bd_net -net [get_bd_nets dma_ip_axi_aclk] [get_bd_pins dma_m_axi_byp_clk_adapt/s_axi_aclk]
+      connect_bd_net -net [get_bd_nets aclk_pcie] [get_bd_pins axi_vip_data_p2p/aclk] [get_bd_pins dma_m_axi_byp_clk_adapt/m_axi_aclk]
+
+  }
+
+  # Control/Status
+  connect_bd_net -net pcie_phy_rdy [get_bd_ports pcie_phy_rdy] [get_bd_pins dma/phy_rdy_out_sd]
+  connect_bd_net -net pcie_user_lnk_up [get_bd_ports pcie_user_lnk_up] [get_bd_pins dma/user_lnk_up_sd]
+
+  #############
+  # Interrupts
+  #############
+
+  # Management interrutps
+  
+  # Connect the management interrupt ports to the concat
+  for {set i 0} {$i < $C_NUM_MGMT_IRQS} {incr i} {
+  
+      connect_bd_net -net interrupt_mgmt_$i [get_bd_ports interrupt_mgmt_$i] [get_bd_pins mgmt_irq_concat/In$i]
+      
+  }
+  
+  # Connect the GND tie-off to the concat
+  if {[expr $C_NUM_MGMT_IRQ_BITS < $C_MAX_NUM_MGMT_IRQS]} {
+  
+      connect_bd_net -net mgmt_irq_gnd_ip_dout [get_bd_pins mgmt_irq_gnd/dout] [get_bd_pins mgmt_irq_concat/In$C_NUM_MGMT_IRQS]
+      
+  }
+  
+  # Connect the management interrupt concat to the DMA interrupt concat
+  connect_bd_net -net mgmt_irq_concat_ip_dout [get_bd_pins mgmt_irq_concat/dout] [get_bd_pins interrupt_concat/In0]
+
+  # User interrutps
+  
+  # Connect the user interrupt ports to the concat
+  for {set i 0} {$i < $C_NUM_USER_IRQS} {incr i} {
+  
+      connect_bd_net -net interrupt_user_$i [get_bd_ports interrupt_user_$i] [get_bd_pins user_irq_concat/In$i]
+      
+  }
+  
+  # Connect the GND tie-off to the concat
+  if {[expr $C_NUM_USER_IRQ_BITS < $C_MAX_NUM_USER_IRQS]} {
+  
+      connect_bd_net -net user_irq_gnd_ip_dout [get_bd_pins user_irq_gnd/dout] [get_bd_pins user_irq_concat/In$C_NUM_USER_IRQS]
+      
+  }
+  
+  # Connect the user interrupt concat to the DMA interrupt concat
+  connect_bd_net -net user_irq_concat_ip_dout [get_bd_pins user_irq_concat/dout] [get_bd_pins interrupt_concat/In1]
+
+  # Connect the interrupts to the DMA
+  if {$C_DMA_TYPE eq "XDMA"} {
+
+      connect_bd_net -net interrupt_concat_ip_dout [get_bd_pins interrupt_concat/dout] [get_bd_pins dma/usr_irq_req]
+
+  } else {
+
+      connect_bd_net -net interrupt_concat_ip_dout [get_bd_pins interrupt_concat/dout] [get_bd_pins dma/usr_irq_req_qdma]
+
+  }
+
+  # Configure the function number associated with each interrupt
+  # 0-7 Management PF, 8-15 User PF
+  connect_bd_net -net dma_usr_irq_func_num_ip_dout [get_bd_pins dma_usr_irq_func_num/dout] [get_bd_pins dma/usr_irq_function_number]
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (3) Create address segments
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+  # s_axi_ctrl_mgmt interface
+  assign_bd_address -offset 0x00000000  -range 4k   -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_ctrl_mgmt]] [get_bd_addr_segs -of [get_bd_intf_pins build_info/S_AXI]]
+
+  # s_axi_dma_debug interface
+  assign_bd_address -offset 0x00000000  -range 64k  -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_dma_debug]] [get_bd_addr_segs -of [get_bd_intf_pins dma/S_AXI_LITE]]
+
+  # Combine all segments
+  assign_bd_address -combine_segments -boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_ports s_axi_dma_debug]]
+
+  # m_axi_data interface
+  set m_axi_data_addr_aptr { \
+      offset 0x0000_0000_0000_0000 range 16E
+  }
+
+  assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins dma/M_AXI]] -dict $m_axi_data_addr_aptr [get_bd_addr_segs -of [get_bd_intf_ports m_axi_data]]
+
+  # m_axi_data_p2p interface
+  if {$C_SUPPORTS_P2P} {
+
+      # m_axi_data_p2p is restricted to 512G range - this is the current RBAR limit enforced by the PCIe in the HIF Subsystem
+      set m_axi_data_p2p_addr_aptr { \
+          offset 0x0000_0000_0000_0000 range 512G
+      }
+      
+      if {$C_DMA_TYPE eq "XDMA"} {
+
+          assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins dma/M_AXI_BYPASS]] -dict $m_axi_data_p2p_addr_aptr [get_bd_addr_segs -of [get_bd_intf_ports m_axi_data_p2p]]
+          
+      } else {
+      
+          assign_bd_address -external -master_boundary -target_address_space [get_bd_addr_spaces -of [get_bd_intf_pins dma/M_AXI_BRIDGE]] -dict $m_axi_data_p2p_addr_aptr [get_bd_addr_segs -of [get_bd_intf_ports m_axi_data_p2p]]
+          
+      }
+
+  }
+
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+# (4) Set driver mode for SDK
+# -----------------------------------------------------------------------------------------------------------------------------------------#
+
+set_driver_mode subcore
